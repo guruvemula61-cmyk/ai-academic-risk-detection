@@ -2,1916 +2,2042 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-
+from datetime import datetime, timedelta
 
 # ============================================================
-# PAGE CONFIGURATION
+# PAGE CONFIG
 # ============================================================
 
 st.set_page_config(
     page_title="AI-Based Early Detection of Students at Academic Risk",
+    page_icon="A",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded"
 )
 
-
 # ============================================================
-# CUSTOM CSS
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-    @import url(
-        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'
-    );
-
-    html, body, [class*="css"] {
-        font-family: Inter, sans-serif;
-    }
-
-    .stApp {
-        background: #f5f7fb;
-        color: #172033;
-    }
-
-    .block-container {
-        max-width: 1450px;
-        padding-top: 1.2rem;
-        padding-bottom: 2rem;
-    }
-
-    .topbar {
-        background: #101828;
-        color: white;
-        padding: 18px 24px;
-        border-radius: 14px;
-        margin-bottom: 18px;
-    }
-
-    .brand {
-        font-size: 21px;
-        font-weight: 800;
-    }
-
-    .top-subtitle {
-        color: #98a2b3;
-        font-size: 12px;
-        margin-top: 4px;
-    }
-
-    .card {
-        background: white;
-        border: 1px solid #e4e7ec;
-        border-radius: 14px;
-        padding: 20px;
-        box-shadow: 0 2px 8px rgba(16, 24, 40, 0.04);
-        margin-bottom: 14px;
-    }
-
-    .metric-label {
-        color: #667085;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .metric-value {
-        font-size: 31px;
-        font-weight: 800;
-        margin-top: 4px;
-    }
-
-    .section-title {
-        font-size: 21px;
-        font-weight: 800;
-        margin: 25px 0 12px;
-    }
-
-    .reason {
-        color: #475467;
-        font-size: 13px;
-        line-height: 1.4;
-    }
-
-    .small-note {
-        color: #667085;
-        font-size: 12px;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .badge-red {
-        background: #fee4e2;
-        color: #b42318;
-    }
-
-    .badge-orange {
-        background: #fff0d6;
-        color: #b54708;
-    }
-
-    .badge-yellow {
-        background: #fff7cc;
-        color: #8a6116;
-    }
-
-    .badge-green {
-        background: #dcfae6;
-        color: #067647;
-    }
-
-    .factor {
-        margin: 15px 0;
-    }
-
-    .factor-top {
-        display: flex;
-        justify-content: space-between;
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .bar {
-        height: 9px;
-        background: #eaecf0;
-        border-radius: 99px;
-        margin-top: 7px;
-        overflow: hidden;
-    }
-
-    .fill-red {
-        height: 100%;
-        background: #d92d20;
-    }
-
-    .fill-orange {
-        height: 100%;
-        background: #f79009;
-    }
-
-    .fill-blue {
-        height: 100%;
-        background: #3b82f6;
-    }
-
-    .login-wrap {
-        max-width: 760px;
-        margin: 9vh auto;
-        text-align: center;
-    }
-
-    .login-title {
-        font-size: 43px;
-        line-height: 1.1;
-        font-weight: 800;
-        color: #101828;
-        margin-top: 15px;
-    }
-
-    .login-sub {
-        color: #667085;
-        font-size: 16px;
-        line-height: 1.6;
-        margin: 15px auto 30px;
-        max-width: 650px;
-    }
-
-    .heatmap {
-        border-collapse: separate;
-        border-spacing: 4px;
-        width: 100%;
-    }
-
-    .heatmap th {
-        font-size: 11px;
-        color: #667085;
-        padding: 5px;
-    }
-
-    .heatmap td {
-        height: 28px;
-        border-radius: 5px;
-        text-align: center;
-        font-size: 9px;
-        color: #344054;
-    }
-
-    .h-green {
-        background: #b7ebc6;
-    }
-
-    .h-yellow {
-        background: #ffe58f;
-    }
-
-    .h-orange {
-        background: #ffbf69;
-    }
-
-    .h-red {
-        background: #f98b82;
-        color: white !important;
-    }
-
-    .info-strip {
-        background: #eef4ff;
-        border: 1px solid #c7d7fe;
-        color: #344054;
-        border-radius: 10px;
-        padding: 12px 15px;
-        font-size: 13px;
-        margin-bottom: 15px;
-    }
-
-    .demo-strip {
-        background: #f9fafb;
-        border: 1px solid #eaecf0;
-        color: #667085;
-        border-radius: 9px;
-        padding: 10px 13px;
-        font-size: 12px;
-        margin-top: 10px;
-    }
-
-    div.stButton > button {
-        border-radius: 9px;
-        font-weight: 700;
-        min-height: 44px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# ============================================================
-# SYNTHETIC CLASSROOM DATA
+# GLOBAL CSS
 # ============================================================
 
-@st.cache_data
-def build_data():
-    rng = np.random.default_rng(2026)
-
-    personas = (
-        ["Steady"] * 15
-        + ["Stable Middle"] * 22
-        + ["Gradual Decliner"] * 8
-        + ["Sudden Dropper"] * 5
-        + ["Chronic Absentee"] * 5
-        + ["Recovering"] * 3
-        + ["Fluctuating"] * 2
-    )
-
-    records = []
-
-    for i, persona in enumerate(personas, 1):
-
-        student = f"Student {i:02d}"
-
-        for week in range(1, 9):
-
-            if persona == "Steady":
-
-                attendance = 92 + rng.normal(0, 2)
-                quiz = 84 + rng.normal(0, 3)
-                assignment = 95 + rng.normal(0, 2)
-                lms = 90 + rng.normal(0, 3)
-
-            elif persona == "Stable Middle":
-
-                attendance = 80 + rng.normal(0, 4)
-                quiz = 69 + rng.normal(0, 5)
-                assignment = 80 + rng.normal(0, 5)
-                lms = 73 + rng.normal(0, 5)
-
-            elif persona == "Gradual Decliner":
-
-                decline = max(0, week - 2)
-
-                attendance = (
-                    88
-                    - decline * 7
-                    + rng.normal(0, 2)
-                )
-
-                quiz = (
-                    78
-                    - decline * 6
-                    + rng.normal(0, 3)
-                )
-
-                assignment = (
-                    90
-                    - decline * 7
-                    + rng.normal(0, 3)
-                )
-
-                lms = (
-                    84
-                    - decline * 6
-                    + rng.normal(0, 3)
-                )
-
-            elif persona == "Sudden Dropper":
-
-                if week <= 4:
-
-                    attendance = 92 + rng.normal(0, 2)
-                    quiz = 82 + rng.normal(0, 3)
-                    assignment = 94 + rng.normal(0, 2)
-                    lms = 88 + rng.normal(0, 3)
-
-                else:
-
-                    decline = week - 4
-
-                    attendance = (
-                        92
-                        - decline * 21
-                        + rng.normal(0, 2)
-                    )
-
-                    quiz = (
-                        82
-                        - decline * 9
-                        + rng.normal(0, 3)
-                    )
-
-                    assignment = (
-                        94
-                        - decline * 18
-                        + rng.normal(0, 2)
-                    )
-
-                    lms = (
-                        88
-                        - decline * 15
-                        + rng.normal(0, 3)
-                    )
-
-            elif persona == "Chronic Absentee":
-
-                attendance = 47 + rng.normal(0, 4)
-                quiz = 54 + rng.normal(0, 5)
-                assignment = 50 + rng.normal(0, 5)
-                lms = 44 + rng.normal(0, 5)
-
-            elif persona == "Recovering":
-
-                if week <= 3:
-
-                    attendance = (
-                        48
-                        + week * 2
-                        + rng.normal(0, 2)
-                    )
-
-                    quiz = (
-                        48
-                        + week * 2
-                        + rng.normal(0, 3)
-                    )
-
-                    assignment = (
-                        46
-                        + week * 3
-                        + rng.normal(0, 3)
-                    )
-
-                    lms = (
-                        45
-                        + week * 2
-                        + rng.normal(0, 3)
-                    )
-
-                else:
-
-                    recovery = week - 3
-
-                    attendance = (
-                        58
-                        + recovery * 7
-                        + rng.normal(0, 2)
-                    )
-
-                    quiz = (
-                        54
-                        + recovery * 7
-                        + rng.normal(0, 3)
-                    )
-
-                    assignment = (
-                        55
-                        + recovery * 7
-                        + rng.normal(0, 3)
-                    )
-
-                    lms = (
-                        52
-                        + recovery * 7
-                        + rng.normal(0, 3)
-                    )
-
-            else:
-
-                swing = [
-                    0,
-                    5,
-                    -4,
-                    7,
-                    -3,
-                    4,
-                    -2,
-                    3,
-                ][week - 1]
-
-                attendance = (
-                    71
-                    + swing
-                    + rng.normal(0, 3)
-                )
-
-                quiz = (
-                    62
-                    + swing
-                    + rng.normal(0, 4)
-                )
-
-                assignment = (
-                    70
-                    + swing
-                    + rng.normal(0, 4)
-                )
-
-                lms = (
-                    65
-                    + swing
-                    + rng.normal(0, 4)
-                )
-
-            assignment = float(
-                np.clip(
-                    assignment,
-                    0,
-                    100
-                )
-            )
-
-            records.append(
-                {
-                    "Student": student,
-                    "Persona": persona,
-                    "Week": week,
-                    "Attendance": float(
-                        np.clip(
-                            attendance,
-                            15,
-                            99
-                        )
-                    ),
-                    "Quiz": float(
-                        np.clip(
-                            quiz,
-                            10,
-                            99
-                        )
-                    ),
-                    "Assignment": assignment,
-                    "LMS": float(
-                        np.clip(
-                            lms,
-                            5,
-                            100
-                        )
-                    ),
-                    "Submitted": assignment >= 55,
-                }
-            )
-
-    return pd.DataFrame(records)
-
-
-df = build_data()
-
-
-# ============================================================
-# RISK ENGINE
-# ============================================================
-
-def risk_score(history):
-
-    h = history.sort_values("Week").copy()
-
-    last_attendance = float(
-        h.iloc[-1]["Attendance"]
-    )
-
-    last_quiz = float(
-        h.iloc[-1]["Quiz"]
-    )
-
-    recent_attendance = h.tail(3)
-
-    recent_quiz = h.tail(4)
-
-    attendance_slope = np.polyfit(
-        recent_attendance["Week"],
-        recent_attendance["Attendance"],
-        1
-    )[0]
-
-    quiz_slope = np.polyfit(
-        recent_quiz["Week"],
-        recent_quiz["Quiz"],
-        1
-    )[0]
-
-    missing_streak = 0
-
-    for submitted in h["Submitted"].iloc[::-1]:
-
-        if not submitted:
-            missing_streak += 1
-        else:
-            break
-
-    attendance_level = np.clip(
-        (75 - last_attendance) / 75 * 100,
-        0,
-        100
-    )
-
-    attendance_trend = np.clip(
-        (-attendance_slope) * 8
-        + attendance_level * 0.35,
-        0,
-        100
-    )
-
-    quiz_trend = np.clip(
-        (-quiz_slope) * 8
-        + max(
-            0,
-            70 - last_quiz
-        ) * 1.25,
-        0,
-        100
-    )
-
-    assignment_gap = np.clip(
-        missing_streak / 3 * 100,
-        0,
-        100
-    )
-
-    overall_attendance = np.clip(
-        (70 - last_attendance) / 70 * 100,
-        0,
-        100
-    )
-
-    score = (
-        attendance_trend * 0.35
-        + quiz_trend * 0.30
-        + assignment_gap * 0.20
-        + overall_attendance * 0.15
-    )
-
-    return float(
-        np.clip(
-            score,
-            0,
-            100
-        )
-    )
-
-
-def risk_label(score):
-
-    if score >= 70:
-        return "Needs Support", "red"
-
-    if score >= 55:
-        return "Monitor Closely", "orange"
-
-    if score >= 35:
-        return "Watch", "yellow"
-
-    return "On Track", "green"
-
-
-def primary_reason(history):
-
-    h = history.sort_values("Week")
-
-    attendance_slope = np.polyfit(
-        h["Week"].tail(3),
-        h["Attendance"].tail(3),
-        1
-    )[0]
-
-    quiz_slope = np.polyfit(
-        h["Week"].tail(4),
-        h["Quiz"].tail(4),
-        1
-    )[0]
-
-    missing = int(
-        (~h["Submitted"].tail(4)).sum()
-    )
-
-    if attendance_slope < -7:
-
-        return (
-            "Attendance has dropped sharply "
-            "in recent weeks."
-        )
-
-    if quiz_slope < -4:
-
-        return (
-            "Quiz performance has been declining "
-            "across recent weeks."
-        )
-
-    if missing >= 2:
-
-        return (
-            "Recent assignment submissions show "
-            "a completion gap."
-        )
-
-    if float(h.iloc[-1]["Attendance"]) < 55:
-
-        return (
-            "Attendance is consistently low "
-            "across the observed period."
-        )
-
-    return (
-        "Multiple learning signals are below "
-        "the class monitoring range."
-    )
-
-
-def risk_components(history):
-
-    h = history.sort_values("Week")
-
-    attendance_change = (
-        float(
-            h.iloc[-1]["Attendance"]
-        )
-        -
-        float(
-            h.iloc[0]["Attendance"]
-        )
-    )
-
-    quiz_start = max(
-        0,
-        len(h) - 4
-    )
-
-    quiz_change = (
-        float(
-            h.iloc[-1]["Quiz"]
-        )
-        -
-        float(
-            h.iloc[quiz_start]["Quiz"]
-        )
-    )
-
-    missing_recent = int(
-        (~h["Submitted"].tail(4)).sum()
-    )
-
-    attendance_impact = max(
-        0,
-        -attendance_change
-    )
-
-    quiz_impact = max(
-        0,
-        -quiz_change
-    )
-
-    assignment_impact = (
-        missing_recent * 20
-    )
-
-    values = [
-        (
-            "Attendance trend",
-            attendance_impact,
-            (
-                f"Attendance changed "
-                f"{h.iloc[0]['Attendance']:.0f}% "
-                f"→ "
-                f"{h.iloc[-1]['Attendance']:.0f}%"
-            ),
-        ),
-        (
-            "Quiz trend",
-            quiz_impact,
-            (
-                f"Recent quiz performance changed "
-                f"{h.iloc[quiz_start]['Quiz']:.0f} "
-                f"→ "
-                f"{h.iloc[-1]['Quiz']:.0f}"
-            ),
-        ),
-        (
-            "Assignment gap",
-            assignment_impact,
-            (
-                f"{missing_recent} recent assignment(s) "
-                f"were not submitted"
-            ),
-        ),
-    ]
-
-    total = sum(
-        item[1]
-        for item in values
-    )
-
-    if total == 0:
-        total = 1
-
-    return [
-        (
-            name,
-            value / total * 100,
-            explanation
-        )
-        for name, value, explanation
-        in sorted(
-            values,
-            key=lambda x: x[1],
-            reverse=True
-        )
-    ]
-
-
-# ============================================================
-# STUDENT SUMMARY TABLE
-# ============================================================
-
-student_rows = []
-
-for student in df["Student"].unique():
-
-    history = df[
-        df["Student"] == student
-    ].sort_values("Week")
-
-    score = risk_score(history)
-
-    label, tone = risk_label(
-        score
-    )
-
-    student_rows.append(
-        {
-            "Student": student,
-            "Risk": score,
-            "Level": label,
-            "Tone": tone,
-            "Reason": primary_reason(
-                history
-            ),
-            "Persona": history.iloc[0]["Persona"],
-        }
-    )
-
-
-risk_df = (
-    pd.DataFrame(student_rows)
-    .sort_values(
-        "Risk",
-        ascending=False
-    )
-    .reset_index(drop=True)
-)
+st.markdown("""
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+.main {
+    background: #f7f9fc;
+}
+
+.block-container {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+    max-width: 1450px;
+}
+
+/* Sidebar */
+
+section[data-testid="stSidebar"] {
+    background: #0f172a;
+}
+
+section[data-testid="stSidebar"] * {
+    color: #e5e7eb !important;
+}
+
+/* Headers */
+
+.hero-title {
+    font-size: 34px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.hero-subtitle {
+    color: #64748b;
+    font-size: 15px;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 23px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 15px;
+    margin-bottom: 12px;
+}
+
+/* Cards */
+
+.metric-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    min-height: 130px;
+    box-shadow: 0 4px 14px rgba(15,23,42,0.04);
+}
+
+.metric-label {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.metric-value {
+    font-size: 31px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 7px;
+}
+
+.metric-small {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 5px;
+}
+
+/* Status */
+
+.status-danger {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.status-warning {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.status-success {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.status-neutral {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+/* Info cards */
+
+.info-box {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 12px;
+}
+
+.info-title {
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 7px;
+}
+
+.info-text {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Login */
+
+.login-wrapper {
+    max-width: 760px;
+    margin: 60px auto 0 auto;
+    text-align: center;
+}
+
+.login-title {
+    font-size: 38px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.login-subtitle {
+    font-size: 16px;
+    color: #64748b;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+.role-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 25px;
+    text-align: center;
+    min-height: 180px;
+    box-shadow: 0 5px 18px rgba(15,23,42,0.05);
+}
+
+/* Tables */
+
+.dataframe {
+    border-radius: 12px;
+}
+
+/* Timeline */
+
+.timeline-card {
+    background: white;
+    border-left: 5px solid #2563eb;
+    padding: 15px 18px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+/* Footer */
+
+.small-note {
+    font-size: 12px;
+    color: #64748b;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 
 # ============================================================
 # SESSION STATE
 # ============================================================
 
-if "screen" not in st.session_state:
-    st.session_state.screen = "Login"
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "role" not in st.session_state:
+    st.session_state.role = None
 
 if "selected_student" not in st.session_state:
-    st.session_state.selected_student = (
-        risk_df.iloc[0]["Student"]
+    st.session_state.selected_student = "STU-001"
+
+if "page" not in st.session_state:
+    st.session_state.page = "Dashboard"
+
+if "selected_subject" not in st.session_state:
+    st.session_state.selected_subject = "Mathematics"
+
+if "parent_message_sent" not in st.session_state:
+    st.session_state.parent_message_sent = False
+
+
+# ============================================================
+# SYNTHETIC DATA GENERATION
+# ============================================================
+
+@st.cache_data
+def create_student_data():
+
+    students = [
+        ("STU-001", "Aarav Kumar", "VIII-A", "Gradual Decliner"),
+        ("STU-002", "Ananya Reddy", "VIII-A", "Steady"),
+        ("STU-003", "Rahul Verma", "VIII-A", "Sudden Drop"),
+        ("STU-004", "Saanvi Rao", "VIII-A", "Steady"),
+        ("STU-005", "Arjun Singh", "VIII-A", "Chronic Absentee"),
+        ("STU-006", "Diya Sharma", "VIII-A", "Recovering"),
+        ("STU-007", "Vihaan Patel", "VIII-A", "Steady"),
+        ("STU-008", "Myra Das", "VIII-A", "Gradual Decliner"),
+        ("STU-009", "Aditya Kumar", "VIII-A", "Steady"),
+        ("STU-010", "Ishita Rao", "VIII-A", "Sudden Drop"),
+        ("STU-011", "Rohan Gupta", "VIII-A", "Steady"),
+        ("STU-012", "Aadhya Singh", "VIII-A", "Chronic Absentee"),
+        ("STU-013", "Kabir Reddy", "VIII-A", "Gradual Decliner"),
+        ("STU-014", "Meera Patel", "VIII-A", "Steady"),
+        ("STU-015", "Ayaan Khan", "VIII-A", "Recovering"),
+        ("STU-016", "Sara Verma", "VIII-A", "Steady"),
+        ("STU-017", "Nikhil Rao", "VIII-A", "Sudden Drop"),
+        ("STU-018", "Anika Sharma", "VIII-A", "Steady"),
+        ("STU-019", "Ishaan Kumar", "VIII-A", "Gradual Decliner"),
+        ("STU-020", "Kiara Das", "VIII-A", "Steady"),
+        ("STU-021", "Dev Reddy", "VIII-A", "Chronic Absentee"),
+        ("STU-022", "Navya Singh", "VIII-A", "Steady"),
+        ("STU-023", "Aryan Patel", "VIII-A", "Gradual Decliner"),
+        ("STU-024", "Tara Rao", "VIII-A", "Steady"),
+        ("STU-025", "Reyansh Kumar", "VIII-A", "Sudden Drop"),
+        ("STU-026", "Ira Verma", "VIII-A", "Steady"),
+        ("STU-027", "Karthik Sharma", "VIII-A", "Gradual Decliner"),
+        ("STU-028", "Riya Reddy", "VIII-A", "Steady"),
+        ("STU-029", "Manav Gupta", "VIII-A", "Recovering"),
+        ("STU-030", "Avni Singh", "VIII-A", "Steady"),
+        ("STU-031", "Siddharth Rao", "VIII-A", "Gradual Decliner"),
+        ("STU-032", "Aanya Patel", "VIII-A", "Steady"),
+        ("STU-033", "Ritvik Kumar", "VIII-A", "Sudden Drop"),
+        ("STU-034", "Shreya Sharma", "VIII-A", "Steady"),
+        ("STU-035", "Yash Verma", "VIII-A", "Chronic Absentee"),
+        ("STU-036", "Pihu Reddy", "VIII-A", "Steady"),
+        ("STU-037", "Atharv Singh", "VIII-A", "Gradual Decliner"),
+        ("STU-038", "Nandini Rao", "VIII-A", "Steady"),
+        ("STU-039", "Krishna Patel", "VIII-A", "Sudden Drop"),
+        ("STU-040", "Mahi Kumar", "VIII-A", "Steady"),
+        ("STU-041", "Varun Das", "VIII-A", "Gradual Decliner"),
+        ("STU-042", "Aarohi Sharma", "VIII-A", "Steady"),
+        ("STU-043", "Harsh Reddy", "VIII-A", "Chronic Absentee"),
+        ("STU-044", "Ishani Verma", "VIII-A", "Steady"),
+        ("STU-045", "Rudra Singh", "VIII-A", "Gradual Decliner"),
+        ("STU-046", "Tanvi Rao", "VIII-A", "Steady"),
+        ("STU-047", "Advik Patel", "VIII-A", "Sudden Drop"),
+        ("STU-048", "Riya Kumar", "VIII-A", "Steady"),
+        ("STU-049", "Om Sharma", "VIII-A", "Gradual Decliner"),
+        ("STU-050", "Kavya Reddy", "VIII-A", "Steady"),
+        ("STU-051", "Dhruv Singh", "VIII-A", "Chronic Absentee"),
+        ("STU-052", "Prisha Rao", "VIII-A", "Steady"),
+        ("STU-053", "Atharv Kumar", "VIII-A", "Recovering"),
+        ("STU-054", "Nitya Patel", "VIII-A", "Steady"),
+        ("STU-055", "Samar Verma", "VIII-A", "Gradual Decliner"),
+        ("STU-056", "Aditi Sharma", "VIII-A", "Steady"),
+        ("STU-057", "Vivaan Reddy", "VIII-A", "Sudden Drop"),
+        ("STU-058", "Manya Singh", "VIII-A", "Steady"),
+        ("STU-059", "Arnav Rao", "VIII-A", "Gradual Decliner"),
+        ("STU-060", "Siya Patel", "VIII-A", "Steady"),
+    ]
+
+    rng = np.random.default_rng(42)
+
+    rows = []
+
+    for sid, name, cls, persona in students:
+
+        if persona == "Steady":
+            base_att = rng.uniform(84, 96)
+            base_quiz = rng.uniform(76, 92)
+            att_slope = rng.uniform(-0.3, 0.3)
+            quiz_slope = rng.uniform(-0.2, 0.3)
+
+        elif persona == "Gradual Decliner":
+            base_att = rng.uniform(82, 92)
+            base_quiz = rng.uniform(78, 88)
+            att_slope = rng.uniform(-2.0, -0.8)
+            quiz_slope = rng.uniform(-2.0, -1.0)
+
+        elif persona == "Sudden Drop":
+            base_att = rng.uniform(85, 94)
+            base_quiz = rng.uniform(80, 90)
+            att_slope = 0
+            quiz_slope = 0
+
+        elif persona == "Chronic Absentee":
+            base_att = rng.uniform(55, 69)
+            base_quiz = rng.uniform(65, 78)
+            att_slope = rng.uniform(-0.7, 0.1)
+            quiz_slope = rng.uniform(-0.7, 0.2)
+
+        elif persona == "Recovering":
+            base_att = rng.uniform(68, 76)
+            base_quiz = rng.uniform(58, 70)
+            att_slope = rng.uniform(1.0, 2.0)
+            quiz_slope = rng.uniform(1.0, 2.2)
+
+        for week in range(1, 9):
+
+            if persona == "Sudden Drop" and week >= 6:
+                attendance = base_att - rng.uniform(8, 17)
+                quiz = base_quiz - rng.uniform(20, 32)
+
+            else:
+                attendance = (
+                    base_att
+                    + att_slope * (week - 1)
+                    + rng.normal(0, 1.5)
+                )
+
+                quiz = (
+                    base_quiz
+                    + quiz_slope * (week - 1)
+                    + rng.normal(0, 2)
+                )
+
+            attendance = float(np.clip(attendance, 45, 99))
+            quiz = float(np.clip(quiz, 30, 99))
+
+            missing = 0
+
+            if persona == "Chronic Absentee":
+                missing = int(rng.integers(1, 4))
+
+            elif persona == "Sudden Drop" and week >= 6:
+                missing = int(rng.integers(1, 4))
+
+            elif persona == "Gradual Decliner" and week >= 5:
+                missing = int(rng.integers(1, 3))
+
+            elif persona == "Recovering":
+                missing = int(rng.integers(0, 2))
+
+            else:
+                missing = int(rng.integers(0, 2))
+
+            rows.append({
+                "Student ID": sid,
+                "Student": name,
+                "Class": cls,
+                "Persona": persona,
+                "Week": week,
+                "Attendance": round(attendance, 1),
+                "Quiz Score": round(quiz, 1),
+                "Missing Assignments": missing
+            })
+
+    return pd.DataFrame(rows)
+
+
+df = create_student_data()
+
+
+# ============================================================
+# SUBJECT DATA
+# ============================================================
+
+subjects = [
+    "Mathematics",
+    "Science",
+    "English",
+    "Social Studies",
+    "Computer Science"
+]
+
+
+@st.cache_data
+def create_subject_data():
+
+    rng = np.random.default_rng(21)
+
+    records = []
+
+    for sid in df["Student ID"].unique():
+
+        student_rows = df[df["Student ID"] == sid]
+
+        latest = student_rows.iloc[-1]
+
+        overall = latest["Quiz Score"]
+
+        for subject in subjects:
+
+            adjustment = {
+                "Mathematics": rng.uniform(-12, 5),
+                "Science": rng.uniform(-7, 6),
+                "English": rng.uniform(-4, 8),
+                "Social Studies": rng.uniform(-5, 8),
+                "Computer Science": rng.uniform(-2, 10)
+            }[subject]
+
+            marks = float(np.clip(overall + adjustment, 35, 98))
+
+            if subject == "Mathematics" and latest["Persona"] in [
+                "Gradual Decliner",
+                "Sudden Drop"
+            ]:
+                marks -= 7
+
+            attendance = float(np.clip(
+                latest["Attendance"] + rng.uniform(-7, 5),
+                45,
+                99
+            ))
+
+            records.append({
+                "Student ID": sid,
+                "Subject": subject,
+                "Marks": round(marks, 1),
+                "Attendance": round(attendance, 1)
+            })
+
+    return pd.DataFrame(records)
+
+
+subject_df = create_subject_data()
+
+
+# ============================================================
+# DAILY ATTENDANCE
+# ============================================================
+
+@st.cache_data
+def create_daily_attendance():
+
+    rng = np.random.default_rng(55)
+
+    rows = []
+
+    start_date = datetime(2026, 8, 3)
+
+    for sid in df["Student ID"].unique():
+
+        latest_att = df[df["Student ID"] == sid].iloc[-1]["Attendance"]
+
+        for day in range(30):
+
+            date = start_date + timedelta(days=day)
+
+            if date.weekday() >= 5:
+                continue
+
+            probability = latest_att / 100
+
+            present = rng.random() < probability
+
+            status = "Present" if present else "Absent"
+
+            if present and rng.random() < 0.04:
+                status = "Late"
+
+            rows.append({
+                "Student ID": sid,
+                "Date": date,
+                "Status": status
+            })
+
+    return pd.DataFrame(rows)
+
+
+daily_df = create_daily_attendance()
+
+
+# ============================================================
+# RISK ENGINE
+# ============================================================
+
+def calculate_risk(student_id):
+
+    history = df[df["Student ID"] == student_id].sort_values("Week")
+
+    attendance = history["Attendance"].values
+    quiz = history["Quiz Score"].values
+
+    attendance_slope = np.polyfit(history["Week"], attendance, 1)[0]
+    quiz_slope = np.polyfit(history["Week"], quiz, 1)[0]
+
+    latest_att = attendance[-1]
+    latest_quiz = quiz[-1]
+
+    attendance_factor = np.clip(
+        (-attendance_slope * 8) + ((85 - latest_att) * 0.65),
+        0,
+        100
     )
 
-if "support_generated" not in st.session_state:
-    st.session_state.support_generated = False
+    quiz_factor = np.clip(
+        (-quiz_slope * 8) + ((70 - latest_quiz) * 1.4),
+        0,
+        100
+    )
 
-if "teacher_tasks" not in st.session_state:
+    missing = int(history.tail(3)["Missing Assignments"].sum())
 
-    st.session_state.teacher_tasks = {
-        "student": False,
-        "parent": False,
-        "revision": False,
-        "followup": False,
+    assignment_factor = np.clip(
+        missing / 6 * 100,
+        0,
+        100
+    )
+
+    attendance_level_factor = np.clip(
+        (85 - latest_att) * 1.7,
+        0,
+        100
+    )
+
+    risk = (
+        attendance_factor * 0.35
+        + quiz_factor * 0.30
+        + assignment_factor * 0.20
+        + attendance_level_factor * 0.15
+    )
+
+    risk = round(float(np.clip(risk, 0, 100)), 1)
+
+    if risk >= 70:
+        status = "Needs Support"
+    elif risk >= 55:
+        status = "Monitor Closely"
+    elif risk >= 35:
+        status = "Watch"
+    else:
+        status = "On Track"
+
+    return {
+        "risk": risk,
+        "status": status,
+        "attendance_slope": attendance_slope,
+        "quiz_slope": quiz_slope,
+        "latest_att": latest_att,
+        "latest_quiz": latest_quiz,
+        "missing": missing,
+        "attendance_factor": attendance_factor,
+        "quiz_factor": quiz_factor,
+        "assignment_factor": assignment_factor,
+        "attendance_level_factor": attendance_level_factor
     }
 
 
-def navigate(screen):
+# ============================================================
+# RISK TABLE
+# ============================================================
 
-    st.session_state.screen = screen
+@st.cache_data
+def create_risk_table():
+
+    records = []
+
+    for sid in df["Student ID"].unique():
+
+        student = df[df["Student ID"] == sid].iloc[-1]
+        risk = calculate_risk(sid)
+
+        records.append({
+            "Student ID": sid,
+            "Student": student["Student"],
+            "Class": student["Class"],
+            "Risk Score": risk["risk"],
+            "Status": risk["status"],
+            "Attendance": risk["latest_att"],
+            "Latest Quiz": risk["latest_quiz"],
+            "Missing Assignments": risk["missing"],
+            "Persona": student["Persona"]
+        })
+
+    return pd.DataFrame(records)
+
+
+risk_df = create_risk_table()
 
 
 # ============================================================
-# SCREEN 1 — LOGIN
+# HELPER FUNCTIONS
 # ============================================================
 
-if st.session_state.screen == "Login":
+def status_html(status):
+
+    if status == "Needs Support":
+        return '<span class="status-danger">Needs Support</span>'
+
+    if status == "Monitor Closely":
+        return '<span class="status-warning">Monitor Closely</span>'
+
+    if status == "Watch":
+        return '<span class="status-neutral">Watch</span>'
+
+    return '<span class="status-success">On Track</span>'
+
+
+def get_student(student_id):
+
+    row = risk_df[risk_df["Student ID"] == student_id].iloc[0]
+    return row
+
+
+def get_reasons(student_id):
+
+    risk = calculate_risk(student_id)
+
+    reasons = []
+
+    if risk["latest_att"] < 75:
+        reasons.append(
+            f"Attendance is currently {risk['latest_att']:.0f}%."
+        )
+
+    if risk["attendance_slope"] < -0.7:
+        reasons.append(
+            "Attendance has been declining across recent weeks."
+        )
+
+    if risk["latest_quiz"] < 60:
+        reasons.append(
+            f"Recent assessment performance is {risk['latest_quiz']:.0f}%."
+        )
+
+    if risk["quiz_slope"] < -0.7:
+        reasons.append(
+            "Assessment performance is trending downward."
+        )
+
+    if risk["missing"] >= 3:
+        reasons.append(
+            f"{risk['missing']} assignments were missed in the recent period."
+        )
+
+    if not reasons:
+        reasons.append(
+            "Current indicators are relatively stable."
+        )
+
+    return reasons
+
+
+def weak_subject(student_id):
+
+    data = subject_df[
+        subject_df["Student ID"] == student_id
+    ].sort_values("Marks")
+
+    return data.iloc[0]["Subject"]
+
+
+def student_name(student_id):
+
+    return risk_df[
+        risk_df["Student ID"] == student_id
+    ].iloc[0]["Student"]
+
+
+# ============================================================
+# LOGIN SCREEN
+# ============================================================
+
+def login_screen():
 
     st.markdown(
-        '<div class="login-wrap">',
+        '<div class="login-wrapper">',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        '<div class="brand">'
+        '<div class="login-title">Academic Support Platform</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="login-subtitle">'
         'AI-Based Early Detection of Students at Academic Risk'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        '<div class="login-title">'
-        'See the struggle early.'
-        '</div>',
+        '<div class="info-box">'
+        '<div class="info-title">Demo Login</div>'
+        '<div class="info-text">'
+        'Select a role to explore the role-based academic support workflow. '
+        'This prototype uses synthetic student data.'
+        '</div></div>',
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        '<div class="login-sub">'
-        'An explainable early-warning and intervention system '
-        'that helps teachers identify emerging academic risk, '
-        'understand likely drivers, provide targeted support, '
-        'and track the student trajectory.'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    col1, col2, col3 = st.columns(3)
 
-    st.markdown(
-        '<div class="demo-strip">'
-        'Demo environment: synthetic classroom data. '
-        'No real student records are used.'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    st.write("")
-
-    login_left, login_right = st.columns(2)
-
-    with login_left:
+    with col1:
+        st.markdown(
+            '<div class="role-card">'
+            '<h3>Teacher</h3>'
+            '<p>Monitor students, identify risk and plan interventions.</p>'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
         if st.button(
-            "Enter as Teacher (Demo)",
+            "Teacher Demo Login",
             use_container_width=True,
             key="teacher_login"
         ):
-
-            navigate("Dashboard")
+            st.session_state.logged_in = True
+            st.session_state.role = "Teacher"
+            st.session_state.page = "Dashboard"
             st.rerun()
 
-    with login_right:
+    with col2:
+        st.markdown(
+            '<div class="role-card">'
+            '<h3>Student</h3>'
+            '<p>View performance, weak subjects and learning support.</p>'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
         if st.button(
-            "Enter as Student (Demo)",
+            "Student Demo Login",
             use_container_width=True,
             key="student_login"
         ):
-
-            navigate("Dashboard")
+            st.session_state.logged_in = True
+            st.session_state.role = "Student"
+            st.session_state.page = "My Dashboard"
             st.rerun()
 
-    st.markdown(
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-    st.stop()
-
-
-# ============================================================
-# TOP BAR
-# ============================================================
-
-st.markdown(
-    """
-    <div class="topbar">
-        <div class="brand">
-            AI-Based Early Detection of Students at Academic Risk
-        </div>
-        <div class="top-subtitle">
-            Detect early · Explain clearly · Intervene · Track
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# NAVIGATION
-# ============================================================
-
-navigation_columns = st.columns(5)
-
-navigation_items = [
-    ("Dashboard", "Dashboard"),
-    ("Student Profile", "Student Profile"),
-    ("Intervention", "Intervention"),
-    ("Track", "Track"),
-    ("Login", "Login"),
-]
-
-for index, (label, target) in enumerate(
-    navigation_items
-):
-
-    with navigation_columns[index]:
+    with col3:
+        st.markdown(
+            '<div class="role-card">'
+            '<h3>Parent</h3>'
+            '<p>Track academic progress, attendance and teacher updates.</p>'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
         if st.button(
-            label,
+            "Parent Demo Login",
             use_container_width=True,
-            key=f"navigation_{label}"
+            key="parent_login"
         ):
-
-            navigate(target)
+            st.session_state.logged_in = True
+            st.session_state.role = "Parent"
+            st.session_state.page = "Child Dashboard"
             st.rerun()
 
-
-# ============================================================
-# SCREEN 2 — TEACHER DASHBOARD
-# ============================================================
-
-if st.session_state.screen == "Dashboard":
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown(
-        "## Teacher Dashboard"
+        '<div style="text-align:center;margin-top:35px;">'
+        '<span class="small-note">'
+        'Prototype | Synthetic Data | Human Oversight Required'
+        '</span></div>',
+        unsafe_allow_html=True
     )
 
-    selector_one, selector_two, selector_three = (
-        st.columns(3)
-    )
 
-    with selector_one:
+# ============================================================
+# TEACHER DASHBOARD
+# ============================================================
 
-        st.selectbox(
-            "Class",
-            ["Class 8-B"],
-            key="class_selector"
-        )
-
-    with selector_two:
-
-        st.selectbox(
-            "Week",
-            ["Week 8"],
-            key="week_selector"
-        )
-
-    with selector_three:
-
-        st.selectbox(
-            "Monitoring Mode",
-            ["Early-warning"],
-            key="monitoring_mode"
-        )
-
-    st.write("")
-
-    total_students = 60
-
-    needs_support = int(
-        (
-            risk_df["Risk"] >= 70
-        ).sum()
-    )
-
-    recovering = int(
-        (
-            risk_df["Persona"]
-            == "Recovering"
-        ).sum()
-    )
-
-    average_attendance = float(
-        df[
-            df["Week"] == 8
-        ]["Attendance"].mean()
-    )
-
-    metric_one, metric_two, metric_three, metric_four = (
-        st.columns(4)
-    )
-
-    with metric_one:
-
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="metric-label">
-                    Students
-                </div>
-                <div class="metric-value">
-                    {total_students}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    with metric_two:
-
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="metric-label">
-                    Needs Support
-                </div>
-                <div class="metric-value">
-                    {needs_support}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    with metric_three:
-
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="metric-label">
-                    Recovering
-                </div>
-                <div class="metric-value">
-                    {recovering}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    with metric_four:
-
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="metric-label">
-                    Avg Attendance
-                </div>
-                <div class="metric-value">
-                    {average_attendance:.0f}%
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+def teacher_dashboard():
 
     st.markdown(
-        '<div class="section-title">'
-        'Class Risk Heatmap'
+        '<div class="hero-title">Teacher Dashboard</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="hero-subtitle">'
+        'Monitor academic performance, attendance and emerging support needs.'
         '</div>',
         unsafe_allow_html=True
     )
 
-    heatmap_html = """
-    <table class="heatmap">
-        <tr>
-            <th style="text-align:left">
-                Student
-            </th>
-            <th>W1</th>
-            <th>W2</th>
-            <th>W3</th>
-            <th>W4</th>
-            <th>W5</th>
-            <th>W6</th>
-            <th>W7</th>
-            <th>W8</th>
-        </tr>
-    """
-
-    for student in df["Student"].unique():
-
-        student_data = df[
-            df["Student"] == student
-        ].sort_values("Week")
-
-        heatmap_html += (
-            "<tr>"
-            f"<td style='text-align:left;font-size:9px'>"
-            f"{student}"
-            f"</td>"
-        )
-
-        for week in range(1, 9):
-
-            partial_history = student_data[
-                student_data["Week"] <= week
-            ]
-
-            score = risk_score(
-                partial_history
-            )
-
-            if score < 35:
-                css_class = "h-green"
-
-            elif score < 55:
-                css_class = "h-yellow"
-
-            elif score < 70:
-                css_class = "h-orange"
-
-            else:
-                css_class = "h-red"
-
-            heatmap_html += (
-                f"<td class='{css_class}' "
-                f"title='Risk {score:.0f}/100'>"
-                f"{score:.0f}"
-                f"</td>"
-            )
-
-        heatmap_html += "</tr>"
-
-    heatmap_html += "</table>"
-
-    st.markdown(
-        heatmap_html,
-        unsafe_allow_html=True
+    total_students = len(risk_df)
+    needs_support = len(
+        risk_df[risk_df["Status"] == "Needs Support"]
     )
 
-    st.caption(
-        "Synthetic classroom data. Each cell represents "
-        "the rule-based risk score using information "
-        "available up to that week."
+    recovering = len(
+        risk_df[
+            risk_df["Persona"] == "Recovering"
+        ]
     )
 
-    st.markdown(
-        '<div class="section-title">'
-        'Needs Support'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    avg_marks = risk_df["Latest Quiz"].mean()
+    avg_att = risk_df["Attendance"].mean()
 
-    for _, row in risk_df.head(5).iterrows():
+    c1, c2, c3, c4, c5 = st.columns(5)
 
-        col_student, col_score, col_reason, col_button = (
-            st.columns(
-                [1.2, 0.8, 3.6, 1]
-            )
-        )
+    metrics = [
+        ("Total Students", total_students, "Class VIII-A"),
+        ("Needs Support", needs_support, "Risk threshold reached"),
+        ("Recovering", recovering, "Positive recent trend"),
+        ("Average Marks", f"{avg_marks:.1f}%", "Latest assessment"),
+        ("Attendance", f"{avg_att:.1f}%", "Class average")
+    ]
 
-        with col_student:
-
-            st.write(
-                f"**{row['Student']}**"
-            )
-
-        with col_score:
-
-            st.write(
-                f"**{row['Risk']:.0f}/100**"
-            )
-
-        with col_reason:
-
-            st.markdown(
-                f'<div class="reason">'
-                f'{row["Reason"]}'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-
-        with col_button:
-
-            if st.button(
-                "View",
-                key=f"dashboard_view_{row['Student']}"
-            ):
-
-                st.session_state.selected_student = (
-                    row["Student"]
-                )
-
-                navigate(
-                    "Student Profile"
-                )
-
-                st.rerun()
-
-
-# ============================================================
-# SCREEN 3 — STUDENT PROFILE
-# ============================================================
-
-elif st.session_state.screen == "Student Profile":
-
-    st.markdown(
-        "## Student Profile"
-    )
-
-    students = risk_df[
-        "Student"
-    ].tolist()
-
-    if (
-        st.session_state.selected_student
-        in students
+    for col, item in zip(
+        [c1, c2, c3, c4, c5],
+        metrics
     ):
-
-        selected_index = students.index(
-            st.session_state.selected_student
-        )
-
-    else:
-
-        selected_index = 0
-
-    selected = st.selectbox(
-        "Student",
-        students,
-        index=selected_index,
-        key="profile_student"
-    )
-
-    st.session_state.selected_student = selected
-
-    history = df[
-        df["Student"] == selected
-    ].sort_values("Week")
-
-    current_score = risk_score(
-        history
-    )
-
-    current_label, current_tone = risk_label(
-        current_score
-    )
-
-    left, right = st.columns(
-        [0.95, 1.35]
-    )
-
-    # --------------------------------------------------------
-    # LEFT SIDE
-    # --------------------------------------------------------
-
-    with left:
-
-        st.markdown(
-            '<div class="card">',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            f"### {selected}"
-        )
-
-        st.markdown(
-            f'<span class="badge badge-{current_tone}">'
-            f'{current_label}'
-            f'</span>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            f"""
-            <div style="
-                font-size:64px;
-                font-weight:800;
-                margin-top:12px
-            ">
-                {current_score:.0f}
-                <span style="
-                    font-size:20px;
-                    color:#667085
-                ">
-                    /100
-                </span>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.caption(
-            "Explainable rule-based academic risk score"
-        )
-
-        st.markdown(
-            "### Top Risk Factors"
-        )
-
-        factors = risk_components(
-            history
-        )
-
-        for index, (
-            name,
-            impact,
-            explanation
-        ) in enumerate(
-            factors[:3]
-        ):
-
-            if index == 0:
-                fill_class = "fill-red"
-
-            elif index == 1:
-                fill_class = "fill-orange"
-
-            else:
-                fill_class = "fill-blue"
-
+        with col:
             st.markdown(
                 f"""
-                <div class="factor">
-                    <div class="factor-top">
-                        <span>{name}</span>
-                        <span>{impact:.0f}%</span>
-                    </div>
-
-                    <div class="bar">
-                        <div class="{fill_class}"
-                             style="
-                                width:
-                                {min(impact,100):.0f}%
-                             ">
-                        </div>
-                    </div>
-
-                    <div class="small-note">
-                        {explanation}
-                    </div>
+                <div class="metric-card">
+                    <div class="metric-label">{item[0]}</div>
+                    <div class="metric-value">{item[1]}</div>
+                    <div class="metric-small">{item[2]}</div>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-        if st.button(
-            "Explain this risk",
-            use_container_width=True,
-            key="explain_risk"
-        ):
+    st.markdown(
+        '<div class="section-title">Academic Risk Overview</div>',
+        unsafe_allow_html=True
+    )
 
-            st.info(
-                f"{selected} is currently classified as "
-                f"'{current_label}'. The explanation is based "
-                f"on observed attendance, quiz, and assignment "
-                f"signals. Current attendance is "
-                f"{history.iloc[-1]['Attendance']:.0f}% "
-                f"and current quiz performance is "
-                f"{history.iloc[-1]['Quiz']:.0f}%. "
-                f"This is a decision-support signal and "
-                f"should be reviewed by a teacher."
-            )
+    left, right = st.columns([1.5, 1])
 
-        st.markdown(
-            "</div>",
-            unsafe_allow_html=True
+    with left:
+
+        counts = risk_df["Status"].value_counts()
+
+        fig = go.Figure(
+            data=[
+                go.Bar(
+                    x=counts.index,
+                    y=counts.values
+                )
+            ]
         )
 
-    # --------------------------------------------------------
-    # RIGHT SIDE
-    # --------------------------------------------------------
+        fig.update_layout(
+            height=350,
+            margin=dict(l=10, r=10, t=20, b=20),
+            xaxis_title="Risk Status",
+            yaxis_title="Students",
+            showlegend=False
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
     with right:
 
         st.markdown(
-            '<div class="card">',
+            '<div class="info-box">'
+            '<div class="info-title">Early Warning Signals</div>'
+            '<div class="info-text">'
+            'The system combines attendance trend, assessment trend, '
+            'missing assignments and current attendance level.'
+            '</div></div>',
             unsafe_allow_html=True
         )
 
         st.markdown(
-            "### Attendance and Quiz Trend"
+            '<div class="info-box">'
+            '<div class="info-title">Important</div>'
+            '<div class="info-text">'
+            'Risk scores are support signals, not final judgments. '
+            'Teachers should review the underlying evidence before taking action.'
+            '</div></div>',
+            unsafe_allow_html=True
         )
 
-        trend_chart = go.Figure()
+    st.markdown(
+        '<div class="section-title">Students Requiring Attention</div>',
+        unsafe_allow_html=True
+    )
 
-        trend_chart.add_trace(
-            go.Scatter(
-                x=history["Week"],
-                y=history["Attendance"],
-                mode="lines+markers",
-                name="Attendance",
-            )
+    top_students = risk_df.sort_values(
+        "Risk Score",
+        ascending=False
+    ).head(7)
+
+    for _, row in top_students.iterrows():
+
+        col1, col2, col3, col4 = st.columns(
+            [2.2, 1, 1, 1]
         )
 
-        trend_chart.add_trace(
-            go.Scatter(
-                x=history["Week"],
-                y=history["Quiz"],
-                mode="lines+markers",
-                name="Quiz",
-            )
-        )
-
-        trend_chart.update_layout(
-            height=300,
-            margin=dict(
-                l=10,
-                r=10,
-                t=10,
-                b=10
-            ),
-            yaxis=dict(
-                range=[0, 100],
-                title="Percent"
-            ),
-            xaxis=dict(
-                title="Week",
-                dtick=1
-            ),
-            legend=dict(
-                orientation="h"
-            ),
-        )
-
-        st.plotly_chart(
-            trend_chart,
-            use_container_width=True
-        )
-
-        st.markdown(
-            "### Time Travel"
-        )
-
-        selected_week = st.slider(
-            "Replay week",
-            min_value=1,
-            max_value=8,
-            value=4,
-            step=1,
-            key="profile_time_travel"
-        )
-
-        snapshot_history = history[
-            history["Week"] <= selected_week
-        ]
-
-        snapshot = history[
-            history["Week"] == selected_week
-        ].iloc[0]
-
-        snapshot_score = risk_score(
-            snapshot_history
-        )
-
-        week_col, risk_col, attendance_col = (
-            st.columns(3)
-        )
-
-        with week_col:
-
-            st.metric(
-                "Week",
-                selected_week
+        with col1:
+            st.write(
+                f"**{row['Student']}**  \n"
+                f"{row['Student ID']} | {row['Class']}"
             )
 
-        with risk_col:
-
+        with col2:
             st.metric(
                 "Risk",
-                f"{snapshot_score:.0f}/100"
+                f"{row['Risk Score']:.0f}"
             )
 
-        with attendance_col:
-
-            st.metric(
-                "Attendance",
-                f"{snapshot['Attendance']:.0f}%"
+        with col3:
+            st.write(
+                status_html(row["Status"]),
+                unsafe_allow_html=True
             )
 
-        if selected_week == 4:
+        with col4:
 
-            st.warning(
-                "Flagged for teacher review in Week 4 "
-                "in this synthetic demonstration."
-            )
-
-        elif selected_week == 8:
-
-            st.info(
-                "Week 8 snapshot. Review the complete "
-                "trajectory before deciding the next "
-                "support step."
-            )
-
-        else:
-
-            st.caption(
-                "Move the slider to replay the "
-                "student's trajectory."
-            )
-
-        st.markdown(
-            "</div>",
-            unsafe_allow_html=True
-        )
+            if st.button(
+                "View",
+                key=f"view_{row['Student ID']}"
+            ):
+                st.session_state.selected_student = row["Student ID"]
+                st.session_state.page = "Student Profile"
+                st.rerun()
 
 
 # ============================================================
-# SCREEN 4 — INTERVENTION
+# STUDENT PROFILE
 # ============================================================
 
-elif st.session_state.screen == "Intervention":
+def student_profile():
+
+    sid = st.session_state.selected_student
+
+    student = get_student(sid)
+    risk = calculate_risk(sid)
 
     st.markdown(
-        "## Intervention"
-    )
-
-    students = risk_df[
-        "Student"
-    ].tolist()
-
-    if (
-        st.session_state.selected_student
-        in students
-    ):
-
-        selected_index = students.index(
-            st.session_state.selected_student
-        )
-
-    else:
-
-        selected_index = 0
-
-    selected = st.selectbox(
-        "Student",
-        students,
-        index=selected_index,
-        key="intervention_student"
-    )
-
-    st.session_state.selected_student = selected
-
-    history = df[
-        df["Student"] == selected
-    ].sort_values("Week")
-
-    score = risk_score(
-        history
-    )
-
-    label, tone = risk_label(
-        score
-    )
-
-    reason = primary_reason(
-        history
-    )
-
-    st.markdown(
-        '<div class="card">',
+        '<div class="hero-title">Student Profile</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f"### {selected}"
-    )
-
-    st.markdown(
-        f'<span class="badge badge-{tone}">'
-        f'{label}'
-        f'</span>',
-        unsafe_allow_html=True
-    )
-
-    st.write("")
-
-    st.write(
-        f"**Observed pattern:** {reason}"
-    )
-
-    st.markdown(
-        '<div class="info-strip">'
-        'Support recommendations are generated from the '
-        'observed synthetic signals. They are intended to '
-        'assist teacher review, not replace it.'
+        '<div class="hero-subtitle">'
+        'Evidence-based student overview with explainable risk signals.'
         '</div>',
         unsafe_allow_html=True
     )
 
-    if st.button(
-        "Generate Support Plan",
-        use_container_width=True,
-        key="generate_support"
-    ):
+    col1, col2, col3, col4 = st.columns(4)
 
-        st.session_state.support_generated = True
-
-    if st.session_state.support_generated:
-
-        plan_left, plan_right = (
-            st.columns(2)
-        )
-
-        # ----------------------------------------------------
-        # REVISION PLAN
-        # ----------------------------------------------------
-
-        with plan_left:
-
-            st.markdown(
-                "### Revision Plan"
-            )
-
-            st.write(
-                "**Day 1–2:** Review the weakest "
-                "recent learning area."
-            )
-
-            st.write(
-                "**Day 3:** Complete a short "
-                "targeted practice set."
-            )
-
-            st.write(
-                "**Day 4:** Teacher check-in "
-                "and feedback."
-            )
-
-            st.write(
-                "**Day 5:** Reassess the relevant "
-                "skill and update support."
-            )
-
-        # ----------------------------------------------------
-        # TELUGU PARENT COMMUNICATION
-        # ----------------------------------------------------
-
-        with plan_right:
-
-            st.markdown(
-                "### Parent Communication"
-            )
-
-            st.info(
-                "నమస్కారం గారు, మీ పిల్లవారి చదువులో "
-                "కొన్ని సహాయం అవసరమైన సంకేతాలు కనిపిస్తున్నాయి. "
-                "కలిసి కొంత అదనపు సహాయం అందిస్తే చదువులో "
-                "మెరుగుదల రావడానికి అవకాశం ఉంటుంది. "
-                "ఉపాధ్యాయుడితో కలిసి తదుపరి చర్యలను "
-                "చర్చిద్దాం."
-            )
-
-            st.button(
-                "Play Telugu Voice Message",
-                disabled=True,
-                use_container_width=True,
-                key="voice_demo"
-            )
-
-            st.caption(
-                "Prototype transcript. Voice playback is "
-                "not connected to an external voice service "
-                "in this version."
-            )
-
-        # ----------------------------------------------------
-        # TEACHER CHECKLIST
-        # ----------------------------------------------------
-
+    with col1:
         st.markdown(
-            "### Teacher Checklist"
+            f"""
+            <div class="metric-card">
+                <div class="metric-label">Student</div>
+                <div class="metric-value" style="font-size:23px;">
+                    {student['Student']}
+                </div>
+                <div class="metric-small">
+                    {student['Student ID']} | {student['Class']}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
-        task_student = st.checkbox(
-            "Talk to the student",
-            value=st.session_state.teacher_tasks[
-                "student"
-            ],
-            key="task_student"
+    with col2:
+        st.markdown(
+            f"""
+            <div class="metric-card">
+                <div class="metric-label">Risk Score</div>
+                <div class="metric-value">
+                    {risk['risk']:.0f}
+                </div>
+                <div class="metric-small">0–100 support signal</div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
-        task_parent = st.checkbox(
-            "Contact parent or guardian",
-            value=st.session_state.teacher_tasks[
-                "parent"
-            ],
-            key="task_parent"
+    with col3:
+        st.markdown(
+            f"""
+            <div class="metric-card">
+                <div class="metric-label">Attendance</div>
+                <div class="metric-value">
+                    {risk['latest_att']:.0f}%
+                </div>
+                <div class="metric-small">Latest period</div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
-        task_revision = st.checkbox(
-            "Assign targeted revision",
-            value=st.session_state.teacher_tasks[
-                "revision"
-            ],
-            key="task_revision"
-        )
-
-        task_followup = st.checkbox(
-            "Schedule follow-up review",
-            value=st.session_state.teacher_tasks[
-                "followup"
-            ],
-            key="task_followup"
-        )
-
-        st.session_state.teacher_tasks = {
-            "student": task_student,
-            "parent": task_parent,
-            "revision": task_revision,
-            "followup": task_followup,
-        }
-
-        completed_tasks = sum(
-            st.session_state.teacher_tasks.values()
-        )
-
-        st.progress(
-            completed_tasks / 4
-        )
-
-        st.caption(
-            f"{completed_tasks} of 4 support actions completed."
+    with col4:
+        st.markdown(
+            f"""
+            <div class="metric-card">
+                <div class="metric-label">Latest Assessment</div>
+                <div class="metric-value">
+                    {risk['latest_quiz']:.0f}%
+                </div>
+                <div class="metric-small">Latest assessment</div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
     st.markdown(
-        "</div>",
+        f"<br>{status_html(risk['status'])}",
         unsafe_allow_html=True
     )
 
-
-# ============================================================
-# SCREEN 5 — TRACK
-# ============================================================
-
-elif st.session_state.screen == "Track":
-
     st.markdown(
-        "## Track"
+        '<div class="section-title">Why is this student receiving this signal?</div>',
+        unsafe_allow_html=True
     )
 
-    recovering_students = risk_df[
-        risk_df["Persona"] == "Recovering"
-    ]["Student"].tolist()
+    reasons = get_reasons(sid)
 
-    if recovering_students:
-
-        selected = st.selectbox(
-            "Recovering Student",
-            recovering_students,
-            key="track_student"
+    for reason in reasons:
+        st.markdown(
+            f"""
+            <div class="info-box">
+                <div class="info-text">{reason}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
-    else:
+    st.markdown(
+        '<div class="section-title">Risk Factor Breakdown</div>',
+        unsafe_allow_html=True
+    )
 
-        selected = st.selectbox(
-            "Student",
-            risk_df["Student"].tolist(),
-            key="track_student_fallback"
-        )
-
-    history = df[
-        df["Student"] == selected
-    ].sort_values("Week")
-
-    weekly_risks = []
-
-    for week in range(1, 9):
-
-        weekly_history = history[
-            history["Week"] <= week
+    factor_df = pd.DataFrame({
+        "Factor": [
+            "Attendance Trend",
+            "Assessment Trend",
+            "Missing Assignments",
+            "Attendance Level"
+        ],
+        "Contribution": [
+            risk["attendance_factor"] * 0.35,
+            risk["quiz_factor"] * 0.30,
+            risk["assignment_factor"] * 0.20,
+            risk["attendance_level_factor"] * 0.15
         ]
+    })
 
-        weekly_risks.append(
-            risk_score(
-                weekly_history
-            )
-        )
-
-    week_three_risk = weekly_risks[2]
-    week_eight_risk = weekly_risks[7]
-
-    trajectory_change = (
-        week_eight_risk
-        - week_three_risk
-    )
-
-    st.markdown(
-        '<div class="card">',
-        unsafe_allow_html=True
-    )
-
-    track_one, track_two, track_three = (
-        st.columns(3)
-    )
-
-    with track_one:
-
-        st.metric(
-            "Risk at Week 3",
-            f"{week_three_risk:.0f}/100"
-        )
-
-    with track_two:
-
-        st.metric(
-            "Risk at Week 8",
-            f"{week_eight_risk:.0f}/100"
-        )
-
-    with track_three:
-
-        st.metric(
-            "Trajectory Change",
-            f"{trajectory_change:+.0f} pts"
-        )
-
-    track_chart = go.Figure()
-
-    track_chart.add_trace(
-        go.Scatter(
-            x=list(range(1, 9)),
-            y=weekly_risks,
-            mode="lines+markers",
-            name="Risk trajectory",
+    fig = go.Figure(
+        go.Bar(
+            x=factor_df["Contribution"],
+            y=factor_df["Factor"],
+            orientation="h"
         )
     )
 
-    track_chart.add_hline(
-        y=70,
-        line_dash="dash",
-        annotation_text="Needs Support"
-    )
-
-    track_chart.add_hline(
-        y=55,
-        line_dash="dot",
-        annotation_text="Monitor Closely"
-    )
-
-    track_chart.update_layout(
-        height=400,
-        yaxis=dict(
-            range=[0, 100],
-            title="Risk Score"
-        ),
-        xaxis=dict(
-            title="Week",
-            dtick=1
-        ),
-        margin=dict(
-            l=10,
-            r=10,
-            t=25,
-            b=10
-        )
+    fig.update_layout(
+        height=300,
+        margin=dict(l=10, r=10, t=10, b=10),
+        xaxis_title="Contribution to risk signal",
+        yaxis_title=""
     )
 
     st.plotly_chart(
-        track_chart,
+        fig,
         use_container_width=True
     )
 
-    if trajectory_change < 0:
+    st.markdown(
+        '<div class="section-title">Subject Performance</div>',
+        unsafe_allow_html=True
+    )
 
-        st.success(
-            "Recovering trajectory shown in this "
-            "synthetic demonstration."
-        )
+    sdata = subject_df[
+        subject_df["Student ID"] == sid
+    ].copy()
 
-    else:
-
-        st.info(
-            "This trajectory is shown for demonstration "
-            "and requires teacher interpretation."
-        )
+    st.dataframe(
+        sdata[
+            ["Subject", "Marks", "Attendance"]
+        ].rename(
+            columns={
+                "Marks": "Marks %",
+                "Attendance": "Attendance %"
+            }
+        ),
+        use_container_width=True,
+        hide_index=True
+    )
 
     st.markdown(
-        '<div class="demo-strip">'
-        'Important: this is synthetic data. A lower risk '
-        'score after support does not by itself prove '
-        'that the support intervention caused the change.'
+        '<div class="section-title">Performance Trend</div>',
+        unsafe_allow_html=True
+    )
+
+    history = df[
+        df["Student ID"] == sid
+    ].sort_values("Week")
+
+    fig2 = go.Figure()
+
+    fig2.add_trace(
+        go.Scatter(
+            x=history["Week"],
+            y=history["Quiz Score"],
+            mode="lines+markers",
+            name="Assessment"
+        )
+    )
+
+    fig2.add_trace(
+        go.Scatter(
+            x=history["Week"],
+            y=history["Attendance"],
+            mode="lines+markers",
+            name="Attendance"
+        )
+    )
+
+    fig2.update_layout(
+        height=380,
+        xaxis_title="Week",
+        yaxis_title="Percentage",
+        yaxis=dict(range=[0, 100])
+    )
+
+    st.plotly_chart(
+        fig2,
+        use_container_width=True
+    )
+
+    st.markdown(
+        '<div class="section-title">Time Travel</div>',
+        unsafe_allow_html=True
+    )
+
+    selected_week = st.slider(
+        "Replay student history up to week",
+        1,
+        8,
+        8,
+        key=f"time_{sid}"
+    )
+
+    snapshot = history[
+        history["Week"] <= selected_week
+    ].iloc[-1]
+
+    a, b, c = st.columns(3)
+
+    a.metric(
+        "Attendance",
+        f"{snapshot['Attendance']:.0f}%"
+    )
+
+    b.metric(
+        "Assessment",
+        f"{snapshot['Quiz Score']:.0f}%"
+    )
+
+    c.metric(
+        "Missing Assignments",
+        int(snapshot["Missing Assignments"])
+    )
+
+    if selected_week < 8:
+        st.info(
+            "This replay shows an earlier point in the student's academic history."
+        )
+    else:
+        st.success(
+            "Current period selected."
+        )
+
+
+# ============================================================
+# INTERVENTION CENTER
+# ============================================================
+
+def intervention_page():
+
+    sid = st.session_state.selected_student
+
+    student = get_student(sid)
+    risk = calculate_risk(sid)
+
+    weak = weak_subject(sid)
+
+    st.markdown(
+        '<div class="hero-title">Intervention Center</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="hero-subtitle">'
+        'Convert detected risk signals into targeted academic support.'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        "</div>",
+        f"""
+        <div class="info-box">
+            <div class="info-title">
+                Recommended focus: {weak}
+            </div>
+            <div class="info-text">
+                The student's current indicators suggest that additional
+                support may be useful in this subject.
+            </div>
+        </div>
+        """,
         unsafe_allow_html=True
     )
+
+    st.markdown(
+        '<div class="section-title">1. Explain Again</div>',
+        unsafe_allow_html=True
+    )
+
+    selected_subject = st.selectbox(
+        "Select subject",
+        subjects,
+        index=subjects.index(weak)
+    )
+
+    explanations = {
+        "Mathematics":
+            "Quadratic equations can be understood as equations containing x². "
+            "Start by identifying a, b and c, then select a suitable solving method.",
+        "Science":
+            "Break the concept into definition, process, example and application. "
+            "Use a simple real-world example before attempting questions.",
+        "English":
+            "Read the sentence carefully, identify the key grammar rule and "
+            "then apply it to a short example.",
+        "Social Studies":
+            "Convert the topic into timeline, causes, events and outcomes. "
+            "This makes long answers easier to remember.",
+        "Computer Science":
+            "Start with the basic concept, trace one small example and then "
+            "practice a similar problem independently."
+    }
+
+    st.markdown(
+        f"""
+        <div class="info-box">
+            <div class="info-title">
+                {selected_subject} — Simple Explanation
+            </div>
+            <div class="info-text">
+                {explanations[selected_subject]}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-title">2. Practice</div>',
+        unsafe_allow_html=True
+    )
+
+    practice_questions = {
+        "Mathematics":
+            "Solve x² - 5x + 6 = 0.",
+        "Science":
+            "Explain the main stages of the process studied in this chapter.",
+        "English":
+            "Identify the grammar rule used in the following sentence.",
+        "Social Studies":
+            "Write two causes and two effects of the selected historical event.",
+        "Computer Science":
+            "Explain the concept using a simple example."
+    }
+
+    st.info(
+        practice_questions[selected_subject]
+    )
+
+    st.button(
+        "Check Practice Answer",
+        key="practice_check"
+    )
+
+    st.markdown(
+        '<div class="section-title">3. Personalized Support Plan</div>',
+        unsafe_allow_html=True
+    )
+
+    plan_col1, plan_col2 = st.columns(2)
+
+    with plan_col1:
+
+        st.markdown(
+            """
+            <div class="info-box">
+                <div class="info-title">Daily Revision</div>
+                <div class="info-text">
+                    25 minutes focused practice on the identified weak area.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+            <div class="info-box">
+                <div class="info-title">Practice Set</div>
+                <div class="info-text">
+                    Complete 5 targeted questions and review incorrect answers.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with plan_col2:
+
+        st.markdown(
+            """
+            <div class="info-box">
+                <div class="info-title">Special Class</div>
+                <div class="info-text">
+                    Attend a focused online support session for the identified topic.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+            <div class="info-box">
+                <div class="info-title">Teacher Review</div>
+                <div class="info-text">
+                    Review progress after the next assessment cycle.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown(
+        '<div class="section-title">4. Parent Communication</div>',
+        unsafe_allow_html=True
+    )
+
+    parent_message = (
+        f"Hello Parent, {student['Student']} may benefit from additional "
+        f"support in {weak}. Current attendance is {risk['latest_att']:.0f}% "
+        f"and the latest assessment score is {risk['latest_quiz']:.0f}%. "
+        f"We recommend regular revision and the available special support class."
+    )
+
+    st.text_area(
+        "Suggested parent update",
+        value=parent_message,
+        height=130
+    )
+
+    if st.button(
+        "Send Parent Update",
+        type="primary",
+        use_container_width=True
+    ):
+        st.session_state.parent_message_sent = True
+
+    if st.session_state.parent_message_sent:
+        st.success(
+            "Parent update sent in demo mode."
+        )
+
+    st.markdown(
+        '<div class="section-title">5. Recommended Special Classes</div>',
+        unsafe_allow_html=True
+    )
+
+    special_classes = pd.DataFrame({
+        "Subject": [
+            weak,
+            "Science",
+            "English"
+        ],
+        "Focus": [
+            "Concept Revision",
+            "Chapter Support",
+            "Practice Session"
+        ],
+        "Mode": [
+            "Online",
+            "Online",
+            "Online"
+        ],
+        "Status": [
+            "Recommended",
+            "Available",
+            "Available"
+        ]
+    })
+
+    st.dataframe(
+        special_classes,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    if st.button(
+        "Join Recommended Special Class",
+        use_container_width=True
+    ):
+        st.success(
+            f"Demo classroom opened for {weak}."
+        )
+
+
+# ============================================================
+# TRACK PAGE
+# ============================================================
+
+def track_page():
+
+    sid = st.session_state.selected_student
+
+    student = get_student(sid)
+
+    st.markdown(
+        '<div class="hero-title">Progress Tracking</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="hero-subtitle">'
+        'Track academic signals before and after support activities.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    history = df[
+        df["Student ID"] == sid
+    ].sort_values("Week")
+
+    risks = []
+
+    for week in range(1, 9):
+
+        h = history[
+            history["Week"] <= week
+        ]
+
+        if len(h) < 2:
+            risk_value = 25
+        else:
+
+            att_slope = np.polyfit(
+                h["Week"],
+                h["Attendance"],
+                1
+            )[0]
+
+            quiz_slope = np.polyfit(
+                h["Week"],
+                h["Quiz Score"],
+                1
+            )[0]
+
+            last_att = h.iloc[-1]["Attendance"]
+            last_quiz = h.iloc[-1]["Quiz Score"]
+
+            risk_value = (
+                np.clip(
+                    (-att_slope * 8) + ((85 - last_att) * 0.65),
+                    0,
+                    100
+                ) * 0.35
+                +
+                np.clip(
+                    (-quiz_slope * 8) + ((70 - last_quiz) * 1.4),
+                    0,
+                    100
+                ) * 0.30
+            )
+
+        risks.append(float(np.clip(risk_value, 0, 100)))
+
+    trend_df = pd.DataFrame({
+        "Week": list(range(1, 9)),
+        "Risk Signal": risks
+    })
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            x=trend_df["Week"],
+            y=trend_df["Risk Signal"],
+            mode="lines+markers",
+            name="Risk Signal"
+        )
+    )
+
+    fig.update_layout(
+        height=400,
+        yaxis=dict(range=[0, 100]),
+        xaxis_title="Week",
+        yaxis_title="Risk Signal"
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+    st.markdown(
+        '<div class="section-title">Academic Recovery Indicators</div>',
+        unsafe_allow_html=True
+    )
+
+    latest = history.iloc[-1]
+    earlier = history.iloc[0]
+
+    latest_subjects = subject_df[
+        subject_df["Student ID"] == sid
+    ]
+
+    weak = latest_subjects.sort_values(
+        "Marks"
+    ).iloc[0]
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    c1.metric(
+        "Attendance",
+        f"{latest['Attendance']:.0f}%",
+        f"{latest['Attendance'] - earlier['Attendance']:+.0f} pts"
+    )
+
+    c2.metric(
+        "Assessment",
+        f"{latest['Quiz Score']:.0f}%",
+        f"{latest['Quiz Score'] - earlier['Quiz Score']:+.0f} pts"
+    )
+
+    c3.metric(
+        "Weak Subject",
+        weak["Subject"]
+    )
+
+    c4.metric(
+        "Current Status",
+        calculate_risk(sid)["status"]
+    )
+
+    st.markdown(
+        '<div class="section-title">Support Timeline</div>',
+        unsafe_allow_html=True
+    )
+
+    timeline = [
+        ("Week 1", "Baseline academic data recorded."),
+        ("Week 3", "Attendance and assessment trends monitored."),
+        ("Week 5", "Emerging support signal identified."),
+        ("Week 6", "Targeted intervention recommended."),
+        ("Week 7", "Parent communication and special class recommended."),
+        ("Week 8", "Progress reviewed.")
+    ]
+
+    for week, text in timeline:
+
+        st.markdown(
+            f"""
+            <div class="timeline-card">
+                <b>{week}</b><br>
+                {text}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.warning(
+        "This prototype uses synthetic data. The progress visualization demonstrates "
+        "how a school could track indicators over time; it does not establish that "
+        "an intervention caused a particular outcome."
+    )
+
+
+# ============================================================
+# STUDENT DASHBOARD
+# ============================================================
+
+def student_dashboard():
+
+    sid = "STU-001"
+
+    student = get_student(sid)
+    risk = calculate_risk(sid)
+
+    st.markdown(
+        '<div class="hero-title">My Dashboard</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f"""
+        <div class="hero-subtitle">
+            Welcome, {student['Student']}. Here is your academic support overview.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    c1.metric(
+        "Overall Marks",
+        f"{risk['latest_quiz']:.0f}%"
+    )
+
+    c2.metric(
+        "Attendance",
+        f"{risk['latest_att']:.0f}%"
+    )
+
+    c3.metric(
+        "Academic Status",
+        risk["status"]
+    )
+
+    c4.metric(
+        "Weak Subject",
+        weak_subject(sid)
+    )
+
+    st.markdown(
+        '<div class="section-title">My Subjects</div>',
+        unsafe_allow_html=True
+    )
+
+    data = subject_df[
+        subject_df["Student ID"] == sid
+    ]
+
+    st.dataframe(
+        data[
+            ["Subject", "Marks", "Attendance"]
+        ].rename(
+            columns={
+                "Marks": "Marks %",
+                "Attendance": "Attendance %"
+            }
+        ),
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.markdown(
+        '<div class="section-title">Learn Again</div>',
+        unsafe_allow_html=True
+    )
+
+    weak = weak_subject(sid)
+
+    st.info(
+        f"Your current support focus is {weak}. "
+        "Use the learning support section to review concepts and practice."
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button(
+            "Explain Again",
+            use_container_width=True
+        ):
+            st.success(
+                f"Learning support opened for {weak}."
+            )
+
+    with col2:
+        if st.button(
+            "Practice Questions",
+            use_container_width=True
+        ):
+            st.success(
+                f"Practice set opened for {weak}."
+            )
+
+    st.markdown(
+        '<div class="section-title">Special Classes</div>',
+        unsafe_allow_html=True
+    )
+
+    classes = pd.DataFrame({
+        "Subject": [weak, "Science"],
+        "Mode": ["Online", "Online"],
+        "Focus": ["Concept Revision", "Chapter Support"],
+        "Availability": ["Recommended", "Available"]
+    })
+
+    st.dataframe(
+        classes,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    if st.button(
+        "Open Recommended Class",
+        use_container_width=True
+    ):
+        st.success(
+            "Demo classroom opened."
+        )
+
+
+# ============================================================
+# PARENT DASHBOARD
+# ============================================================
+
+def parent_dashboard():
+
+    sid = "STU-001"
+
+    student = get_student(sid)
+    risk = calculate_risk(sid)
+
+    st.markdown(
+        '<div class="hero-title">Child Dashboard</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f"""
+        <div class="hero-subtitle">
+            Academic progress overview for {student['Student']}.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    c1.metric(
+        "Overall Marks",
+        f"{risk['latest_quiz']:.0f}%"
+    )
+
+    c2.metric(
+        "Attendance",
+        f"{risk['latest_att']:.0f}%"
+    )
+
+    c3.metric(
+        "Status",
+        risk["status"]
+    )
+
+    c4.metric(
+        "Focus Subject",
+        weak_subject(sid)
+    )
+
+    st.markdown(
+        '<div class="section-title">Subject-wise Performance</div>',
+        unsafe_allow_html=True
+    )
+
+    data = subject_df[
+        subject_df["Student ID"] == sid
+    ]
+
+    st.dataframe(
+        data[
+            ["Subject", "Marks", "Attendance"]
+        ].rename(
+            columns={
+                "Marks": "Marks %",
+                "Attendance": "Attendance %"
+            }
+        ),
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.markdown(
+        '<div class="section-title">Attendance</div>',
+        unsafe_allow_html=True
+    )
+
+    daily = daily_df[
+        daily_df["Student ID"] == sid
+    ].copy()
+
+    attendance_summary = (
+        daily["Status"]
+        .value_counts()
+        .rename_axis("Status")
+        .reset_index(name="Days")
+    )
+
+    st.dataframe(
+        attendance_summary,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.markdown(
+        '<div class="section-title">Teacher Update</div>',
+        unsafe_allow_html=True
+    )
+
+    weak = weak_subject(sid)
+
+    st.markdown(
+        f"""
+        <div class="info-box">
+            <div class="info-title">Suggested Support</div>
+            <div class="info-text">
+                The teacher has identified {weak} as a current focus area.
+                Regular revision, practice and participation in the recommended
+                support class may help the student address the identified learning need.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-title">Recommended Special Class</div>',
+        unsafe_allow_html=True
+    )
+
+    st.info(
+        f"{weak} | Online | Concept Revision | Recommended"
+    )
+
+    if st.button(
+        "View Special Class",
+        use_container_width=True
+    ):
+        st.success(
+            "Demo special class details opened."
+        )
+
+    st.markdown(
+        '<div class="section-title">Progress</div>',
+        unsafe_allow_html=True
+    )
+
+    history = df[
+        df["Student ID"] == sid
+    ].sort_values("Week")
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            x=history["Week"],
+            y=history["Quiz Score"],
+            mode="lines+markers",
+            name="Marks"
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=history["Week"],
+            y=history["Attendance"],
+            mode="lines+markers",
+            name="Attendance"
+        )
+    )
+
+    fig.update_layout(
+        height=350,
+        yaxis=dict(range=[0, 100]),
+        xaxis_title="Week",
+        yaxis_title="Percentage"
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+
+# ============================================================
+# SIDEBAR NAVIGATION
+# ============================================================
+
+def sidebar():
+
+    with st.sidebar:
+
+        st.markdown(
+            """
+            <div style="font-size:21px;font-weight:800;">
+                Academic Support
+            </div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:5px;">
+                Early Detection and Intervention
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.divider()
+
+        st.write(
+            f"**Role:** {st.session_state.role}"
+        )
+
+        if st.session_state.role == "Teacher":
+
+            pages = [
+                "Dashboard",
+                "Student Profile",
+                "Intervention",
+                "Track"
+            ]
+
+        elif st.session_state.role == "Student":
+
+            pages = [
+                "My Dashboard"
+            ]
+
+        else:
+
+            pages = [
+                "Child Dashboard"
+            ]
+
+        selected = st.radio(
+            "Navigation",
+            pages,
+            index=pages.index(
+                st.session_state.page
+            ) if st.session_state.page in pages else 0
+        )
+
+        st.session_state.page = selected
+
+        st.divider()
+
+        if st.button(
+            "Logout",
+            use_container_width=True
+        ):
+            st.session_state.logged_in = False
+            st.session_state.role = None
+            st.session_state.page = "Dashboard"
+            st.rerun()
+
+        st.markdown(
+            """
+            <div style="margin-top:20px;font-size:11px;color:#94a3b8;">
+                Synthetic demonstration data<br>
+                Human review required for real deployment
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+# ============================================================
+# APP ROUTER
+# ============================================================
+
+if not st.session_state.logged_in:
+
+    login_screen()
+
+else:
+
+    sidebar()
+
+    if st.session_state.role == "Teacher":
+
+        if st.session_state.page == "Dashboard":
+            teacher_dashboard()
+
+        elif st.session_state.page == "Student Profile":
+            student_profile()
+
+        elif st.session_state.page == "Intervention":
+            intervention_page()
+
+        elif st.session_state.page == "Track":
+            track_page()
+
+    elif st.session_state.role == "Student":
+
+        student_dashboard()
+
+    elif st.session_state.role == "Parent":
+
+        parent_dashboard()
