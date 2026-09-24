@@ -1,1870 +1,732 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>AI-Based Early Detection of Students at Academic Risk</title>
-
-    <meta
-        name="description"
-        content="AI-assisted academic support platform for early detection, explanation, intervention, parent communication and progress tracking."
-    >
-
-    <style>
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: Inter, Arial, Helvetica, sans-serif;
-            background: #f8fafc;
-            color: #0f172a;
-            line-height: 1.6;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* =========================
-           NAVBAR
-        ========================= */
-
-        nav {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: rgba(255,255,255,0.94);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 17px 25px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            font-size: 19px;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-        }
-
-        .logo span {
-            color: #2563eb;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 27px;
-            align-items: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: #475569;
-        }
-
-        .nav-links a:hover {
-            color: #2563eb;
-        }
-
-        .nav-button {
-            background: #2563eb;
-            color: white !important;
-            padding: 10px 18px;
-            border-radius: 9px;
-        }
-
-        /* =========================
-           HERO
-        ========================= */
-
-        .hero {
-            min-height: 720px;
-            display: flex;
-            align-items: center;
-            background:
-                radial-gradient(circle at 85% 20%, #dbeafe 0, transparent 28%),
-                radial-gradient(circle at 10% 80%, #e0e7ff 0, transparent 25%),
-                #f8fafc;
-        }
-
-        .hero-container {
-            max-width: 1200px;
-            width: 100%;
-            margin: auto;
-            padding: 80px 25px;
-            display: grid;
-            grid-template-columns: 1.05fr 0.95fr;
-            gap: 65px;
-            align-items: center;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 8px 13px;
-            border-radius: 999px;
-            background: #eff6ff;
-            color: #1d4ed8;
-            border: 1px solid #bfdbfe;
-            font-size: 12px;
-            font-weight: 800;
-            margin-bottom: 20px;
-        }
-
-        .hero h1 {
-            font-size: clamp(42px, 5vw, 66px);
-            line-height: 1.03;
-            letter-spacing: -2.8px;
-            max-width: 720px;
-        }
-
-        .hero h1 span {
-            color: #2563eb;
-        }
-
-        .hero-text {
-            margin-top: 24px;
-            max-width: 650px;
-            font-size: 18px;
-            color: #64748b;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 13px;
-            margin-top: 32px;
-            flex-wrap: wrap;
-        }
-
-        .primary-button {
-            background: #2563eb;
-            color: white;
-            padding: 14px 23px;
-            border-radius: 10px;
-            font-weight: 700;
-            transition: 0.2s;
-        }
-
-        .primary-button:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-        }
-
-        .secondary-button {
-            background: white;
-            color: #0f172a;
-            border: 1px solid #cbd5e1;
-            padding: 14px 23px;
-            border-radius: 10px;
-            font-weight: 700;
-        }
-
-        .secondary-button:hover {
-            border-color: #2563eb;
-            color: #2563eb;
-        }
-
-        .hero-note {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        /* =========================
-           DASHBOARD MOCKUP
-        ========================= */
-
-        .dashboard-window {
-            background: #0f172a;
-            border-radius: 20px;
-            padding: 12px;
-            box-shadow: 0 30px 70px rgba(15,23,42,0.22);
-            transform: rotate(1deg);
-        }
-
-        .window-top {
-            display: flex;
-            gap: 6px;
-            padding: 7px 8px 13px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: #64748b;
-            border-radius: 50%;
-        }
-
-        .dashboard-content {
-            background: #f8fafc;
-            border-radius: 13px;
-            padding: 19px;
-        }
-
-        .dash-title {
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 15px;
-        }
-
-        .mini-grid {
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 9px;
-        }
-
-        .mini-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 9px;
-            padding: 12px;
-        }
-
-        .mini-label {
-            color: #64748b;
-            font-size: 9px;
-            font-weight: 700;
-        }
-
-        .mini-value {
-            font-size: 20px;
-            font-weight: 800;
-            margin-top: 3px;
-        }
-
-        .chart-box {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 9px;
-            margin-top: 10px;
-            padding: 15px;
-        }
-
-        .chart-lines {
-            height: 120px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .line-one,
-        .line-two {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            transform-origin: left;
-        }
-
-        .line-one {
-            top: 75px;
-            background: #2563eb;
-            transform: rotate(-9deg);
-        }
-
-        .line-two {
-            top: 40px;
-            background: #16a34a;
-            transform: rotate(7deg);
-        }
-
-        .risk-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 12px;
-        }
-
-        .risk-pill {
-            padding: 4px 8px;
-            border-radius: 999px;
-            background: #fef2f2;
-            color: #b91c1c;
-            font-weight: 700;
-        }
-
-        /* =========================
-           GENERAL
-        ========================= */
-
-        section {
-            padding: 95px 25px;
-        }
-
-        .section-container {
-            max-width: 1200px;
-            margin: auto;
-        }
-
-        .section-tag {
-            color: #2563eb;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 10px;
-        }
-
-        .section-title {
-            font-size: 40px;
-            line-height: 1.12;
-            letter-spacing: -1.4px;
-            max-width: 750px;
-        }
-
-        .section-description {
-            color: #64748b;
-            max-width: 720px;
-            margin-top: 16px;
-            font-size: 16px;
-        }
-
-        /* =========================
-           PROBLEM
-        ========================= */
-
-        .problem {
-            background: white;
-        }
-
-        .problem-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            margin-top: 50px;
-        }
-
-        .problem-list {
-            display: grid;
-            gap: 13px;
-        }
-
-        .problem-item {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 17px;
-            border-radius: 11px;
-        }
-
-        .problem-item strong {
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .problem-item span {
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        .problem-visual {
-            background: #0f172a;
-            border-radius: 18px;
-            padding: 32px;
-            color: white;
-        }
-
-        .problem-visual h3 {
-            font-size: 25px;
-            margin-bottom: 22px;
-        }
-
-        .signal {
-            border: 1px solid #334155;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            color: #cbd5e1;
-        }
-
-        /* =========================
-           WORKFLOW
-        ========================= */
-
-        .workflow {
-            background: #f8fafc;
-        }
-
-        .workflow-grid {
-            margin-top: 50px;
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 17px;
-        }
-
-        .workflow-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 26px;
-            min-height: 190px;
-            transition: 0.2s;
-        }
-
-        .workflow-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(15,23,42,0.08);
-        }
-
-        .workflow-number {
-            color: #2563eb;
-            font-size: 13px;
-            font-weight: 800;
-        }
-
-        .workflow-card h3 {
-            margin-top: 14px;
-            font-size: 20px;
-        }
-
-        .workflow-card p {
-            margin-top: 8px;
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        /* =========================
-           ROLES
-        ========================= */
-
-        .roles {
-            background: white;
-        }
-
-        .role-grid {
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 20px;
-            margin-top: 50px;
-        }
-
-        .role-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 18px;
-            padding: 30px;
-            background: #f8fafc;
-        }
-
-        .role-card .role-number {
-            font-size: 12px;
-            color: #2563eb;
-            font-weight: 800;
-        }
-
-        .role-card h3 {
-            font-size: 24px;
-            margin-top: 10px;
-        }
-
-        .role-card p {
-            color: #64748b;
-            font-size: 14px;
-            margin-top: 9px;
-        }
-
-        .role-card ul {
-            margin-top: 18px;
-            padding-left: 18px;
-            color: #475569;
-            font-size: 14px;
-        }
-
-        .role-card li {
-            margin-bottom: 7px;
-        }
-
-        /* =========================
-           FEATURES
-        ========================= */
-
-        .features {
-            background: #f8fafc;
-        }
-
-        .feature-grid {
-            margin-top: 50px;
-            display: grid;
-            grid-template-columns: repeat(2,1fr);
-            gap: 18px;
-        }
-
-        .feature {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 15px;
-            padding: 25px;
-        }
-
-        .feature h3 {
-            font-size: 19px;
-        }
-
-        .feature p {
-            margin-top: 8px;
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        /* =========================
-           EXPLAIN
-        ========================= */
-
-        .explain {
-            background: #0f172a;
-            color: white;
-        }
-
-        .explain .section-title {
-            color: white;
-        }
-
-        .explain .section-description {
-            color: #94a3b8;
-        }
-
-        .explain-box {
-            margin-top: 45px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .explain-card {
-            border: 1px solid #334155;
-            border-radius: 15px;
-            padding: 25px;
-            background: #111c31;
-        }
-
-        .explain-card h3 {
-            margin-bottom: 10px;
-        }
-
-        .explain-card p {
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
-        .reason {
-            padding: 13px;
-            margin-top: 9px;
-            border-radius: 8px;
-            background: #17243b;
-            color: #cbd5e1;
-            font-size: 13px;
-        }
-
-        /* =========================
-           INTERVENTION
-        ========================= */
-
-        .intervention {
-            background: white;
-        }
-
-        .intervention-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            margin-top: 50px;
-            align-items: center;
-        }
-
-        .support-flow {
-            display: grid;
-            gap: 10px;
-        }
-
-        .support-step {
-            border: 1px solid #e2e8f0;
-            padding: 18px;
-            border-radius: 11px;
-            background: #f8fafc;
-        }
-
-        .support-step strong {
-            display: block;
-        }
-
-        .support-step span {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        .class-card {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 17px;
-            padding: 28px;
-        }
-
-        .class-card h3 {
-            color: #1e40af;
-        }
-
-        .class-row {
-            background: white;
-            padding: 14px;
-            border-radius: 9px;
-            margin-top: 10px;
-            border: 1px solid #dbeafe;
-            font-size: 13px;
-        }
-
-        /* =========================
-           PARENT
-        ========================= */
-
-        .parent {
-            background: #f8fafc;
-        }
-
-        .parent-message {
-            margin-top: 40px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 17px;
-            padding: 28px;
-            max-width: 850px;
-        }
-
-        .message-label {
-            font-size: 11px;
-            color: #2563eb;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .message-text {
-            margin-top: 15px;
-            color: #475569;
-            font-size: 15px;
-            line-height: 1.8;
-        }
-
-        /* =========================
-           TRACK
-        ========================= */
-
-        .track {
-            background: white;
-        }
-
-        .track-grid {
-            display: grid;
-            grid-template-columns: repeat(4,1fr);
-            gap: 14px;
-            margin-top: 45px;
-        }
-
-        .track-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 13px;
-            padding: 22px;
-        }
-
-        .track-card span {
-            color: #64748b;
-            font-size: 12px;
-        }
-
-        .track-card strong {
-            display: block;
-            margin-top: 6px;
-            font-size: 24px;
-        }
-
-        .arrow {
-            color: #2563eb;
-            margin: 0 6px;
-        }
-
-        /* =========================
-           TECHNOLOGY
-        ========================= */
-
-        .technology {
-            background: #f8fafc;
-        }
-
-        .tech-grid {
-            margin-top: 40px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 11px;
-        }
-
-        .tech {
-            padding: 11px 17px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 9px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        /* =========================
-           RESPONSIBLE AI
-        ========================= */
-
-        .responsible {
-            background: white;
-        }
-
-        .responsible-grid {
-            margin-top: 45px;
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 18px;
-        }
-
-        .responsible-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 15px;
-            padding: 25px;
-        }
-
-        .responsible-card h3 {
-            font-size: 18px;
-        }
-
-        .responsible-card p {
-            color: #64748b;
-            font-size: 14px;
-            margin-top: 8px;
-        }
-
-        /* =========================
-           CTA
-        ========================= */
-
-        .cta {
-            background: #0f172a;
-            color: white;
-            text-align: center;
-        }
-
-        .cta-container {
-            max-width: 850px;
-            margin: auto;
-        }
-
-        .cta h2 {
-            font-size: 43px;
-            line-height: 1.1;
-            letter-spacing: -1.5px;
-        }
-
-        .cta p {
-            color: #94a3b8;
-            margin-top: 15px;
-            font-size: 16px;
-        }
-
-        .cta-buttons {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .cta .primary-button {
-            background: white;
-            color: #0f172a;
-        }
-
-        .cta .primary-button:hover {
-            background: #e2e8f0;
-        }
-
-        .cta .secondary-button {
-            background: transparent;
-            border-color: #475569;
-            color: white;
-        }
-
-        /* =========================
-           FOOTER
-        ========================= */
-
-        footer {
-            background: #020617;
-            color: #94a3b8;
-            text-align: center;
-            padding: 28px 20px;
-            font-size: 12px;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 900px) {
-
-            .hero-container,
-            .problem-grid,
-            .intervention-grid,
-            .explain-box {
-                grid-template-columns: 1fr;
-            }
-
-            .workflow-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .role-grid,
-            .responsible-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .track-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .hero {
-                min-height: auto;
-            }
-
-            .dashboard-window {
-                transform: none;
-            }
-        }
-
-        @media (max-width: 650px) {
-
-            .nav-links {
-                display: none;
-            }
-
-            .hero-container {
-                padding: 60px 20px;
-            }
-
-            .hero h1 {
-                font-size: 42px;
-            }
-
-            .section-title {
-                font-size: 32px;
-            }
-
-            section {
-                padding: 70px 20px;
-            }
-
-            .workflow-grid,
-            .feature-grid,
-            .track-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .mini-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI-Based Early Detection of At-Risk Students</title>
+<style>
+:root{
+  --bg:#f5f3ff; --card:#ffffff; --ink:#191035; --sub:#6b6285; --line:#e7e1fb;
+  --blue:#6d28d9; --blue-soft:#efe8ff;
+  --red:#e11d48; --red-soft:#ffe4ec;
+  --amber:#ea8c00; --amber-soft:#fff2dc;
+  --green:#0d9488; --green-soft:#dcfaf3;
+  --navy:#1e0a4d;
+  --grad1:#7c3aed; --grad2:#db2777; --grad3:#f59e0b;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1220; --card:#121a2b; --ink:#eef2f9; --sub:#96a3b8; --line:#233047;
+    --blue-soft:#16223f; --red-soft:#2a1615; --amber-soft:#2a2011; --green-soft:#12261c;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1220; --card:#121a2b; --ink:#eef2f9; --sub:#96a3b8; --line:#233047;
+  --blue-soft:#16223f; --red-soft:#2a1615; --amber-soft:#2a2011; --green-soft:#12261c;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Inter",Segoe UI,Roboto,sans-serif;}
+.app{display:flex;min-height:100vh;max-width:100%;overflow-x:hidden}
+.hide{display:none!important}
+/* Sidebar */
+.side{width:230px;flex:0 0 230px;background:linear-gradient(200deg,#2a0e6e 0%,#1e0a4d 55%,#4c0a63 100%);color:#e6ddff;padding:22px 16px;display:flex;flex-direction:column;gap:6px}
+.side h1{font-size:16px;font-weight:700;color:#fff;margin:0}
+.side p{font-size:11px;color:#b7a4e8;margin:2px 0 14px}
+.side .role{font-size:12px;color:#c9b8f2;margin-bottom:8px}
+.navbtn{background:none;border:none;color:#d3c5f7;text-align:left;padding:9px 10px;border-radius:8px;font-size:13.5px;cursor:pointer}
+.navbtn:hover{background:rgba(255,255,255,.08)}
+.navbtn.active{background:linear-gradient(90deg,#7c3aed,#db2777);color:#fff;font-weight:600}
+.side .spacer{flex:1}
+.logout{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#e6ddff;padding:9px;border-radius:8px;cursor:pointer;font-size:13px}
+.foot-note{font-size:10.5px;color:#a996d6;margin-top:10px;line-height:1.5}
+/* Main */
+.main{flex:1;min-width:0;padding:26px 30px 60px;overflow-x:hidden}
+.hero-title{font-size:27px;font-weight:800;margin:0 0 3px;background:linear-gradient(90deg,var(--grad1),var(--grad2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{color:var(--sub);font-size:14px;margin:0 0 22px}
+.section-title{font-size:17px;font-weight:700;margin:26px 0 12px}
+.grid{display:grid;gap:14px}
+.grid.cols-5{grid-template-columns:repeat(5,1fr)}
+.grid.cols-4{grid-template-columns:repeat(4,1fr)}
+.grid.cols-2{grid-template-columns:1fr 1fr}
+@media(max-width:900px){.grid.cols-5,.grid.cols-4{grid-template-columns:repeat(2,1fr)}.grid.cols-2{grid-template-columns:1fr}.side{width:190px;flex-basis:190px}.main{padding:18px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(109,40,217,.06)}
+.metric-label{font-size:12px;color:var(--sub);font-weight:600}
+.metric-value{font-size:26px;font-weight:800;margin-top:6px;background:linear-gradient(90deg,var(--grad1),var(--grad2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.metric-note{font-size:11.5px;color:var(--sub);margin-top:4px}
+.badge{display:inline-block;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:700}
+.badge.danger{background:var(--red-soft);color:var(--red)}
+.badge.warn{background:var(--amber-soft);color:var(--amber)}
+.badge.watch{background:var(--blue-soft);color:var(--blue)}
+.badge.ok{background:var(--green-soft);color:var(--green)}
+.blue-panel{background:linear-gradient(135deg,#eef3ff,#e4ecff);border:1px solid #c9d9ff;border-radius:14px;padding:18px}
+.blue-panel .metric-card2{background:#fff;border:1px solid #d3e0ff;border-radius:12px;padding:14px}
+.blue-panel .metric-label{color:#2955d6}
+.blue-panel .metric-value{background:none;-webkit-text-fill-color:initial;color:#1e3a8a;font-size:22px}
+.att-log{max-height:260px;overflow-y:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:10px;flex-wrap:wrap}
+.topbar .crumb{font-size:12.5px;color:var(--sub);font-weight:600}
+.icon-btn{background:var(--card);border:1px solid var(--line);border-radius:9px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
+.icon-btn:hover{background:var(--blue-soft)}
+@media print{
+  .side,.topbar,.chip-row,#dir-search,input[type=range],button{display:none!important}
+  .main{padding:0}
+  body{background:#fff}
+  .card{box-shadow:none;break-inside:avoid}
+}
+.info{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.info b{display:block;margin-bottom:5px;font-size:13.5px}
+.info p{margin:0;font-size:13px;color:var(--sub);line-height:1.55}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;color:var(--sub);font-weight:600;font-size:12px;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid var(--line)}
+tr:hover td{background:var(--blue-soft)}
+.row-flex{display:flex;align-items:center;gap:10px}
+.btn{background:linear-gradient(90deg,var(--grad1),var(--grad2));color:#fff;border:none;padding:9px 14px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(124,58,237,.3)}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:6px 11px;font-size:12.5px}
+select,textarea,input[type=range]{font-family:inherit;font-size:13.5px;border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--card);color:var(--ink)}
+textarea{width:100%;resize:vertical}
+/* Login */
+@keyframes floatBg{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-3%,2%) scale(1.05)}100%{transform:translate(0,0) scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+body.login-body{min-height:100vh;position:relative;overflow-x:hidden;background:#120833}
+body.login-body::before{content:"";position:fixed;inset:-10%;background:
+  radial-gradient(38% 32% at 15% 20%,rgba(124,58,237,.55),transparent 60%),
+  radial-gradient(35% 30% at 85% 15%,rgba(219,39,119,.5),transparent 60%),
+  radial-gradient(40% 35% at 50% 90%,rgba(245,158,11,.35),transparent 60%),
+  #120833;
+  animation:floatBg 14s ease-in-out infinite; z-index:0}
+.login-wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;text-align:center;padding:64px 20px 40px;animation:rise .6s ease}
+.eyebrow-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#e9d8ff;padding:6px 14px;border-radius:999px;font-size:12.5px;backdrop-filter:blur(6px)}
+.eyebrow-pill span.dot{width:7px;height:7px;border-radius:50%;background:#22d3ee;box-shadow:0 0 8px #22d3ee}
+.login-title{font-size:44px;line-height:1.12;font-weight:800;color:#fff;margin:22px 0 12px;letter-spacing:-.5px}
+.login-title em{font-style:normal;background:linear-gradient(90deg,#a78bfa,#f472b6,#fbbf24);-webkit-background-clip:text;background-clip:text;color:transparent}
+.login-sub{color:#cabdea;margin-top:8px;font-size:16px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.6}
+.stat-strip{display:flex;justify-content:center;gap:34px;margin-top:30px;flex-wrap:wrap}
+.stat-strip .stat b{display:block;font-size:22px;font-weight:800;color:#fff}
+.stat-strip .stat span{font-size:12px;color:#b6a5da}
+.roles{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:38px auto 0;max-width:920px}
+@media(max-width:700px){.roles{grid-template-columns:1fr}.login-title{font-size:32px}.stat-strip{gap:20px}}
+.role-card{background:rgba(255,255,255,.06);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:26px 20px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,.25);transition:transform .18s,background .18s}
+.role-card:hover{transform:translateY(-6px);background:rgba(255,255,255,.1)}
+.role-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:#fff}
+.role-card:nth-child(1) .role-icon{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.role-card:nth-child(2) .role-icon{background:linear-gradient(135deg,#db2777,#f472b6)}
+.role-card:nth-child(3) .role-icon{background:linear-gradient(135deg,#f59e0b,#fbbf24)}
+.role-card h3{margin:4px 0 6px;font-size:16.5px;color:#fff}
+.role-card p{font-size:13px;color:#c7bbe3;margin:0 0 16px;line-height:1.5}
+.role-card .btn{width:100%;background:#fff;color:#241148;box-shadow:none}
+.role-card .btn:hover{background:#f2ebff}
+.role-card h3{margin:4px 0 6px;font-size:16px}
+.role-card p{font-size:13px;color:var(--sub);margin:0 0 14px}
+.timeline{border-left:4px solid var(--blue);background:var(--card);border-radius:0 10px 10px 0;padding:11px 15px;margin-bottom:9px;font-size:13.5px}
+.timeline b{display:block;font-size:12.5px;color:var(--blue);margin-bottom:2px}
+svg text{font-family:inherit}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{padding:5px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;cursor:pointer;background:var(--card)}
+.chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+</style>
 </head>
-
 <body>
+<div id="app" class="app"></div>
 
-<!-- =========================
-     NAVIGATION
-========================= -->
+<script>
+/* ---------- DATA ---------- */
+const SUBJECTS = ["Mathematics","Science","English","Social Studies","Computer Science"];
+const PERSONAS = {
+  "Steady":       {att:[86,94], quiz:[78,90], slope:[-0.2,0.2]},
+  "Gradual Decliner": {att:[82,90], quiz:[78,86], slope:[-1.8,-1.0]},
+  "Sudden Drop":  {att:[86,93], quiz:[80,88], slope:[0,0]},
+  "Chronic Absentee": {att:[56,68], quiz:[64,76], slope:[-0.5,0.1]},
+  "Recovering":   {att:[68,75], quiz:[58,68], slope:[1.0,2.0]}
+};
+const NAMES = ["Aarav Kumar","Ananya Reddy","Rahul Verma","Saanvi Rao","Arjun Singh","Diya Sharma","Vihaan Patel","Myra Das","Aditya Kumar","Ishita Rao","Rohan Gupta","Aadhya Singh","Kabir Reddy","Meera Patel","Ayaan Khan","Sara Verma","Nikhil Rao","Anika Sharma","Ishaan Kumar","Kiara Das","Dev Reddy","Navya Singh","Aryan Patel","Tara Rao","Reyansh Kumar","Ira Verma","Karthik Sharma","Riya Reddy","Manav Gupta","Avni Singh","Siddharth Rao","Aanya Patel","Ritvik Kumar","Shreya Sharma","Yash Verma","Pihu Reddy","Atharv Singh","Nandini Rao","Krishna Patel","Mahi Kumar","Varun Das","Aarohi Sharma","Harsh Reddy","Ishani Verma","Rudra Singh","Tanvi Rao","Advik Patel","Om Sharma","Kavya Reddy","Dhruv Singh"];
+const FATHER_FIRST = ["Suresh","Ramesh","Mahesh","Rajesh","Prakash","Vijay","Anil","Sanjay","Vinod","Ashok"];
+const PATTERN = ["Steady","Steady","Gradual Decliner","Steady","Chronic Absentee","Steady","Sudden Drop","Steady","Recovering","Steady"];
+const PLIST = NAMES.map((_,i)=>PATTERN[i%PATTERN.length]);
+function synthPhone(i){ return "9"+String(700000000+i*137931).slice(0,9); }
 
-<nav>
-    <div class="nav-container">
+// Seeded RNG to mirror app.py's rng = np.random.default_rng(42)
+let __seed = 42;
+function __rand(){
+  __seed += 0x6D2B79F5;
+  let t = __seed;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+function rnd(a,b){return a+__rand()*(b-a);}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 
-        <a href="#top" class="logo">
-            Academic<span>Risk</span>
-        </a>
+let students = [];
+NAMES.forEach((name,i)=>{
+  const persona = PLIST[i];
+  const p = PERSONAS[persona];
+  const baseAtt = rnd(p.att[0],p.att[1]);
+  const baseQuiz = rnd(p.quiz[0],p.quiz[1]);
+  const attSlope = rnd(p.slope[0],p.slope[1]);
+  const quizSlope = rnd(p.slope[0],p.slope[1]);
+  let weeks=[];
+  for(let w=1; w<=8; w++){
+    let att,quiz,missing=0;
+    if(persona==="Sudden Drop" && w>=6){ att=baseAtt-rnd(8,17); quiz=baseQuiz-rnd(20,32); missing=Math.floor(rnd(1,4)); }
+    else{
+      att = baseAtt+attSlope*(w-1)+rnd(-1.5,1.5);
+      quiz = baseQuiz+quizSlope*(w-1)+rnd(-2,2);
+      if(persona==="Chronic Absentee") missing=Math.floor(rnd(1,4));
+      else if(persona==="Gradual Decliner" && w>=5) missing=Math.floor(rnd(1,3));
+      else missing=Math.floor(rnd(0,2));
+    }
+    weeks.push({week:w, att:clamp(att,45,99), quiz:clamp(quiz,30,99), missing});
+  }
+  const subj = {};
+  SUBJECTS.forEach(s=>{
+    let adj = rnd(-8,8);
+    if(s==="Mathematics" && (persona==="Gradual Decliner"||persona==="Sudden Drop")) adj -= 7;
+    subj[s] = {marks: clamp(weeks[7].quiz+adj,35,98), att: clamp(weeks[7].att+rnd(-6,4),45,99)};
+  });
+  const examAtt = clamp(weeks[7].att + rnd(-6,4), 40, 99);
+  const specialAtt = clamp(weeks[7].att + rnd(-10,6), 35, 99);
+  const dailyLog = [];
+  let dPtr = new Date(2026,7,3);
+  while(dailyLog.length < 20){
+    if(dPtr.getDay()!==0 && dPtr.getDay()!==6){
+      const p = weeks[7].att/100;
+      let status = Math.random()<p ? "Present" : "Absent";
+      if(status==="Present" && Math.random()<0.08) status="Late";
+      dailyLog.push({date:new Date(dPtr), status});
+    }
+    dPtr = new Date(dPtr.getTime()+86400000);
+  }
+  students.push({id:"STU-"+String(i+1).padStart(3,"0"), name, cls:"VIII-A", persona, weeks, subj,
+    father: FATHER_FIRST[i%FATHER_FIRST.length]+" "+name.split(" ")[1], phone: synthPhone(i),
+    examAtt, specialAtt, dailyLog});
+});
 
-        <div class="nav-links">
-            <a href="#problem">Problem</a>
-            <a href="#workflow">Workflow</a>
-            <a href="#roles">Roles</a>
-            <a href="#features">Features</a>
-            <a href="#technology">Technology</a>
+function slope(vals){
+  const n=vals.length; const xs=vals.map((_,i)=>i+1);
+  const mx=xs.reduce((a,b)=>a+b)/n, my=vals.reduce((a,b)=>a+b)/n;
+  let num=0,den=0;
+  for(let i=0;i<n;i++){num+=(xs[i]-mx)*(vals[i]-my); den+=(xs[i]-mx)**2;}
+  return den===0?0:num/den;
+}
+function calcRisk(st){
+  const attArr=st.weeks.map(w=>w.att), quizArr=st.weeks.map(w=>w.quiz);
+  const attSlope=slope(attArr), quizSlope=slope(quizArr);
+  const lastAtt=attArr[7], lastQuiz=quizArr[7];
+  const attFactor=clamp((-attSlope*8)+((85-lastAtt)*0.65),0,100);
+  const quizFactor=clamp((-quizSlope*8)+((70-lastQuiz)*1.4),0,100);
+  const missing=st.weeks.slice(-3).reduce((a,w)=>a+w.missing,0);
+  const assignFactor=clamp(missing/6*100,0,100);
+  const attLevelFactor=clamp((85-lastAtt)*1.7,0,100);
+  const risk=Math.round((attFactor*0.35+quizFactor*0.30+assignFactor*0.20+attLevelFactor*0.15)*10)/10;
+  let status = risk>=70?"Needs Support":risk>=55?"Monitor Closely":risk>=35?"Watch":"On Track";
+  return {risk,status,attSlope,quizSlope,lastAtt,lastQuiz,missing,attFactor,quizFactor,assignFactor,attLevelFactor};
+}
+function weakSubject(st){
+  return Object.entries(st.subj).sort((a,b)=>a[1].marks-b[1].marks)[0][0];
+}
+function badgeClass(status){
+  return status==="Needs Support"?"danger":status==="Monitor Closely"?"warn":status==="Watch"?"watch":"ok";
+}
 
-            <a
-                href="https://ai-academic-risk-detection.streamlit.app/"
-                target="_blank"
-                class="nav-button"
-            >
-                Open App
-            </a>
-        </div>
+/* ---------- STATE ---------- */
+let state = {loggedIn:false, role:null, page:null, selected: students[0].id, subject: SUBJECTS[0], sent:false, dirFilter:"All"};
 
+/* ---------- SVG CHART HELPERS ---------- */
+function lineChart(series, w=560, h=220){
+  const pad={l:34,r:14,t:14,b:24};
+  const iw=w-pad.l-pad.r, ih=h-pad.t-pad.b;
+  const n=series[0].data.length;
+  const x=i=>pad.l+iw*(i/(n-1));
+  const y=v=>pad.t+ih*(1-v/100);
+  let s = `<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:100%">`;
+  [0,25,50,75,100].forEach(v=>{
+    s+=`<line x1="${pad.l}" y1="${y(v)}" x2="${w-pad.r}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/>`;
+    s+=`<text x="4" y="${y(v)+4}" font-size="10" fill="var(--sub)">${v}</text>`;
+  });
+  const colors=["#7c3aed","#0d9488"];
+  series.forEach((ser,si)=>{
+    let d="";
+    ser.data.forEach((v,i)=>{ d+= (i===0?"M":"L")+x(i)+","+y(v)+" "; });
+    s+=`<path d="${d}" fill="none" stroke="${colors[si]}" stroke-width="2.5"/>`;
+    ser.data.forEach((v,i)=>{ s+=`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="${colors[si]}"/>`; });
+  });
+  s+=`</svg>`;
+  let legend = series.map((ser,i)=>`<span style="display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-size:12px;color:var(--sub)"><span style="width:10px;height:10px;background:${colors[i]};border-radius:2px;display:inline-block"></span>${ser.name}</span>`).join("");
+  return `<div>${s}<div style="margin-top:4px">${legend}</div></div>`;
+}
+function barChartH(items, w=520){
+  const maxV = Math.max(...items.map(i=>i.value), 1);
+  let rows = items.map(it=>{
+    const pct = (it.value/maxV*100).toFixed(1);
+    return `<div style="margin-bottom:10px"><div style="font-size:12.5px;color:var(--sub);margin-bottom:3px">${it.label}</div>
+    <div style="background:var(--line);border-radius:6px;height:16px;overflow:hidden"><div style="width:${pct}%;background:linear-gradient(90deg,#7c3aed,#db2777);height:100%;border-radius:6px"></div></div></div>`;
+  }).join("");
+  return `<div>${rows}</div>`;
+}
+function barChartV(items){
+  const maxV = Math.max(...items.map(i=>i.value),1);
+  const w=440,h=200,pad=30;
+  const bw = (w-pad*2)/items.length*0.6;
+  const gap=(w-pad*2)/items.length;
+  const barColors=["#0d9488","#6d28d9","#ea8c00","#e11d48"];
+  let s=`<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:100%">`;
+  items.forEach((it,i)=>{
+    const bh=(it.value/maxV)*(h-50);
+    const x=pad+gap*i+(gap-bw)/2;
+    const y=h-30-bh;
+    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="${barColors[i%barColors.length]}" rx="6"/>`;
+    s+=`<text x="${x+bw/2}" y="${h-14}" font-size="10.5" fill="var(--sub)" text-anchor="middle">${it.label}</text>`;
+    s+=`<text x="${x+bw/2}" y="${y-6}" font-size="11" fill="var(--ink)" text-anchor="middle" font-weight="700">${it.value}</text>`;
+  });
+  s+=`</svg>`;
+  return s;
+}
+
+/* ---------- RENDER ---------- */
+function render(){
+  const app = document.getElementById("app");
+  if(!state.loggedIn){ document.body.classList.add("login-body"); app.innerHTML = loginView(); attachLogin(); return; }
+  document.body.classList.remove("login-body");
+  app.innerHTML = `<div class="side">${sidebarView()}</div><div class="main">${topbarView()}${pageView()}</div>`;
+  attachMain();
+}
+function topbarView(){
+  let dark=false; try{ dark = localStorage.getItem('theme')==='dark'; }catch(e){}
+  return `<div class="topbar">
+    <span class="crumb">${state.role} &nbsp;/&nbsp; ${state.page}</span>
+    <div style="display:flex;gap:8px">
+      <div class="icon-btn" id="theme-toggle" title="Toggle dark mode">${dark? "☀️" : "🌙"}</div>
+      <div class="icon-btn" id="export-btn" title="Export / Print report">⤓</div>
     </div>
-</nav>
+  </div>`;
+}
+function applyTheme(){
+  try{
+    const t = localStorage.getItem('theme');
+    if(t==='dark') document.documentElement.setAttribute('data-theme','dark');
+  }catch(e){}
+}
+applyTheme();
 
-
-<!-- =========================
-     HERO
-========================= -->
-
-<header class="hero" id="top">
-
-    <div class="hero-container">
-
-        <div>
-
-            <div class="badge">
-                HORIZON 2026 · AI WITH EDUCATION
-            </div>
-
-            <h1>
-                Detect Academic Risk
-                <span>Before It Becomes a Bigger Problem.</span>
-            </h1>
-
-            <p class="hero-text">
-                An AI-assisted academic support platform that combines
-                attendance, assessment performance and assignment signals
-                to help educators identify emerging support needs,
-                understand the contributing factors and coordinate
-                targeted interventions.
-            </p>
-
-            <div class="hero-buttons">
-
-                <a
-                    href="https://ai-academic-risk-detection.streamlit.app/"
-                    target="_blank"
-                    class="primary-button"
-                >
-                    Launch Live App
-                </a>
-
-                <a
-                    href="https://github.com/guruvemula61-cmyk/ai-academic-risk-detection"
-                    target="_blank"
-                    class="secondary-button"
-                >
-                    View GitHub
-                </a>
-
-            </div>
-
-            <div class="hero-note">
-                Synthetic demonstration data · Human oversight required
-            </div>
-
-        </div>
-
-
-        <!-- Dashboard visual -->
-
-        <div class="dashboard-window">
-
-            <div class="window-top">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-
-            <div class="dashboard-content">
-
-                <div class="dash-title">
-                    Teacher Dashboard
-                </div>
-
-                <div class="mini-grid">
-
-                    <div class="mini-card">
-                        <div class="mini-label">
-                            STUDENTS
-                        </div>
-                        <div class="mini-value">
-                            60
-                        </div>
-                    </div>
-
-                    <div class="mini-card">
-                        <div class="mini-label">
-                            NEED SUPPORT
-                        </div>
-                        <div class="mini-value">
-                            12
-                        </div>
-                    </div>
-
-                    <div class="mini-card">
-                        <div class="mini-label">
-                            ATTENDANCE
-                        </div>
-                        <div class="mini-value">
-                            82%
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="chart-box">
-
-                    <div class="mini-label">
-                        ACADEMIC TREND
-                    </div>
-
-                    <div class="chart-lines">
-                        <div class="line-one"></div>
-                        <div class="line-two"></div>
-                    </div>
-
-                </div>
-
-                <div class="chart-box">
-
-                    <div class="mini-label">
-                        STUDENTS REQUIRING ATTENTION
-                    </div>
-
-                    <div class="risk-row">
-                        <span>Aarav Kumar</span>
-                        <span class="risk-pill">Needs Support</span>
-                    </div>
-
-                    <div class="risk-row">
-                        <span>Rahul Verma</span>
-                        <span class="risk-pill">Needs Support</span>
-                    </div>
-
-                    <div class="risk-row">
-                        <span>Diya Sharma</span>
-                        <span style="color:#047857;font-weight:700;">
-                            Recovering
-                        </span>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
+function loginView(){
+  const supportCount = students.filter(s=>calcRisk(s).status!=="On Track").length;
+  return `<div class="login-wrap">
+    <span class="eyebrow-pill"><span class="dot"></span>AI-Powered · Early Warning System</span>
+    <div class="login-title">AI-Based Early Detection<br><em>of At-Risk Students</em></div>
+    <div class="login-sub">An explainable early-detection engine that reads attendance, assessments and assignment patterns to flag students who need support — weeks before report cards do.</div>
+    <div class="stat-strip">
+      <div class="stat"><b>${students.length}</b><span>Students monitored</span></div>
+      <div class="stat"><b>${SUBJECTS.length}</b><span>Subjects tracked</span></div>
+      <div class="stat"><b>${supportCount}</b><span>Signals flagged this term</span></div>
+      <div class="stat"><b>3</b><span>Role-based views</span></div>
     </div>
-
-</header>
-
-
-<!-- =========================
-     PROBLEM
-========================= -->
-
-<section class="problem" id="problem">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            The Problem
-        </div>
-
-        <h2 class="section-title">
-            Academic difficulty rarely appears as a single signal.
-        </h2>
-
-        <p class="section-description">
-            Attendance, assessment performance and assignment completion
-            can change at different times. A support system needs to bring
-            these indicators together so educators can review the emerging
-            pattern and respond appropriately.
-        </p>
-
-        <div class="problem-grid">
-
-            <div class="problem-list">
-
-                <div class="problem-item">
-                    <strong>Attendance Decline</strong>
-                    <span>
-                        A student's attendance may gradually fall before
-                        academic performance visibly changes.
-                    </span>
-                </div>
-
-                <div class="problem-item">
-                    <strong>Assessment Decline</strong>
-                    <span>
-                        Falling quiz or assessment performance can indicate
-                        that additional academic support may be useful.
-                    </span>
-                </div>
-
-                <div class="problem-item">
-                    <strong>Missed Assignments</strong>
-                    <span>
-                        Repeatedly incomplete work provides another signal
-                        for teacher review.
-                    </span>
-                </div>
-
-                <div class="problem-item">
-                    <strong>Delayed Intervention</strong>
-                    <span>
-                        When signals are reviewed separately, emerging
-                        support needs may be harder to identify.
-                    </span>
-                </div>
-
-            </div>
-
-            <div class="problem-visual">
-
-                <h3>
-                    Multiple signals.
-                    One support view.
-                </h3>
-
-                <div class="signal">
-                    Attendance trend
-                </div>
-
-                <div class="signal">
-                    Assessment trend
-                </div>
-
-                <div class="signal">
-                    Assignment completion
-                </div>
-
-                <div class="signal">
-                    Subject performance
-                </div>
-
-                <div class="signal">
-                    Academic support recommendation
-                </div>
-
-            </div>
-
-        </div>
-
+    <div class="roles">
+      <div class="role-card">
+        <div class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 2 8l10 5 8-4.2V16h2V8L12 3z" fill="currentColor"/><path d="M6 12.5V17c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5l-6 3-6-3z" fill="currentColor"/></svg></div>
+        <h3>Teacher</h3>
+        <p>Monitor every student, see explainable risk signals and launch interventions.</p>
+        <button class="btn" id="login-teacher">Continue as Teacher</button>
+      </div>
+      <div class="role-card">
+        <div class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4z" fill="currentColor"/><path d="M18 7h2v13a3 3 0 0 1-3 3H7" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></div>
+        <h3>Student</h3>
+        <p>Track your marks and attendance by subject, and get help on weak topics.</p>
+        <button class="btn" id="login-student">Continue as Student</button>
+      </div>
+      <div class="role-card">
+        <div class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 2 12h3v8h6v-5h2v5h6v-8h3L12 3z" fill="currentColor"/></svg></div>
+        <h3>Parent</h3>
+        <p>See your child's full progress, attendance and teacher recommendations.</p>
+        <button class="btn" id="login-parent">Continue as Parent</button>
+      </div>
     </div>
+  </div>`;
+}
+function attachLogin(){
+  const go=(role,page)=>{
+    document.querySelectorAll(".role-card .btn").forEach(b=>b.textContent="Signing in...");
+    setTimeout(()=>{state.loggedIn=true;state.role=role;state.page=page;render();},420);
+  };
+  document.getElementById("login-teacher").onclick=()=>go("Teacher","Dashboard");
+  document.getElementById("login-student").onclick=()=>go("Student","My Dashboard");
+  document.getElementById("login-parent").onclick=()=>go("Parent","Child Dashboard");
+}
 
-</section>
+function sidebarView(){
+  const pagesByRole = {Teacher:["Dashboard","Student Profile","Intervention","Track"], Student:["My Dashboard"], Parent:["Child Dashboard"]};
+  const pages = pagesByRole[state.role];
+  const navs = pages.map(p=>`<button class="navbtn ${p===state.page?'active':''}" data-page="${p}">${p}</button>`).join("");
+  return `<h1>Academic Support</h1><p>Early detection & intervention</p>
+    <div class="role">Role: <b style="color:#fff">${state.role}</b></div>
+    ${navs}
+    <div class="spacer"></div>
+    <button class="logout" id="logout-btn">Log out</button>
+    <div class="foot-note">Synthetic demonstration data.<br>Human review required for real deployment.</div>`;
+}
 
+function pageView(){
+  if(state.role==="Teacher"){
+    if(state.page==="Dashboard") return teacherDashboard();
+    if(state.page==="Student Profile") return studentProfile();
+    if(state.page==="Intervention") return interventionPage();
+    if(state.page==="Track") return trackPage();
+  }
+  if(state.role==="Student") return studentDashboard();
+  if(state.role==="Parent") return parentDashboard();
+  return "";
+}
 
-<!-- =========================
-     WORKFLOW
-========================= -->
-
-<section class="workflow" id="workflow">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            Product Workflow
-        </div>
-
-        <h2 class="section-title">
-            From detection to continuous support.
-        </h2>
-
-        <p class="section-description">
-            The platform connects early-warning signals with explanations,
-            learning support, communication and progress tracking.
-        </p>
-
-        <div class="workflow-grid">
-
-            <div class="workflow-card">
-                <div class="workflow-number">01 · DETECT</div>
-                <h3>Identify Signals</h3>
-                <p>
-                    Combine attendance, assessment trends and missing
-                    assignments into an interpretable academic support signal.
-                </p>
-            </div>
-
-            <div class="workflow-card">
-                <div class="workflow-number">02 · EXPLAIN</div>
-                <h3>Understand Why</h3>
-                <p>
-                    Show the factors contributing to the student's current
-                    support signal instead of presenting only a number.
-                </p>
-            </div>
-
-            <div class="workflow-card">
-                <div class="workflow-number">03 · LEARN</div>
-                <h3>Explain Again</h3>
-                <p>
-                    Provide simple explanations, examples and practice
-                    around an identified weak subject.
-                </p>
-            </div>
-
-            <div class="workflow-card">
-                <div class="workflow-number">04 · SUPPORT</div>
-                <h3>Targeted Intervention</h3>
-                <p>
-                    Create a focused revision plan and recommend additional
-                    academic support.
-                </p>
-            </div>
-
-            <div class="workflow-card">
-                <div class="workflow-number">05 · COMMUNICATE</div>
-                <h3>Connect Parents</h3>
-                <p>
-                    Generate a structured teacher-to-parent academic update
-                    for the student's support needs.
-                </p>
-            </div>
-
-            <div class="workflow-card">
-                <div class="workflow-number">06 · TRACK</div>
-                <h3>Monitor Progress</h3>
-                <p>
-                    Review academic indicators across multiple weeks and
-                    observe changing support signals.
-                </p>
-            </div>
-
-        </div>
-
+function teacherDashboard(){
+  const risks = students.map(s=>({s,r:calcRisk(s)}));
+  const needsSupport = risks.filter(x=>x.r.status==="Needs Support").length;
+  const recovering = students.filter(s=>s.persona==="Recovering").length;
+  const avgMarks = (risks.reduce((a,x)=>a+x.r.lastQuiz,0)/risks.length).toFixed(1);
+  const avgAtt = (risks.reduce((a,x)=>a+x.r.lastAtt,0)/risks.length).toFixed(1);
+  const counts = {};
+  risks.forEach(x=>counts[x.r.status]=(counts[x.r.status]||0)+1);
+  const order = ["On Track","Watch","Monitor Closely","Needs Support"];
+  const chartItems = order.filter(o=>counts[o]).map(o=>({label:o,value:counts[o]}));
+  const top = [...risks].sort((a,b)=>b.r.risk-a.r.risk).slice(0,7);
+  return `
+  <div class="hero-title">Teacher Dashboard</div>
+  <div class="hero-sub">Monitor academic performance, attendance and emerging support needs.</div>
+  <div class="grid cols-5">
+    ${metricCard("Total Students",students.length,"Class VIII-A")}
+    ${metricCard("Needs Support",needsSupport,"Risk threshold reached")}
+    ${metricCard("Recovering",recovering,"Positive recent trend")}
+    ${metricCard("Average Marks",avgMarks+"%","Latest assessment")}
+    ${metricCard("Attendance",avgAtt+"%","Class average")}
+  </div>
+  <div class="section-title">Academic Risk Overview</div>
+  <div class="grid cols-2">
+    <div class="card">${barChartV(chartItems)}</div>
+    <div>
+      <div class="info"><b>Early warning signals</b><p>Combines attendance trend, assessment trend, missing assignments and current attendance level.</p></div>
+      <div class="info"><b>Important</b><p>Risk scores are support signals, not final judgments — review evidence before acting.</p></div>
     </div>
-
-</section>
-
-
-<!-- =========================
-     ROLES
-========================= -->
-
-<section class="roles" id="roles">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            Role-Based Platform
-        </div>
-
-        <h2 class="section-title">
-            One academic support system. Three connected views.
-        </h2>
-
-        <p class="section-description">
-            Teachers identify and support. Students learn and practice.
-            Parents monitor progress and receive updates.
-        </p>
-
-        <div class="role-grid">
-
-            <div class="role-card">
-
-                <div class="role-number">
-                    ROLE 01
-                </div>
-
-                <h3>Teacher</h3>
-
-                <p>
-                    A complete overview for identifying students who may
-                    require additional academic support.
-                </p>
-
-                <ul>
-                    <li>Class Dashboard</li>
-                    <li>Student Profiles</li>
-                    <li>Risk Factor Analysis</li>
-                    <li>Time Travel</li>
-                    <li>Intervention Center</li>
-                    <li>Parent Updates</li>
-                    <li>Progress Tracking</li>
-                </ul>
-
-            </div>
-
-
-            <div class="role-card">
-
-                <div class="role-number">
-                    ROLE 02
-                </div>
-
-                <h3>Student</h3>
-
-                <p>
-                    A learner-focused dashboard designed around academic
-                    improvement and targeted practice.
-                </p>
-
-                <ul>
-                    <li>Marks Overview</li>
-                    <li>Attendance</li>
-                    <li>Weak Subjects</li>
-                    <li>Explain Again</li>
-                    <li>Practice Questions</li>
-                    <li>Special Classes</li>
-                </ul>
-
-            </div>
-
-
-            <div class="role-card">
-
-                <div class="role-number">
-                    ROLE 03
-                </div>
-
-                <h3>Parent</h3>
-
-                <p>
-                    A simplified view of the child's academic performance,
-                    attendance and teacher recommendations.
-                </p>
-
-                <ul>
-                    <li>Child Performance</li>
-                    <li>Attendance</li>
-                    <li>Subject-wise Marks</li>
-                    <li>Teacher Update</li>
-                    <li>Special Classes</li>
-                    <li>Progress Trends</li>
-                </ul>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     FEATURES
-========================= -->
-
-<section class="features" id="features">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            Core Features
-        </div>
-
-        <h2 class="section-title">
-            Built around the decisions teachers actually need to make.
-        </h2>
-
-        <div class="feature-grid">
-
-            <div class="feature">
-                <h3>Explainable Risk Signals</h3>
-                <p>
-                    Understand the factors behind the academic support signal
-                    instead of relying on a black-box score.
-                </p>
-            </div>
-
-            <div class="feature">
-                <h3>Subject-Level Analysis</h3>
-                <p>
-                    Identify weak subjects using subject-wise marks and
-                    attendance indicators.
-                </p>
-            </div>
-
-            <div class="feature">
-                <h3>Time Travel</h3>
-                <p>
-                    Replay weekly academic data to understand how a student's
-                    indicators changed over time.
-                </p>
-            </div>
-
-            <div class="feature">
-                <h3>Explain Again</h3>
-                <p>
-                    Turn an identified weak area into a simple learning
-                    explanation and practice opportunity.
-                </p>
-            </div>
-
-            <div class="feature">
-                <h3>Parent Communication</h3>
-                <p>
-                    Generate a structured academic update that teachers can
-                    review before communicating with parents.
-                </p>
-            </div>
-
-            <div class="feature">
-                <h3>Special Classes</h3>
-                <p>
-                    Recommend focused online support sessions for identified
-                    learning needs.
-                </p>
-            </div>
-
-            <div class="feature">
-                <h3>Daily Attendance</h3>
-                <p>
-                    Review attendance at both overall and daily levels.
-                </p>
-            </div>
-
-            <div class="feature">
-                <h3>Progress Tracking</h3>
-                <p>
-                    Follow changing academic indicators across multiple
-                    weeks using visual trends.
-                </p>
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     EXPLAINABLE AI
-========================= -->
-
-<section class="explain">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            Explainable Support
-        </div>
-
-        <h2 class="section-title">
-            Don't just show the signal. Show the evidence.
-        </h2>
-
-        <p class="section-description">
-            The prototype uses transparent weighted indicators so educators
-            can inspect the underlying factors before deciding on support.
-        </p>
-
-        <div class="explain-box">
-
-            <div class="explain-card">
-
-                <h3>
-                    Example Student
-                </h3>
-
-                <div class="reason">
-                    Attendance is declining across recent weeks.
-                </div>
-
-                <div class="reason">
-                    Assessment performance is trending downward.
-                </div>
-
-                <div class="reason">
-                    Recent assessment performance is below the expected level.
-                </div>
-
-                <div class="reason">
-                    Recent assignments require additional review.
-                </div>
-
-            </div>
-
-
-            <div class="explain-card">
-
-                <h3>
-                    What the Teacher Can Do
-                </h3>
-
-                <div class="reason">
-                    Review the student profile.
-                </div>
-
-                <div class="reason">
-                    Identify the weak subject.
-                </div>
-
-                <div class="reason">
-                    Create a targeted support plan.
-                </div>
-
-                <div class="reason">
-                    Communicate the support recommendation.
-                </div>
-
-                <div class="reason">
-                    Track indicators over time.
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     INTERVENTION
-========================= -->
-
-<section class="intervention">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            Intervention
-        </div>
-
-        <h2 class="section-title">
-            Turn an academic signal into an action plan.
-        </h2>
-
-        <p class="section-description">
-            The intervention workflow moves beyond detection by connecting
-            the identified learning need with practical academic support.
-        </p>
-
-        <div class="intervention-grid">
-
-            <div class="support-flow">
-
-                <div class="support-step">
-                    <strong>01 · Identify Weak Subject</strong>
-                    <span>
-                        Review subject-level performance and attendance.
-                    </span>
-                </div>
-
-                <div class="support-step">
-                    <strong>02 · Explain Again</strong>
-                    <span>
-                        Present the concept in a simpler learning format.
-                    </span>
-                </div>
-
-                <div class="support-step">
-                    <strong>03 · Practice</strong>
-                    <span>
-                        Provide targeted practice questions.
-                    </span>
-                </div>
-
-                <div class="support-step">
-                    <strong>04 · Revision Plan</strong>
-                    <span>
-                        Set a focused daily revision recommendation.
-                    </span>
-                </div>
-
-                <div class="support-step">
-                    <strong>05 · Special Class</strong>
-                    <span>
-                        Recommend additional support when appropriate.
-                    </span>
-                </div>
-
-            </div>
-
-
-            <div class="class-card">
-
-                <h3>
-                    Recommended Special Class
-                </h3>
-
-                <div class="class-row">
-                    <strong>Mathematics</strong><br>
-                    Concept Revision · Online · Recommended
-                </div>
-
-                <div class="class-row">
-                    <strong>Science</strong><br>
-                    Chapter Support · Online · Available
-                </div>
-
-                <div class="class-row">
-                    <strong>English</strong><br>
-                    Practice Session · Online · Available
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     PARENT COMMUNICATION
-========================= -->
-
-<section class="parent">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            Parent Communication
-        </div>
-
-        <h2 class="section-title">
-            Keep parents connected to the support process.
-        </h2>
-
-        <p class="section-description">
-            Teachers can review and generate a structured academic update
-            based on the student's current indicators and recommended support.
-        </p>
-
-        <div class="parent-message">
-
-            <div class="message-label">
-                Example Teacher Update
-            </div>
-
-            <div class="message-text">
-                Hello Parent, the student may benefit from additional support
-                in Mathematics. Current attendance and recent assessment
-                performance are shown in the academic overview. Regular
-                revision and participation in the recommended support class
-                may help address the identified learning need.
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     TRACK
-========================= -->
-
-<section class="track">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            Track
-        </div>
-
-        <h2 class="section-title">
-            Support should be measurable over time.
-        </h2>
-
-        <p class="section-description">
-            The platform provides a longitudinal view of academic indicators
-            so educators can review whether the student's trajectory is changing.
-        </p>
-
-        <div class="track-grid">
-
-            <div class="track-card">
-                <span>Attendance</span>
-                <strong>
-                    71%
-                    <span class="arrow">→</span>
-                    82%
-                </strong>
-            </div>
-
-            <div class="track-card">
-                <span>Assessment</span>
-                <strong>
-                    54%
-                    <span class="arrow">→</span>
-                    68%
-                </strong>
-            </div>
-
-            <div class="track-card">
-                <span>Support Signal</span>
-                <strong>
-                    72
-                    <span class="arrow">→</span>
-                    54
-                </strong>
-            </div>
-
-            <div class="track-card">
-                <span>Current Status</span>
-                <strong>
-                    Recovering
-                </strong>
-            </div>
-
-        </div>
-
-        <p class="hero-note" style="margin-top:22px;">
-            Demonstration values shown above are synthetic and do not establish
-            that an intervention caused the observed changes.
-        </p>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     TECHNOLOGY
-========================= -->
-
-<section class="technology" id="technology">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            Technology
-        </div>
-
-        <h2 class="section-title">
-            Lightweight technology. Transparent logic.
-        </h2>
-
-        <p class="section-description">
-            The prototype focuses on a practical architecture that can be
-            demonstrated clearly and extended in future development.
-        </p>
-
-        <div class="tech-grid">
-
-            <div class="tech">Python</div>
-            <div class="tech">Streamlit</div>
-            <div class="tech">Pandas</div>
-            <div class="tech">NumPy</div>
-            <div class="tech">Plotly</div>
-            <div class="tech">Rule-Based Risk Engine</div>
-            <div class="tech">Synthetic Dataset</div>
-            <div class="tech">Streamlit Community Cloud</div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     RESPONSIBLE AI
-========================= -->
-
-<section class="responsible">
-
-    <div class="section-container">
-
-        <div class="section-tag">
-            Responsible AI
-        </div>
-
-        <h2 class="section-title">
-            Designed to support educators, not replace their judgment.
-        </h2>
-
-        <div class="responsible-grid">
-
-            <div class="responsible-card">
-                <h3>Human Oversight</h3>
-                <p>
-                    Risk signals are intended to support teacher review,
-                    not make high-stakes decisions automatically.
-                </p>
-            </div>
-
-            <div class="responsible-card">
-                <h3>Synthetic Data</h3>
-                <p>
-                    The hackathon prototype uses generated demonstration
-                    data rather than real student records.
-                </p>
-            </div>
-
-            <div class="responsible-card">
-                <h3>Privacy by Design</h3>
-                <p>
-                    Real deployment would require appropriate privacy,
-                    security and institutional safeguards.
-                </p>
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     CTA
-========================= -->
-
-<section class="cta">
-
-    <div class="cta-container">
-
-        <h2>
-            Identify early. Understand clearly. Support personally.
-        </h2>
-
-        <p>
-            Explore the working prototype and see the complete academic
-            support workflow.
-        </p>
-
-        <div class="cta-buttons">
-
-            <a
-                href="https://ai-academic-risk-detection.streamlit.app/"
-                target="_blank"
-                class="primary-button"
-            >
-                Launch Application
-            </a>
-
-            <a
-                href="https://github.com/guruvemula61-cmyk/ai-academic-risk-detection"
-                target="_blank"
-                class="secondary-button"
-            >
-                Explore Source Code
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     FOOTER
-========================= -->
-
-<footer>
-
-    AI-Based Early Detection of Students at Academic Risk
-    <br>
-    Horizon 2026 · AI with Education · Hackathon Prototype
-
-</footer>
-
-
+  </div>
+  <div class="section-title">Class performance by subject</div>
+  <div class="card">${barChartV(SUBJECTS.map(su=>({label:su.split(" ")[0],value:Math.round(students.reduce((a,s)=>a+s.subj[su].marks,0)/students.length)})))}</div>
+
+  <div class="section-title">Recent alert feed</div>
+  <div class="card" style="max-height:220px;overflow-y:auto">
+  ${risks.filter(x=>x.r.status==="Needs Support"||x.r.status==="Monitor Closely").slice(0,8).map(x=>{
+    const reason = getReasons(x.s,x.r)[0];
+    return `<div class="timeline" style="border-left-color:${x.r.status==="Needs Support"?"var(--red)":"var(--amber)"}"><b>${x.s.name} · ${x.r.status}</b>${reason}</div>`;
+  }).join("") || '<p style="color:var(--sub);font-size:13px">No active alerts.</p>'}
+  </div>
+
+  <div class="section-title">Students requiring attention</div>
+  <div class="card">
+  <table><thead><tr><th>Student</th><th>Risk</th><th>Status</th><th></th></tr></thead><tbody>
+  ${top.map(x=>`<tr><td><b>${x.s.name}</b><br><span style="color:var(--sub);font-size:12px">${x.s.id} · ${x.s.cls}</span></td>
+  <td style="font-weight:800">${x.r.risk.toFixed(0)}</td>
+  <td><span class="badge ${badgeClass(x.r.status)}">${x.r.status}</span></td>
+  <td><button class="btn sm ghost view-student" data-id="${x.s.id}">View</button></td></tr>`).join("")}
+  </tbody></table></div>
+
+  <div class="section-title">Full student directory (${students.length})</div>
+  <div class="chip-row">
+  ${["All","Needs Support","Monitor Closely","Watch","On Track"].map(f=>`<div class="chip dir-filter ${state.dirFilter===f?'active':''}" data-f="${f}">${f}</div>`).join("")}
+  </div>
+  <input type="text" id="dir-search" placeholder="Search by name or ID..." style="width:100%;margin-bottom:10px">
+  <div class="card" style="max-height:520px;overflow-y:auto;padding:0">
+  <table id="dir-table"><thead><tr><th>ID</th><th>Student</th><th>Father's Name</th><th>Phone</th><th>Attendance</th><th>Marks</th><th>Risk</th><th></th></tr></thead>
+  <tbody>
+  ${risks.filter(x=>state.dirFilter==="All"||x.r.status===state.dirFilter).map(x=>`<tr class="dir-row" data-name="${x.s.name.toLowerCase()}" data-id="${x.s.id.toLowerCase()}">
+  <td>${x.s.id}</td><td><b>${x.s.name}</b></td><td>${x.s.father}</td><td>${x.s.phone}</td>
+  <td>${x.r.lastAtt.toFixed(0)}%</td><td>${x.r.lastQuiz.toFixed(0)}%</td>
+  <td><span class="badge ${badgeClass(x.r.status)}">${x.r.status}</span></td>
+  <td><button class="btn sm ghost view-student" data-id="${x.s.id}">View</button></td></tr>`).join("")}
+  </tbody></table></div>`;
+}
+function metricCard(label,value,note){
+  return `<div class="card"><div class="metric-label">${label}</div><div class="metric-value">${value}</div><div class="metric-note">${note}</div></div>`;
+}
+
+function getReasons(st,r){
+  const reasons=[];
+  if(r.lastAtt<75) reasons.push(`Attendance is currently ${r.lastAtt.toFixed(0)}%.`);
+  if(r.attSlope<-0.7) reasons.push("Attendance has been declining across recent weeks.");
+  if(r.lastQuiz<60) reasons.push(`Recent assessment performance is ${r.lastQuiz.toFixed(0)}%.`);
+  if(r.quizSlope<-0.7) reasons.push("Assessment performance is trending downward.");
+  if(r.missing>=3) reasons.push(`${r.missing} assignments were missed in the recent period.`);
+  if(!reasons.length) reasons.push("Current indicators are relatively stable.");
+  return reasons;
+}
+
+function studentProfile(){
+  const st = students.find(s=>s.id===state.selected);
+  const r = calcRisk(st);
+  const reasons = getReasons(st,r);
+  const factors = [
+    {label:"Attendance Trend", value:Math.round(r.attFactor*0.35)},
+    {label:"Assessment Trend", value:Math.round(r.quizFactor*0.30)},
+    {label:"Missing Assignments", value:Math.round(r.assignFactor*0.20)},
+    {label:"Attendance Level", value:Math.round(r.attLevelFactor*0.15)}
+  ];
+  return `
+  <div class="hero-title">Student Profile</div>
+  <div class="hero-sub">Evidence-based overview with explainable risk signals.</div>
+  <div class="grid cols-4">
+    ${metricCard("Student",st.name,st.id+" · "+st.cls)}
+    ${metricCard("Risk Score",r.risk.toFixed(0),"0–100 support signal")}
+    ${metricCard("Attendance",r.lastAtt.toFixed(0)+"%","Latest period")}
+    ${metricCard("Latest Assessment",r.lastQuiz.toFixed(0)+"%","Latest assessment")}
+  </div>
+  <div style="margin-top:12px"><span class="badge ${badgeClass(r.status)}">${r.status}</span></div>
+  <div class="info" style="margin-top:14px"><b>Guardian contact</b><p>Father's Name: ${st.father} &nbsp;·&nbsp; Phone: ${st.phone} &nbsp;·&nbsp; Class: ${st.cls}</p></div>
+  <div class="section-title">Why is this student receiving this signal?</div>
+  ${reasons.map(x=>`<div class="info"><p>${x}</p></div>`).join("")}
+  <div class="info" style="border-left:4px solid var(--blue)"><b>AI trend forecast</b><p>${
+    (r.attSlope<-0.5||r.quizSlope<-0.5) ? "Based on the last 8 weeks, this student's risk signal is trending upward — early intervention now is likely to be more effective than waiting for the next report card." :
+    (r.attSlope>0.5||r.quizSlope>0.5) ? "Based on the last 8 weeks, this student's indicators are improving — current support appears to be working." :
+    "Based on the last 8 weeks, this student's indicators are relatively stable."
+  }</p></div>
+  <div class="section-title">Risk factor breakdown</div>
+  <div class="card">${barChartH(factors)}</div>
+  <div class="section-title">Subject performance</div>
+  <div class="card"><table><thead><tr><th>Subject</th><th>Marks %</th><th>Attendance %</th></tr></thead><tbody>
+  ${SUBJECTS.map(s=>`<tr><td>${s}</td><td>${st.subj[s].marks.toFixed(1)}</td><td>${st.subj[s].att.toFixed(1)}</td></tr>`).join("")}
+  </tbody></table></div>
+  <div class="section-title">Performance trend</div>
+  <div class="card">${lineChart([{name:"Assessment",data:st.weeks.map(w=>w.quiz)},{name:"Attendance",data:st.weeks.map(w=>w.att)}])}</div>
+  <div class="section-title">Time travel</div>
+  <div class="card">
+    <input type="range" min="1" max="8" value="8" id="time-slider" style="width:100%">
+    <div class="grid cols-4" style="margin-top:12px" id="time-metrics"></div>
+    <p id="time-note" style="color:var(--sub);font-size:13px;margin-top:6px"></p>
+  </div>
+  <button class="btn ghost" id="back-teacher" style="margin-top:18px">← Back to dashboard</button>`;
+}
+
+function interventionPage(){
+  const st = students.find(s=>s.id===state.selected);
+  const r = calcRisk(st);
+  const weak = weakSubject(st);
+  const sel = state.subject && SUBJECTS.includes(state.subject) ? state.subject : weak;
+  const explanations = {
+    "Mathematics":"Quadratic equations can be understood as equations containing x². Identify a, b and c, then choose a suitable solving method.",
+    "Science":"Break the concept into definition, process, example and application. Use a simple real-world example before attempting questions.",
+    "English":"Read the sentence carefully, identify the key grammar rule, then apply it to a short example.",
+    "Social Studies":"Convert the topic into timeline, causes, events and outcomes — this makes long answers easier to remember.",
+    "Computer Science":"Start with the basic concept, trace one small example, then practice a similar problem independently."
+  };
+  const practice = {
+    "Mathematics":"Solve x² − 5x + 6 = 0.",
+    "Science":"Explain the main stages of the process studied in this chapter.",
+    "English":"Identify the grammar rule used in the following sentence.",
+    "Social Studies":"Write two causes and two effects of the selected historical event.",
+    "Computer Science":"Explain the concept using a simple example."
+  };
+  const message = `Hello Parent, ${st.name} may benefit from additional support in ${weak}. Current attendance is ${r.lastAtt.toFixed(0)}% and the latest assessment score is ${r.lastQuiz.toFixed(0)}%. We recommend regular revision and the available special support class.`;
+  return `
+  <div class="hero-title">Intervention Center</div>
+  <div class="hero-sub">Convert detected risk signals into targeted academic support.</div>
+  <div class="info"><b>Recommended focus: ${weak}</b><p>Current indicators suggest additional support may help in this subject.</p></div>
+
+  <div class="section-title">1. Explain again</div>
+  <select id="subject-select">${SUBJECTS.map(s=>`<option ${s===sel?"selected":""}>${s}</option>`).join("")}</select>
+  <div class="info" style="margin-top:12px"><b>${sel} — simple explanation</b><p>${explanations[sel]}</p></div>
+
+  <div class="section-title">2. Practice</div>
+  <div class="info"><p>${practice[sel]}</p></div>
+  <button class="btn ghost">Check practice answer</button>
+
+  <div class="section-title">3. Personalized support plan</div>
+  <div class="grid cols-2">
+    <div class="info"><b>Daily revision</b><p>25 minutes focused practice on the identified weak area.</p></div>
+    <div class="info"><b>Special class</b><p>Attend a focused online support session for the identified topic.</p></div>
+    <div class="info"><b>Practice set</b><p>Complete 5 targeted questions and review incorrect answers.</p></div>
+    <div class="info"><b>Teacher review</b><p>Review progress after the next assessment cycle.</p></div>
+  </div>
+
+  <div class="section-title">4. Parent communication</div>
+  <textarea id="parent-msg" rows="4">${message}</textarea>
+  <div style="margin-top:10px"><button class="btn" id="send-parent">Send parent update</button></div>
+  <div id="parent-sent" style="margin-top:10px">${state.sent?'<div class="badge ok">Parent update sent (demo mode)</div>':''}</div>
+
+  <div class="section-title">5. Recommended special classes</div>
+  <div class="card"><table><thead><tr><th>Subject</th><th>Focus</th><th>Mode</th><th>Status</th></tr></thead><tbody>
+  <tr><td>${weak}</td><td>Concept Revision</td><td>Online</td><td><span class="badge watch">Recommended</span></td></tr>
+  <tr><td>Science</td><td>Chapter Support</td><td>Online</td><td><span class="badge ok">Available</span></td></tr>
+  <tr><td>English</td><td>Practice Session</td><td>Online</td><td><span class="badge ok">Available</span></td></tr>
+  </tbody></table></div>
+  <button class="btn ghost" id="back-teacher" style="margin-top:18px">← Back to dashboard</button>`;
+}
+
+function trackPage(){
+  const st = students.find(s=>s.id===state.selected);
+  const risks = [];
+  for(let w=1; w<=8; w++){
+    const h = st.weeks.slice(0,w);
+    if(h.length<2){ risks.push(25); continue; }
+    const attS=slope(h.map(x=>x.att)), quizS=slope(h.map(x=>x.quiz));
+    const lastAtt=h[h.length-1].att, lastQuiz=h[h.length-1].quiz;
+    const v = clamp((-attS*8)+((85-lastAtt)*0.65),0,100)*0.35 + clamp((-quizS*8)+((70-lastQuiz)*1.4),0,100)*0.30;
+    risks.push(clamp(v,0,100));
+  }
+  const r = calcRisk(st);
+  const weak = weakSubject(st);
+  const first = st.weeks[0], last = st.weeks[7];
+  const timeline = [
+    ["Week 1","Baseline academic data recorded."],
+    ["Week 3","Attendance and assessment trends monitored."],
+    ["Week 5","Emerging support signal identified."],
+    ["Week 6","Targeted intervention recommended."],
+    ["Week 7","Parent communication and special class recommended."],
+    ["Week 8","Progress reviewed."]
+  ];
+  return `
+  <div class="hero-title">Progress Tracking</div>
+  <div class="hero-sub">Track academic signals before and after support activities — ${st.name}.</div>
+  <div class="card">${lineChart([{name:"Risk Signal",data:risks}])}</div>
+  <div class="section-title">Academic recovery indicators</div>
+  <div class="grid cols-4">
+    ${metricCard("Attendance",last.att.toFixed(0)+"%",(last.att-first.att>=0?"+":"")+(last.att-first.att).toFixed(0)+" pts")}
+    ${metricCard("Assessment",last.quiz.toFixed(0)+"%",(last.quiz-first.quiz>=0?"+":"")+(last.quiz-first.quiz).toFixed(0)+" pts")}
+    ${metricCard("Weak Subject",weak,"")}
+    ${metricCard("Current Status",r.status,"")}
+  </div>
+  <div class="section-title">Support timeline</div>
+  ${timeline.map(([w,t])=>`<div class="timeline"><b>${w}</b>${t}</div>`).join("")}
+  <div class="info" style="margin-top:12px"><p>This prototype uses synthetic data. The progress visualization shows how a school could track indicators over time; it does not establish that an intervention caused a particular outcome.</p></div>
+  <button class="btn ghost" id="back-teacher" style="margin-top:8px">← Back to dashboard</button>`;
+}
+
+function studentDashboard(){
+  const st = students[0];
+  const r = calcRisk(st);
+  const weak = weakSubject(st);
+  return `
+  <div class="hero-title">My Dashboard</div>
+  <div class="hero-sub">Welcome, ${st.name}. Here's your academic support overview.</div>
+  <div class="grid cols-4">
+    ${metricCard("Overall Marks",r.lastQuiz.toFixed(0)+"%","")}
+    ${metricCard("Attendance",r.lastAtt.toFixed(0)+"%","")}
+    ${metricCard("Academic Status",r.status,"")}
+    ${metricCard("Weak Subject",weak,"")}
+  </div>
+  <div class="section-title">Attendance & performance summary</div>
+  <div class="blue-panel grid cols-4">
+    <div class="metric-card2"><div class="metric-label">Overall Marks</div><div class="metric-value">${r.lastQuiz.toFixed(0)}%</div></div>
+    <div class="metric-card2"><div class="metric-label">Class Attendance</div><div class="metric-value">${r.lastAtt.toFixed(0)}%</div></div>
+    <div class="metric-card2"><div class="metric-label">Daily Exam Attendance</div><div class="metric-value">${st.examAtt.toFixed(0)}%</div></div>
+    <div class="metric-card2"><div class="metric-label">Special Classes Attendance</div><div class="metric-value">${st.specialAtt.toFixed(0)}%</div></div>
+  </div>
+  <div class="section-title">My subjects</div>
+  <div class="card"><table><thead><tr><th>Subject</th><th>Marks %</th><th>Attendance %</th></tr></thead><tbody>
+  ${SUBJECTS.map(s=>`<tr><td>${s}</td><td>${st.subj[s].marks.toFixed(1)}</td><td>${st.subj[s].att.toFixed(1)}</td></tr>`).join("")}
+  </tbody></table></div>
+  <div class="section-title">Learn again</div>
+  <div class="info"><p>Your current support focus is ${weak}. Use the buttons below to review concepts and practice.</p></div>
+  <div class="grid cols-2">
+    <button class="btn" id="explain-btn">Explain again</button>
+    <button class="btn ghost" id="practice-btn">Practice questions</button>
+  </div>
+  <div id="student-msg" style="margin-top:12px"></div>
+  <div class="section-title">Special classes</div>
+  <div class="card"><table><thead><tr><th>Subject</th><th>Mode</th><th>Focus</th><th>Availability</th></tr></thead><tbody>
+  <tr><td>${weak}</td><td>Online</td><td>Concept Revision</td><td><span class="badge watch">Recommended</span></td></tr>
+  <tr><td>Science</td><td>Online</td><td>Chapter Support</td><td><span class="badge ok">Available</span></td></tr>
+  </tbody></table></div>`;
+}
+
+function parentDashboard(){
+  const st = students[0];
+  const r = calcRisk(st);
+  const weak = weakSubject(st);
+  return `
+  <div class="hero-title">Child Dashboard</div>
+  <div class="hero-sub">Academic progress overview for ${st.name}.</div>
+  <div class="info"><b>Registered contact</b><p>Student ID: ${st.id} &nbsp;·&nbsp; Father's Name: ${st.father} &nbsp;·&nbsp; Phone: ${st.phone} &nbsp;·&nbsp; Class: ${st.cls}</p></div>
+  <div class="grid cols-4">
+    ${metricCard("Overall Marks",r.lastQuiz.toFixed(0)+"%","")}
+    ${metricCard("Attendance",r.lastAtt.toFixed(0)+"%","")}
+    ${metricCard("Status",r.status,"")}
+    ${metricCard("Focus Subject",weak,"")}
+  </div>
+  <div class="section-title">Subject-wise performance</div>
+  <div class="card"><table><thead><tr><th>Subject</th><th>Marks %</th><th>Attendance %</th></tr></thead><tbody>
+  ${SUBJECTS.map(s=>`<tr><td>${s}</td><td>${st.subj[s].marks.toFixed(1)}</td><td>${st.subj[s].att.toFixed(1)}</td></tr>`).join("")}
+  </tbody></table></div>
+  <div class="section-title">Daily attendance record</div>
+  <div class="grid cols-4">
+    ${metricCard("Present",st.dailyLog.filter(d=>d.status==="Present").length,"days")}
+    ${metricCard("Absent",st.dailyLog.filter(d=>d.status==="Absent").length,"days")}
+    ${metricCard("Late",st.dailyLog.filter(d=>d.status==="Late").length,"days")}
+    ${metricCard("Attendance %",r.lastAtt.toFixed(0)+"%","current term")}
+  </div>
+  <div class="card att-log" style="margin-top:10px"><table><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>
+  ${st.dailyLog.slice().reverse().map(d=>`<tr><td>${d.date.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})}</td><td><span class="badge ${d.status==="Present"?"ok":d.status==="Late"?"warn":"danger"}">${d.status}</span></td></tr>`).join("")}
+  </tbody></table></div>
+
+  <div class="section-title">Teacher update</div>
+  <div class="info"><b>Suggested support</b><p>The teacher has identified ${weak} as a current focus area. Regular revision, practice and participation in the recommended support class may help address this need.</p></div>
+  <div class="section-title">Recommended special class</div>
+  <div class="info"><p>${weak} · Online · Concept Revision · Recommended</p></div>
+  <div class="section-title">Progress</div>
+  <div class="card">${lineChart([{name:"Marks",data:st.weeks.map(w=>w.quiz)},{name:"Attendance",data:st.weeks.map(w=>w.att)}])}</div>`;
+}
+
+/* ---------- EVENTS ---------- */
+function attachMain(){
+  document.querySelectorAll(".navbtn").forEach(b=>b.onclick=()=>{state.page=b.dataset.page; render();});
+  const lo = document.getElementById("logout-btn");
+  if(lo) lo.onclick=()=>{state.loggedIn=false; state.role=null; render();};
+  document.querySelectorAll(".view-student").forEach(b=>b.onclick=()=>{state.selected=b.dataset.id; state.page="Student Profile"; render();});
+  const dirSearch = document.getElementById("dir-search");
+  if(dirSearch) dirSearch.oninput=()=>{
+    const q = dirSearch.value.toLowerCase();
+    document.querySelectorAll(".dir-row").forEach(row=>{
+      row.style.display = (row.dataset.name.includes(q)||row.dataset.id.includes(q)) ? "" : "none";
+    });
+  };
+  document.querySelectorAll(".dir-filter").forEach(c=>c.onclick=()=>{state.dirFilter=c.dataset.f; render();});
+  const themeBtn = document.getElementById("theme-toggle");
+  if(themeBtn) themeBtn.onclick=()=>{
+    try{
+      const cur = localStorage.getItem('theme')==='dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', cur);
+      if(cur==='dark') document.documentElement.setAttribute('data-theme','dark');
+      else document.documentElement.removeAttribute('data-theme');
+    }catch(e){}
+    render();
+  };
+  const exportBtn = document.getElementById("export-btn");
+  if(exportBtn) exportBtn.onclick=()=>window.print();
+  const back = document.getElementById("back-teacher");
+  if(back) back.onclick=()=>{state.page="Dashboard"; render();};
+  const slider = document.getElementById("time-slider");
+  if(slider){
+    const updateTime=()=>{
+      const st = students.find(s=>s.id===state.selected);
+      const w = st.weeks[slider.value-1];
+      document.getElementById("time-metrics").innerHTML =
+        metricCard("Attendance",w.att.toFixed(0)+"%","")+
+        metricCard("Assessment",w.quiz.toFixed(0)+"%","")+
+        metricCard("Missing Assignments",w.missing,"")+ "<div></div>";
+      document.getElementById("time-note").textContent = slider.value<8 ? "This replay shows an earlier point in the student's academic history." : "Current period selected.";
+    };
+    slider.oninput = updateTime; updateTime();
+  }
+  const subjSel = document.getElementById("subject-select");
+  if(subjSel) subjSel.onchange=()=>{state.subject=subjSel.value; render();};
+  const sendBtn = document.getElementById("send-parent");
+  if(sendBtn) sendBtn.onclick=()=>{state.sent=true; document.getElementById("parent-sent").innerHTML='<div class="badge ok">Parent update sent (demo mode)</div>';};
+  const explainBtn = document.getElementById("explain-btn");
+  if(explainBtn) explainBtn.onclick=()=>{document.getElementById("student-msg").innerHTML='<div class="badge ok">Learning support opened.</div>';};
+  const practiceBtn = document.getElementById("practice-btn");
+  if(practiceBtn) practiceBtn.onclick=()=>{document.getElementById("student-msg").innerHTML='<div class="badge ok">Practice set opened.</div>';};
+}
+
+render();
+</script>
 </body>
 </html>
