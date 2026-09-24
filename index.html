@@ -8,10 +8,11 @@
 
     <meta
         name="description"
-        content="An explainable early-warning and intervention system for identifying students at academic risk."
+        content="AI-assisted academic support platform for early detection, explanation, intervention, parent communication and progress tracking."
     >
 
     <style>
+
         * {
             margin: 0;
             padding: 0;
@@ -24,8 +25,8 @@
 
         body {
             font-family: Inter, Arial, Helvetica, sans-serif;
-            background: #f7f9fc;
-            color: #172033;
+            background: #f8fafc;
+            color: #0f172a;
             line-height: 1.6;
         }
 
@@ -34,12 +35,9 @@
             color: inherit;
         }
 
-        .container {
-            width: min(1180px, 92%);
-            margin: auto;
-        }
-
-        /* NAVBAR */
+        /* =========================
+           NAVBAR
+        ========================= */
 
         nav {
             position: sticky;
@@ -47,261 +45,297 @@
             z-index: 1000;
             background: rgba(255,255,255,0.94);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid #e5e9f2;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .nav-inner {
-            height: 72px;
+        .nav-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 17px 25px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .brand {
+        .logo {
+            font-size: 19px;
             font-weight: 800;
-            font-size: 16px;
-            color: #172033;
-            max-width: 430px;
+            letter-spacing: -0.3px;
+        }
+
+        .logo span {
+            color: #2563eb;
         }
 
         .nav-links {
             display: flex;
-            gap: 28px;
+            gap: 27px;
             align-items: center;
             font-size: 14px;
             font-weight: 600;
-            color: #596579;
+            color: #475569;
         }
 
         .nav-links a:hover {
-            color: #315bea;
+            color: #2563eb;
         }
 
         .nav-button {
-            background: #315bea;
+            background: #2563eb;
             color: white !important;
             padding: 10px 18px;
             border-radius: 9px;
         }
 
-        /* HERO */
+        /* =========================
+           HERO
+        ========================= */
 
         .hero {
-            padding: 105px 0 90px;
+            min-height: 720px;
+            display: flex;
+            align-items: center;
             background:
-                radial-gradient(circle at 80% 20%, rgba(49,91,234,0.13), transparent 30%),
-                linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+                radial-gradient(circle at 85% 20%, #dbeafe 0, transparent 28%),
+                radial-gradient(circle at 10% 80%, #e0e7ff 0, transparent 25%),
+                #f8fafc;
         }
 
-        .hero-grid {
+        .hero-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: auto;
+            padding: 80px 25px;
             display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
-            gap: 70px;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 65px;
             align-items: center;
         }
 
-        .eyebrow {
+        .badge {
             display: inline-block;
-            padding: 7px 12px;
-            border-radius: 30px;
-            background: #eaf0ff;
-            color: #315bea;
+            padding: 8px 13px;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
             font-size: 12px;
             font-weight: 800;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
 
-        h1 {
-            font-size: clamp(42px, 5vw, 68px);
-            line-height: 1.05;
-            letter-spacing: -2.5px;
-            margin-bottom: 24px;
-            color: #101827;
+        .hero h1 {
+            font-size: clamp(42px, 5vw, 66px);
+            line-height: 1.03;
+            letter-spacing: -2.8px;
+            max-width: 720px;
         }
 
-        .hero-description {
-            font-size: 19px;
-            color: #5e6a7d;
-            max-width: 680px;
-            margin-bottom: 32px;
+        .hero h1 span {
+            color: #2563eb;
+        }
+
+        .hero-text {
+            margin-top: 24px;
+            max-width: 650px;
+            font-size: 18px;
+            color: #64748b;
         }
 
         .hero-buttons {
             display: flex;
-            gap: 14px;
+            gap: 13px;
+            margin-top: 32px;
             flex-wrap: wrap;
         }
 
-        .primary-btn,
-        .secondary-btn {
-            padding: 14px 22px;
+        .primary-button {
+            background: #2563eb;
+            color: white;
+            padding: 14px 23px;
             border-radius: 10px;
             font-weight: 700;
-            display: inline-block;
+            transition: 0.2s;
         }
 
-        .primary-btn {
-            background: #315bea;
-            color: white;
-            box-shadow: 0 10px 25px rgba(49,91,234,0.2);
+        .primary-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
         }
 
-        .secondary-btn {
+        .secondary-button {
             background: white;
-            border: 1px solid #dbe1eb;
-            color: #243047;
-        }
-
-        .primary-btn:hover {
-            background: #2448c8;
-        }
-
-        .secondary-btn:hover {
-            border-color: #315bea;
-        }
-
-        /* HERO MOCKUP */
-
-        .hero-dashboard {
-            background: #101827;
-            border-radius: 20px;
-            padding: 18px;
-            box-shadow: 0 25px 70px rgba(24,36,58,0.22);
-        }
-
-        .mock-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            font-size: 12px;
-            margin-bottom: 18px;
-        }
-
-        .mock-title {
-            font-weight: 800;
-        }
-
-        .mock-week {
-            background: #26334b;
-            padding: 6px 10px;
-            border-radius: 7px;
-        }
-
-        .mock-cards {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-
-        .mock-card {
-            background: #182338;
-            border: 1px solid #27344b;
-            border-radius: 12px;
-            padding: 15px;
-            color: white;
-        }
-
-        .mock-card small {
-            color: #9ca9be;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .mock-card strong {
-            font-size: 23px;
-        }
-
-        .mock-card.warning strong {
-            color: #ffb84d;
-        }
-
-        .mock-card.success strong {
-            color: #51d59b;
-        }
-
-        .mock-card.blue strong {
-            color: #78a1ff;
-        }
-
-        .heatmap {
-            background: #182338;
-            border-radius: 12px;
-            padding: 15px;
-        }
-
-        .heatmap-title {
-            color: white;
-            font-size: 12px;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            padding: 14px 23px;
+            border-radius: 10px;
             font-weight: 700;
-            margin-bottom: 12px;
         }
 
-        .heatmap-grid {
+        .secondary-button:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .hero-note {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* =========================
+           DASHBOARD MOCKUP
+        ========================= */
+
+        .dashboard-window {
+            background: #0f172a;
+            border-radius: 20px;
+            padding: 12px;
+            box-shadow: 0 30px 70px rgba(15,23,42,0.22);
+            transform: rotate(1deg);
+        }
+
+        .window-top {
+            display: flex;
+            gap: 6px;
+            padding: 7px 8px 13px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #64748b;
+            border-radius: 50%;
+        }
+
+        .dashboard-content {
+            background: #f8fafc;
+            border-radius: 13px;
+            padding: 19px;
+        }
+
+        .dash-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .mini-grid {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 5px;
+            grid-template-columns: repeat(3,1fr);
+            gap: 9px;
         }
 
-        .heat-cell {
-            height: 18px;
-            border-radius: 4px;
+        .mini-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            padding: 12px;
         }
 
-        .green {
-            background: #43c98c;
+        .mini-label {
+            color: #64748b;
+            font-size: 9px;
+            font-weight: 700;
         }
 
-        .yellow {
-            background: #f4cf57;
+        .mini-value {
+            font-size: 20px;
+            font-weight: 800;
+            margin-top: 3px;
         }
 
-        .orange {
-            background: #f49b4b;
+        .chart-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            margin-top: 10px;
+            padding: 15px;
         }
 
-        .red {
-            background: #e45c68;
+        .chart-lines {
+            height: 120px;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* SECTION */
+        .line-one,
+        .line-two {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            transform-origin: left;
+        }
+
+        .line-one {
+            top: 75px;
+            background: #2563eb;
+            transform: rotate(-9deg);
+        }
+
+        .line-two {
+            top: 40px;
+            background: #16a34a;
+            transform: rotate(7deg);
+        }
+
+        .risk-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12px;
+        }
+
+        .risk-pill {
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-weight: 700;
+        }
+
+        /* =========================
+           GENERAL
+        ========================= */
 
         section {
-            padding: 90px 0;
+            padding: 95px 25px;
         }
 
-        .section-header {
-            text-align: center;
-            max-width: 760px;
-            margin: 0 auto 55px;
+        .section-container {
+            max-width: 1200px;
+            margin: auto;
         }
 
-        .section-label {
-            color: #315bea;
+        .section-tag {
+            color: #2563eb;
             font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
             font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             margin-bottom: 10px;
         }
 
-        h2 {
-            font-size: 38px;
-            line-height: 1.15;
-            letter-spacing: -1px;
-            margin-bottom: 15px;
-            color: #101827;
+        .section-title {
+            font-size: 40px;
+            line-height: 1.12;
+            letter-spacing: -1.4px;
+            max-width: 750px;
         }
 
-        .section-header p {
-            color: #657186;
-            font-size: 17px;
+        .section-description {
+            color: #64748b;
+            max-width: 720px;
+            margin-top: 16px;
+            font-size: 16px;
         }
 
-        /* PROBLEM */
+        /* =========================
+           PROBLEM
+        ========================= */
 
         .problem {
             background: white;
@@ -310,284 +344,232 @@
         .problem-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            align-items: center;
+            gap: 60px;
+            margin-top: 50px;
         }
 
-        .problem-text h3 {
-            font-size: 30px;
-            margin-bottom: 18px;
-        }
-
-        .problem-text p {
-            color: #626e81;
-            margin-bottom: 18px;
-        }
-
-        .signal-list {
+        .problem-list {
             display: grid;
-            gap: 12px;
+            gap: 13px;
+        }
+
+        .problem-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 17px;
+            border-radius: 11px;
+        }
+
+        .problem-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .problem-item span {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .problem-visual {
+            background: #0f172a;
+            border-radius: 18px;
+            padding: 32px;
+            color: white;
+        }
+
+        .problem-visual h3 {
+            font-size: 25px;
+            margin-bottom: 22px;
         }
 
         .signal {
-            padding: 17px 18px;
-            border: 1px solid #e2e7ef;
+            border: 1px solid #334155;
+            padding: 15px;
             border-radius: 10px;
-            background: #fafbfe;
-            font-weight: 700;
+            margin-bottom: 10px;
+            color: #cbd5e1;
         }
 
-        .signal span {
-            color: #315bea;
-            margin-right: 8px;
-        }
-
-        /* WORKFLOW */
+        /* =========================
+           WORKFLOW
+        ========================= */
 
         .workflow {
+            background: #f8fafc;
+        }
+
+        .workflow-grid {
+            margin-top: 50px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
+            grid-template-columns: repeat(3,1fr);
+            gap: 17px;
         }
 
         .workflow-card {
             background: white;
-            border: 1px solid #e3e8f0;
+            border: 1px solid #e2e8f0;
             border-radius: 16px;
-            padding: 28px;
-            position: relative;
+            padding: 26px;
+            min-height: 190px;
+            transition: 0.2s;
+        }
+
+        .workflow-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(15,23,42,0.08);
         }
 
         .workflow-number {
-            font-size: 12px;
+            color: #2563eb;
+            font-size: 13px;
             font-weight: 800;
-            color: #315bea;
-            margin-bottom: 20px;
         }
 
         .workflow-card h3 {
-            margin-bottom: 10px;
-            font-size: 22px;
+            margin-top: 14px;
+            font-size: 20px;
         }
 
         .workflow-card p {
-            color: #687488;
+            margin-top: 8px;
+            color: #64748b;
             font-size: 14px;
         }
 
-        /* FIVE SCREENS */
+        /* =========================
+           ROLES
+        ========================= */
 
-        .screens {
+        .roles {
             background: white;
         }
 
-        .screen-grid {
+        .role-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(3,1fr);
+            gap: 20px;
+            margin-top: 50px;
         }
 
-        .screen-card {
-            border: 1px solid #e2e7ef;
-            border-radius: 15px;
-            padding: 22px;
-            background: #fbfcff;
+        .role-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 30px;
+            background: #f8fafc;
         }
 
-        .screen-card .screen-number {
-            color: #315bea;
+        .role-card .role-number {
             font-size: 12px;
+            color: #2563eb;
             font-weight: 800;
-            margin-bottom: 12px;
         }
 
-        .screen-card h3 {
-            font-size: 18px;
-            margin-bottom: 9px;
+        .role-card h3 {
+            font-size: 24px;
+            margin-top: 10px;
         }
 
-        .screen-card p {
-            color: #687488;
-            font-size: 13px;
+        .role-card p {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 9px;
         }
 
-        /* FEATURES */
+        .role-card ul {
+            margin-top: 18px;
+            padding-left: 18px;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .role-card li {
+            margin-bottom: 7px;
+        }
+
+        /* =========================
+           FEATURES
+        ========================= */
 
         .features {
+            background: #f8fafc;
+        }
+
+        .feature-grid {
+            margin-top: 50px;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2,1fr);
             gap: 18px;
         }
 
         .feature {
             background: white;
-            border: 1px solid #e3e8f0;
+            border: 1px solid #e2e8f0;
             border-radius: 15px;
-            padding: 27px;
+            padding: 25px;
         }
 
         .feature h3 {
             font-size: 19px;
-            margin-bottom: 9px;
         }
 
         .feature p {
-            color: #687488;
+            margin-top: 8px;
+            color: #64748b;
             font-size: 14px;
         }
 
-        /* EXPLAINABILITY */
+        /* =========================
+           EXPLAIN
+        ========================= */
 
-        .explain-section {
-            background: #101827;
+        .explain {
+            background: #0f172a;
             color: white;
         }
 
-        .explain-section h2 {
+        .explain .section-title {
             color: white;
         }
 
-        .explain-section .section-header p {
-            color: #aeb8c9;
+        .explain .section-description {
+            color: #94a3b8;
         }
 
-        .explain-grid {
+        .explain-box {
+            margin-top: 45px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
+            gap: 18px;
         }
 
         .explain-card {
-            background: #172238;
-            border: 1px solid #29364e;
-            border-radius: 16px;
-            padding: 30px;
+            border: 1px solid #334155;
+            border-radius: 15px;
+            padding: 25px;
+            background: #111c31;
         }
 
         .explain-card h3 {
-            margin-bottom: 15px;
-            font-size: 22px;
+            margin-bottom: 10px;
         }
 
         .explain-card p {
-            color: #aeb8c9;
+            color: #94a3b8;
+            font-size: 14px;
         }
 
-        .factor {
-            margin-top: 18px;
-        }
-
-        .factor-header {
-            display: flex;
-            justify-content: space-between;
+        .reason {
+            padding: 13px;
+            margin-top: 9px;
+            border-radius: 8px;
+            background: #17243b;
+            color: #cbd5e1;
             font-size: 13px;
-            margin-bottom: 7px;
         }
 
-        .bar {
-            height: 8px;
-            background: #29364e;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            background: #6e94ff;
-            border-radius: 20px;
-        }
-
-        /* TIME TRAVEL */
-
-        .time-travel-box {
-            background: white;
-            border: 1px solid #e0e6ef;
-            border-radius: 18px;
-            padding: 30px;
-            display: grid;
-            grid-template-columns: 0.8fr 1.2fr;
-            gap: 35px;
-            align-items: center;
-        }
-
-        .timeline {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 25px;
-        }
-
-        .timeline-dot {
-            width: 29px;
-            height: 29px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #dce5ff;
-            color: #315bea;
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        .timeline-dot.active {
-            background: #315bea;
-            color: white;
-        }
-
-        .timeline-line {
-            height: 2px;
-            background: #dce2ec;
-            flex: 1;
-        }
-
-        .chart {
-            height: 220px;
-            position: relative;
-            border-left: 1px solid #dce2ec;
-            border-bottom: 1px solid #dce2ec;
-            background:
-                repeating-linear-gradient(
-                    to bottom,
-                    transparent 0,
-                    transparent 43px,
-                    #edf0f5 44px
-                );
-        }
-
-        .chart-line {
-            position: absolute;
-            left: 5%;
-            right: 4%;
-            top: 25%;
-            height: 100px;
-            border-bottom: 3px solid #315bea;
-            transform: rotate(8deg);
-        }
-
-        .chart-marker {
-            position: absolute;
-            left: 45%;
-            top: 46%;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #e45c68;
-            box-shadow: 0 0 0 7px rgba(228,92,104,0.14);
-        }
-
-        .flag-label {
-            position: absolute;
-            left: 42%;
-            top: 27%;
-            background: #101827;
-            color: white;
-            font-size: 11px;
-            padding: 6px 9px;
-            border-radius: 6px;
-        }
-
-        /* INTERVENTION */
+        /* =========================
+           INTERVENTION
+        ========================= */
 
         .intervention {
             background: white;
@@ -595,1321 +577,1273 @@
 
         .intervention-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-top: 50px;
+            align-items: center;
         }
 
-        .intervention-card {
+        .support-flow {
+            display: grid;
+            gap: 10px;
+        }
+
+        .support-step {
+            border: 1px solid #e2e8f0;
+            padding: 18px;
+            border-radius: 11px;
+            background: #f8fafc;
+        }
+
+        .support-step strong {
+            display: block;
+        }
+
+        .support-step span {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .class-card {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 17px;
             padding: 28px;
-            border: 1px solid #e2e7ef;
-            border-radius: 16px;
         }
 
-        .intervention-card h3 {
-            margin-bottom: 13px;
+        .class-card h3 {
+            color: #1e40af;
         }
 
-        .intervention-card p {
-            color: #687488;
-            font-size: 14px;
+        .class-row {
+            background: white;
+            padding: 14px;
+            border-radius: 9px;
+            margin-top: 10px;
+            border: 1px solid #dbeafe;
+            font-size: 13px;
         }
 
-        .check-list {
-            list-style: none;
+        /* =========================
+           PARENT
+        ========================= */
+
+        .parent {
+            background: #f8fafc;
+        }
+
+        .parent-message {
+            margin-top: 40px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 17px;
+            padding: 28px;
+            max-width: 850px;
+        }
+
+        .message-label {
+            font-size: 11px;
+            color: #2563eb;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .message-text {
             margin-top: 15px;
+            color: #475569;
+            font-size: 15px;
+            line-height: 1.8;
         }
 
-        .check-list li {
-            padding: 9px 0;
-            border-bottom: 1px solid #edf0f5;
-            font-size: 14px;
-        }
+        /* =========================
+           TRACK
+        ========================= */
 
-        .check-list li::before {
-            content: "✓";
-            color: #315bea;
-            font-weight: 800;
-            margin-right: 9px;
-        }
-
-        /* TRACK */
-
-        .track-box {
-            background: #f0f4ff;
-            border: 1px solid #d8e1ff;
-            border-radius: 18px;
-            padding: 38px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .track-score {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .score {
-            font-size: 46px;
-            font-weight: 850;
-            color: #315bea;
-        }
-
-        .arrow {
-            font-size: 26px;
-            color: #7b879a;
-        }
-
-        .recovering {
-            color: #15855d;
-            font-weight: 800;
-        }
-
-        /* TECH */
-
-        .tech {
+        .track {
             background: white;
         }
 
-        .tech-grid {
+        .track-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(4,1fr);
+            gap: 14px;
+            margin-top: 45px;
         }
 
-        .tech-card {
-            border: 1px solid #e1e6ee;
-            border-radius: 12px;
+        .track-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 13px;
             padding: 22px;
-            text-align: center;
+        }
+
+        .track-card span {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .track-card strong {
+            display: block;
+            margin-top: 6px;
+            font-size: 24px;
+        }
+
+        .arrow {
+            color: #2563eb;
+            margin: 0 6px;
+        }
+
+        /* =========================
+           TECHNOLOGY
+        ========================= */
+
+        .technology {
+            background: #f8fafc;
+        }
+
+        .tech-grid {
+            margin-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 11px;
+        }
+
+        .tech {
+            padding: 11px 17px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            font-size: 13px;
             font-weight: 700;
         }
 
-        .tech-card span {
-            display: block;
-            color: #687488;
-            font-size: 12px;
-            margin-top: 5px;
-            font-weight: 500;
-        }
-
-        /* RESPONSIBLE AI */
+        /* =========================
+           RESPONSIBLE AI
+        ========================= */
 
         .responsible {
-            background: #f7f9fc;
+            background: white;
         }
 
         .responsible-grid {
+            margin-top: 45px;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3,1fr);
             gap: 18px;
         }
 
         .responsible-card {
-            background: white;
-            border: 1px solid #e2e7ef;
+            border: 1px solid #e2e8f0;
             border-radius: 15px;
             padding: 25px;
         }
 
         .responsible-card h3 {
-            margin-bottom: 9px;
+            font-size: 18px;
         }
 
         .responsible-card p {
-            color: #687488;
+            color: #64748b;
             font-size: 14px;
+            margin-top: 8px;
         }
 
-        /* CTA */
+        /* =========================
+           CTA
+        ========================= */
 
         .cta {
-            padding: 95px 0;
-            background: #101827;
-            text-align: center;
+            background: #0f172a;
             color: white;
+            text-align: center;
+        }
+
+        .cta-container {
+            max-width: 850px;
+            margin: auto;
         }
 
         .cta h2 {
-            color: white;
-            max-width: 750px;
-            margin: auto auto 16px;
+            font-size: 43px;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
         }
 
         .cta p {
-            color: #aeb8c9;
-            max-width: 650px;
-            margin: 0 auto 30px;
+            color: #94a3b8;
+            margin-top: 15px;
+            font-size: 16px;
         }
 
-        /* FOOTER */
+        .cta-buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .cta .primary-button {
+            background: white;
+            color: #0f172a;
+        }
+
+        .cta .primary-button:hover {
+            background: #e2e8f0;
+        }
+
+        .cta .secondary-button {
+            background: transparent;
+            border-color: #475569;
+            color: white;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
 
         footer {
-            background: #0b111d;
-            color: #8f9bae;
-            padding: 28px 0;
-            font-size: 13px;
+            background: #020617;
+            color: #94a3b8;
+            text-align: center;
+            padding: 28px 20px;
+            font-size: 12px;
         }
 
-        .footer-inner {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
+        /* =========================
+           RESPONSIVE
+        ========================= */
 
-        .footer-title {
-            color: white;
-            font-weight: 700;
-        }
+        @media (max-width: 900px) {
 
-        /* RESPONSIVE */
-
-        @media (max-width: 1000px) {
-            .hero-grid,
+            .hero-container,
             .problem-grid,
-            .time-travel-box,
-            .explain-grid {
+            .intervention-grid,
+            .explain-box {
                 grid-template-columns: 1fr;
             }
 
-            .screen-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .workflow-grid {
+                grid-template-columns: 1fr 1fr;
             }
 
-            .workflow {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .features,
-            .intervention-grid,
+            .role-grid,
             .responsible-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
             }
 
-            .tech-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .track-grid {
+                grid-template-columns: 1fr 1fr;
             }
 
             .hero {
-                padding-top: 70px;
+                min-height: auto;
+            }
+
+            .dashboard-window {
+                transform: none;
             }
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 650px) {
+
             .nav-links {
                 display: none;
             }
 
-            h1 {
+            .hero-container {
+                padding: 60px 20px;
+            }
+
+            .hero h1 {
                 font-size: 42px;
             }
 
-            h2 {
-                font-size: 31px;
+            .section-title {
+                font-size: 32px;
             }
 
-            .workflow,
-            .screen-grid,
-            .features,
-            .intervention-grid,
-            .responsible-grid,
-            .tech-grid {
+            section {
+                padding: 70px 20px;
+            }
+
+            .workflow-grid,
+            .feature-grid,
+            .track-grid {
                 grid-template-columns: 1fr;
             }
 
-            .track-box {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .footer-inner {
-                flex-direction: column;
-            }
-
-            .mock-cards {
-                grid-template-columns: 1fr 1fr;
+            .mini-grid {
+                grid-template-columns: 1fr;
             }
         }
+
     </style>
 </head>
 
 <body>
 
-<!-- NAVIGATION -->
+<!-- =========================
+     NAVIGATION
+========================= -->
 
 <nav>
-    <div class="container nav-inner">
-        <a href="#top" class="brand">
-            AI-Based Early Detection of Students at Academic Risk
+    <div class="nav-container">
+
+        <a href="#top" class="logo">
+            Academic<span>Risk</span>
         </a>
 
         <div class="nav-links">
             <a href="#problem">Problem</a>
             <a href="#workflow">Workflow</a>
+            <a href="#roles">Roles</a>
             <a href="#features">Features</a>
-            <a href="#responsible">Responsible AI</a>
-            <a
-                href="https://github.com/guruvemula61-cmyk/ai-academic-risk-detection"
-                target="_blank"
-                class="nav-button"
-            >
-                GitHub
-            </a>
-        </div>
-    </div>
-</nav>
-
-
-<!-- HERO -->
-
-<header class="hero" id="top">
-    <div class="container hero-grid">
-
-        <div>
-            <div class="eyebrow">
-                Explainable Academic Early-Warning System
-            </div>
-
-            <h1>
-                Detect academic risk before it becomes visible too late.
-            </h1>
-
-            <p class="hero-description">
-                An explainable teacher-focused system that identifies emerging
-                academic risk, explains the contributing signals, generates
-                targeted support, and tracks student progress over time.
-            </p>
-
-            <div class="hero-buttons">
-                <a
-                    href="https://ai-academic-risk-detection.streamlit.app/"
-                    target="_blank"
-                    class="primary-btn"
-                >
-                    Open Live Demo
-                </a>
-
-                <a href="#workflow" class="secondary-btn">
-                    Explore the System
-                </a>
-            </div>
-        </div>
-
-
-        <!-- DASHBOARD PREVIEW -->
-
-        <div class="hero-dashboard">
-
-            <div class="mock-top">
-                <div class="mock-title">
-                    Teacher Dashboard
-                </div>
-
-                <div class="mock-week">
-                    Class 8-B · Week 8
-                </div>
-            </div>
-
-            <div class="mock-cards">
-
-                <div class="mock-card blue">
-                    <small>Students</small>
-                    <strong>60</strong>
-                </div>
-
-                <div class="mock-card warning">
-                    <small>Needs Support</small>
-                    <strong>7</strong>
-                </div>
-
-                <div class="mock-card success">
-                    <small>Recovering</small>
-                    <strong>3</strong>
-                </div>
-
-                <div class="mock-card blue">
-                    <small>Avg Attendance</small>
-                    <strong>84%</strong>
-                </div>
-
-            </div>
-
-            <div class="heatmap">
-
-                <div class="heatmap-title">
-                    Eight-Week Academic Risk Heatmap
-                </div>
-
-                <div class="heatmap-grid">
-
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell orange"></div>
-                    <div class="heat-cell orange"></div>
-                    <div class="heat-cell red"></div>
-                    <div class="heat-cell red"></div>
-
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell orange"></div>
-                    <div class="heat-cell orange"></div>
-                    <div class="heat-cell red"></div>
-                    <div class="heat-cell red"></div>
-                    <div class="heat-cell red"></div>
-                    <div class="heat-cell red"></div>
-
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell orange"></div>
-                    <div class="heat-cell orange"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-
-                    <div class="heat-cell red"></div>
-                    <div class="heat-cell red"></div>
-                    <div class="heat-cell orange"></div>
-                    <div class="heat-cell orange"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell yellow"></div>
-                    <div class="heat-cell green"></div>
-                    <div class="heat-cell green"></div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-</header>
-
-
-<!-- PROBLEM -->
-
-<section class="problem" id="problem">
-
-    <div class="container">
-
-        <div class="section-header">
-            <div class="section-label">The Problem</div>
-
-            <h2>
-                Academic risk often develops gradually.
-            </h2>
-
-            <p>
-                A single examination result may show the outcome, but it may
-                not show when the underlying academic pattern started changing.
-            </p>
-        </div>
-
-
-        <div class="problem-grid">
-
-            <div class="problem-text">
-
-                <h3>
-                    Turning scattered signals into an understandable story.
-                </h3>
-
-                <p>
-                    Teachers may observe changes across attendance, assessments,
-                    assignments, and engagement at different points in time.
-                </p>
-
-                <p>
-                    This prototype brings those signals together into one
-                    explainable early-warning workflow.
-                </p>
-
-            </div>
-
-
-            <div class="signal-list">
-
-                <div class="signal">
-                    <span>01</span>
-                    Attendance trend
-                </div>
-
-                <div class="signal">
-                    <span>02</span>
-                    Quiz performance trend
-                </div>
-
-                <div class="signal">
-                    <span>03</span>
-                    Assignment gaps
-                </div>
-
-                <div class="signal">
-                    <span>04</span>
-                    Historical risk trajectory
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- WORKFLOW -->
-
-<section id="workflow">
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <div class="section-label">Core Workflow</div>
-
-            <h2>
-                From detection to support.
-            </h2>
-
-            <p>
-                The system connects four stages into one teacher-facing workflow.
-            </p>
-
-        </div>
-
-
-        <div class="workflow">
-
-            <div class="workflow-card">
-
-                <div class="workflow-number">01</div>
-
-                <h3>DETECT</h3>
-
-                <p>
-                    Analyze weekly academic signals and identify students
-                    showing emerging risk patterns.
-                </p>
-
-            </div>
-
-
-            <div class="workflow-card">
-
-                <div class="workflow-number">02</div>
-
-                <h3>EXPLAIN</h3>
-
-                <p>
-                    Show the main factors and trends contributing to the
-                    student's current risk level.
-                </p>
-
-            </div>
-
-
-            <div class="workflow-card">
-
-                <div class="workflow-number">03</div>
-
-                <h3>INTERVENE</h3>
-
-                <p>
-                    Generate a structured support plan and parent communication
-                    for teacher-led action.
-                </p>
-
-            </div>
-
-
-            <div class="workflow-card">
-
-                <div class="workflow-number">04</div>
-
-                <h3>TRACK</h3>
-
-                <p>
-                    Follow the student's risk trajectory and demonstrate
-                    changes over time.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- FIVE SCREENS -->
-
-<section class="screens">
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <div class="section-label">Application Flow</div>
-
-            <h2>
-                Five screens. One connected workflow.
-            </h2>
-
-            <p>
-                The application is intentionally focused on the complete
-                journey from teacher entry to student progress tracking.
-            </p>
-
-        </div>
-
-
-        <div class="screen-grid">
-
-            <div class="screen-card">
-                <div class="screen-number">SCREEN 01</div>
-                <h3>Login</h3>
-                <p>
-                    Simple teacher and student demo entry without
-                    authentication complexity.
-                </p>
-            </div>
-
-
-            <div class="screen-card">
-                <div class="screen-number">SCREEN 02</div>
-                <h3>Teacher Dashboard</h3>
-                <p>
-                    Class overview, risk heatmap, summary indicators,
-                    and students needing support.
-                </p>
-            </div>
-
-
-            <div class="screen-card">
-                <div class="screen-number">SCREEN 03</div>
-                <h3>Student Profile</h3>
-                <p>
-                    Risk score, contributing factors, trend charts,
-                    explanation, and time travel analysis.
-                </p>
-            </div>
-
-
-            <div class="screen-card">
-                <div class="screen-number">SCREEN 04</div>
-                <h3>Intervention</h3>
-                <p>
-                    Personalized support plan, Telugu parent communication,
-                    and teacher action checklist.
-                </p>
-            </div>
-
-
-            <div class="screen-card">
-                <div class="screen-number">SCREEN 05</div>
-                <h3>Track</h3>
-                <p>
-                    Monitor the student's risk trajectory and demonstrate
-                    synthetic recovery scenarios.
-                </p>
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- FEATURES -->
-
-<section id="features">
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <div class="section-label">Capabilities</div>
-
-            <h2>
-                Built around explainability and action.
-            </h2>
-
-            <p>
-                The prototype focuses on features that help teachers understand
-                what changed and what can be done next.
-            </p>
-
-        </div>
-
-
-        <div class="features">
-
-            <div class="feature">
-                <h3>Early Risk Detection</h3>
-                <p>
-                    Identifies emerging academic risk from multiple weekly
-                    signals rather than relying on one result.
-                </p>
-            </div>
-
-
-            <div class="feature">
-                <h3>Risk Heatmap</h3>
-                <p>
-                    Provides a class-level view of changing risk across
-                    eight weeks.
-                </p>
-            </div>
-
-
-            <div class="feature">
-                <h3>Explainable Risk Factors</h3>
-                <p>
-                    Shows the major signals contributing to the current
-                    risk score.
-                </p>
-            </div>
-
-
-            <div class="feature">
-                <h3>Time Travel</h3>
-                <p>
-                    Replays the student's academic history week by week
-                    to identify when risk emerged.
-                </p>
-            </div>
-
-
-            <div class="feature">
-                <h3>Support Plan</h3>
-                <p>
-                    Converts detected signals into a structured teacher-led
-                    intervention workflow.
-                </p>
-            </div>
-
-
-            <div class="feature">
-                <h3>Recovery Tracking</h3>
-                <p>
-                    Demonstrates how risk status can be monitored after
-                    support using synthetic scenarios.
-                </p>
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- EXPLAINABILITY -->
-
-<section class="explain-section">
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <div class="section-label">
-                Explainable Risk
-            </div>
-
-            <h2>
-                A score is useful only when the reason is understandable.
-            </h2>
-
-            <p>
-                The system connects the risk score with observable academic
-                signals so teachers can review the underlying pattern.
-            </p>
-
-        </div>
-
-
-        <div class="explain-grid">
-
-            <div class="explain-card">
-
-                <h3>
-                    Example Risk Profile
-                </h3>
-
-                <p>
-                    A student may be flagged because recent attendance has
-                    declined, quiz performance is trending downward, and
-                    assignments have been missed.
-                </p>
-
-
-                <div class="factor">
-
-                    <div class="factor-header">
-                        <span>Attendance trend</span>
-                        <span>35%</span>
-                    </div>
-
-                    <div class="bar">
-                        <div class="bar-fill" style="width: 78%;"></div>
-                    </div>
-
-                </div>
-
-
-                <div class="factor">
-
-                    <div class="factor-header">
-                        <span>Quiz trend</span>
-                        <span>30%</span>
-                    </div>
-
-                    <div class="bar">
-                        <div class="bar-fill" style="width: 66%;"></div>
-                    </div>
-
-                </div>
-
-
-                <div class="factor">
-
-                    <div class="factor-header">
-                        <span>Assignment gap</span>
-                        <span>20%</span>
-                    </div>
-
-                    <div class="bar">
-                        <div class="bar-fill" style="width: 51%;"></div>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="explain-card">
-
-                <h3>
-                    Plain-Language Explanation
-                </h3>
-
-                <p>
-                    “Attendance has declined during recent weeks and quiz
-                    performance is also showing a downward trend. The recent
-                    assignment gap is contributing additional risk.”
-                </p>
-
-                <br>
-
-                <p>
-                    The teacher can then review the student's context before
-                    deciding whether additional academic support is appropriate.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- TIME TRAVEL -->
-
-<section>
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <div class="section-label">
-                Time Travel Analysis
-            </div>
-
-            <h2>
-                Find the moment when the pattern changed.
-            </h2>
-
-            <p>
-                Move through eight weeks of synthetic student data and
-                observe how the risk trajectory evolves.
-            </p>
-
-        </div>
-
-
-        <div class="time-travel-box">
-
-            <div>
-
-                <h3>
-                    Week-by-week replay
-                </h3>
-
-                <p style="color:#687488; margin-top:10px;">
-                    The selected week updates the student's risk context,
-                    academic signals, and historical state.
-                </p>
-
-
-                <div class="timeline">
-
-                    <div class="timeline-dot">1</div>
-                    <div class="timeline-line"></div>
-
-                    <div class="timeline-dot">2</div>
-                    <div class="timeline-line"></div>
-
-                    <div class="timeline-dot">3</div>
-                    <div class="timeline-line"></div>
-
-                    <div class="timeline-dot active">4</div>
-                    <div class="timeline-line"></div>
-
-                    <div class="timeline-dot">5</div>
-                    <div class="timeline-line"></div>
-
-                    <div class="timeline-dot">6</div>
-                    <div class="timeline-line"></div>
-
-                    <div class="timeline-dot">7</div>
-                    <div class="timeline-line"></div>
-
-                    <div class="timeline-dot">8</div>
-
-                </div>
-
-                <p style="margin-top:15px; color:#315bea; font-weight:800;">
-                    Week 4 — Flagged
-                </p>
-
-            </div>
-
-
-            <div class="chart">
-
-                <div class="flag-label">
-                    Risk begins increasing
-                </div>
-
-                <div class="chart-line"></div>
-
-                <div class="chart-marker"></div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- INTERVENTION -->
-
-<section class="intervention">
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <div class="section-label">
-                Intervention
-            </div>
-
-            <h2>
-                Detection should lead to an actionable next step.
-            </h2>
-
-            <p>
-                The intervention screen connects risk information with
-                practical teacher-led support.
-            </p>
-
-        </div>
-
-
-        <div class="intervention-grid">
-
-            <div class="intervention-card">
-
-                <h3>
-                    Revision Plan
-                </h3>
-
-                <p>
-                    Generate a focused academic support plan based on the
-                    student's observed risk factors.
-                </p>
-
-                <ul class="check-list">
-                    <li>Review recent weak areas</li>
-                    <li>Assign targeted revision</li>
-                    <li>Monitor the next assessment</li>
-                </ul>
-
-            </div>
-
-
-            <div class="intervention-card">
-
-                <h3>
-                    Telugu Parent Communication
-                </h3>
-
-                <p>
-                    Provide a clear Telugu communication script that teachers
-                    can review before speaking with parents.
-                </p>
-
-                <ul class="check-list">
-                    <li>Explain the observed change</li>
-                    <li>Suggest supportive action</li>
-                    <li>Encourage collaboration</li>
-                </ul>
-
-            </div>
-
-
-            <div class="intervention-card">
-
-                <h3>
-                    Teacher Checklist
-                </h3>
-
-                <p>
-                    Keep intervention actions visible and track completion
-                    inside the prototype.
-                </p>
-
-                <ul class="check-list">
-                    <li>Talk to student</li>
-                    <li>Call parent</li>
-                    <li>Assign revision plan</li>
-                    <li>Mark action done</li>
-                </ul>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- TRACK -->
-
-<section>
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <div class="section-label">
-                Recovery Tracking
-            </div>
-
-            <h2>
-                Monitor the trajectory, not just the current score.
-            </h2>
-
-            <p>
-                The prototype demonstrates how a student's risk status could
-                be followed over subsequent weeks.
-            </p>
-
-        </div>
-
-
-        <div class="track-box">
-
-            <div>
-
-                <h3>
-                    Synthetic Recovery Example
-                </h3>
-
-                <p style="color:#687488; margin-top:8px;">
-                    Demonstration data only. The change is not presented
-                    as proof of intervention causality.
-                </p>
-
-            </div>
-
-
-            <div class="track-score">
-
-                <div class="score">72</div>
-
-                <div class="arrow">→</div>
-
-                <div class="score">54</div>
-
-                <div>
-                    <div class="recovering">
-                        Recovering
-                    </div>
-                    <small style="color:#687488;">
-                        Synthetic demonstration
-                    </small>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- TECHNOLOGY -->
-
-<section class="tech">
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <div class="section-label">
-                Technology
-            </div>
-
-            <h2>
-                Lightweight and explainable architecture.
-            </h2>
-
-            <p>
-                The prototype uses a simple technology stack suitable for
-                rapid experimentation and demonstration.
-            </p>
-
-        </div>
-
-
-        <div class="tech-grid">
-
-            <div class="tech-card">
-                Python
-                <span>Application logic</span>
-            </div>
-
-            <div class="tech-card">
-                Streamlit
-                <span>Interactive application</span>
-            </div>
-
-            <div class="tech-card">
-                Pandas
-                <span>Data processing</span>
-            </div>
-
-            <div class="tech-card">
-                NumPy
-                <span>Numerical operations</span>
-            </div>
-
-            <div class="tech-card">
-                Plotly
-                <span>Data visualization</span>
-            </div>
-
-            <div class="tech-card">
-                Rule-Based Risk Engine
-                <span>Explainable scoring</span>
-            </div>
-
-            <div class="tech-card">
-                Synthetic Dataset
-                <span>Prototype data</span>
-            </div>
-
-            <div class="tech-card">
-                Streamlit Cloud
-                <span>Deployment</span>
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- RESPONSIBLE AI -->
-
-<section class="responsible" id="responsible">
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <div class="section-label">
-                Responsible AI
-            </div>
-
-            <h2>
-                Built for support, not automatic judgment.
-            </h2>
-
-            <p>
-                The prototype keeps teachers in the decision loop and clearly
-                separates demonstration data from real student records.
-            </p>
-
-        </div>
-
-
-        <div class="responsible-grid">
-
-            <div class="responsible-card">
-
-                <h3>
-                    Human Oversight
-                </h3>
-
-                <p>
-                    Risk information is intended to support teacher review,
-                    not replace professional judgment.
-                </p>
-
-            </div>
-
-
-            <div class="responsible-card">
-
-                <h3>
-                    Explainability
-                </h3>
-
-                <p>
-                    The prototype shows contributing signals alongside the
-                    risk score instead of presenting a prediction alone.
-                </p>
-
-            </div>
-
-
-            <div class="responsible-card">
-
-                <h3>
-                    Synthetic Data
-                </h3>
-
-                <p>
-                    The demonstration uses synthetic student records and does
-                    not require real student personal information.
-                </p>
-
-            </div>
-
-
-            <div class="responsible-card">
-
-                <h3>
-                    Support-Oriented Language
-                </h3>
-
-                <p>
-                    The interface uses “Needs Support” rather than stigmatizing
-                    students with failure labels.
-                </p>
-
-            </div>
-
-
-            <div class="responsible-card">
-
-                <h3>
-                    No High-Stakes Automation
-                </h3>
-
-                <p>
-                    The prototype does not make final academic decisions
-                    automatically.
-                </p>
-
-            </div>
-
-
-            <div class="responsible-card">
-
-                <h3>
-                    Prototype Transparency
-                </h3>
-
-                <p>
-                    Synthetic recovery examples and prototype voice features
-                    are clearly identified as demonstrations.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- CTA -->
-
-<section class="cta">
-
-    <div class="container">
-
-        <h2>
-            From academic signals to meaningful support.
-        </h2>
-
-        <p>
-            Explore the complete prototype and see how detection,
-            explanation, intervention, and tracking work together.
-        </p>
-
-        <div class="hero-buttons" style="justify-content:center;">
+            <a href="#technology">Technology</a>
 
             <a
                 href="https://ai-academic-risk-detection.streamlit.app/"
                 target="_blank"
-                class="primary-btn"
+                class="nav-button"
             >
-                Launch Live Demo
+                Open App
+            </a>
+        </div>
+
+    </div>
+</nav>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<header class="hero" id="top">
+
+    <div class="hero-container">
+
+        <div>
+
+            <div class="badge">
+                HORIZON 2026 · AI WITH EDUCATION
+            </div>
+
+            <h1>
+                Detect Academic Risk
+                <span>Before It Becomes a Bigger Problem.</span>
+            </h1>
+
+            <p class="hero-text">
+                An AI-assisted academic support platform that combines
+                attendance, assessment performance and assignment signals
+                to help educators identify emerging support needs,
+                understand the contributing factors and coordinate
+                targeted interventions.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a
+                    href="https://ai-academic-risk-detection.streamlit.app/"
+                    target="_blank"
+                    class="primary-button"
+                >
+                    Launch Live App
+                </a>
+
+                <a
+                    href="https://github.com/guruvemula61-cmyk/ai-academic-risk-detection"
+                    target="_blank"
+                    class="secondary-button"
+                >
+                    View GitHub
+                </a>
+
+            </div>
+
+            <div class="hero-note">
+                Synthetic demonstration data · Human oversight required
+            </div>
+
+        </div>
+
+
+        <!-- Dashboard visual -->
+
+        <div class="dashboard-window">
+
+            <div class="window-top">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <div class="dashboard-content">
+
+                <div class="dash-title">
+                    Teacher Dashboard
+                </div>
+
+                <div class="mini-grid">
+
+                    <div class="mini-card">
+                        <div class="mini-label">
+                            STUDENTS
+                        </div>
+                        <div class="mini-value">
+                            60
+                        </div>
+                    </div>
+
+                    <div class="mini-card">
+                        <div class="mini-label">
+                            NEED SUPPORT
+                        </div>
+                        <div class="mini-value">
+                            12
+                        </div>
+                    </div>
+
+                    <div class="mini-card">
+                        <div class="mini-label">
+                            ATTENDANCE
+                        </div>
+                        <div class="mini-value">
+                            82%
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="chart-box">
+
+                    <div class="mini-label">
+                        ACADEMIC TREND
+                    </div>
+
+                    <div class="chart-lines">
+                        <div class="line-one"></div>
+                        <div class="line-two"></div>
+                    </div>
+
+                </div>
+
+                <div class="chart-box">
+
+                    <div class="mini-label">
+                        STUDENTS REQUIRING ATTENTION
+                    </div>
+
+                    <div class="risk-row">
+                        <span>Aarav Kumar</span>
+                        <span class="risk-pill">Needs Support</span>
+                    </div>
+
+                    <div class="risk-row">
+                        <span>Rahul Verma</span>
+                        <span class="risk-pill">Needs Support</span>
+                    </div>
+
+                    <div class="risk-row">
+                        <span>Diya Sharma</span>
+                        <span style="color:#047857;font-weight:700;">
+                            Recovering
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================
+     PROBLEM
+========================= -->
+
+<section class="problem" id="problem">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            The Problem
+        </div>
+
+        <h2 class="section-title">
+            Academic difficulty rarely appears as a single signal.
+        </h2>
+
+        <p class="section-description">
+            Attendance, assessment performance and assignment completion
+            can change at different times. A support system needs to bring
+            these indicators together so educators can review the emerging
+            pattern and respond appropriately.
+        </p>
+
+        <div class="problem-grid">
+
+            <div class="problem-list">
+
+                <div class="problem-item">
+                    <strong>Attendance Decline</strong>
+                    <span>
+                        A student's attendance may gradually fall before
+                        academic performance visibly changes.
+                    </span>
+                </div>
+
+                <div class="problem-item">
+                    <strong>Assessment Decline</strong>
+                    <span>
+                        Falling quiz or assessment performance can indicate
+                        that additional academic support may be useful.
+                    </span>
+                </div>
+
+                <div class="problem-item">
+                    <strong>Missed Assignments</strong>
+                    <span>
+                        Repeatedly incomplete work provides another signal
+                        for teacher review.
+                    </span>
+                </div>
+
+                <div class="problem-item">
+                    <strong>Delayed Intervention</strong>
+                    <span>
+                        When signals are reviewed separately, emerging
+                        support needs may be harder to identify.
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="problem-visual">
+
+                <h3>
+                    Multiple signals.
+                    One support view.
+                </h3>
+
+                <div class="signal">
+                    Attendance trend
+                </div>
+
+                <div class="signal">
+                    Assessment trend
+                </div>
+
+                <div class="signal">
+                    Assignment completion
+                </div>
+
+                <div class="signal">
+                    Subject performance
+                </div>
+
+                <div class="signal">
+                    Academic support recommendation
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     WORKFLOW
+========================= -->
+
+<section class="workflow" id="workflow">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            Product Workflow
+        </div>
+
+        <h2 class="section-title">
+            From detection to continuous support.
+        </h2>
+
+        <p class="section-description">
+            The platform connects early-warning signals with explanations,
+            learning support, communication and progress tracking.
+        </p>
+
+        <div class="workflow-grid">
+
+            <div class="workflow-card">
+                <div class="workflow-number">01 · DETECT</div>
+                <h3>Identify Signals</h3>
+                <p>
+                    Combine attendance, assessment trends and missing
+                    assignments into an interpretable academic support signal.
+                </p>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-number">02 · EXPLAIN</div>
+                <h3>Understand Why</h3>
+                <p>
+                    Show the factors contributing to the student's current
+                    support signal instead of presenting only a number.
+                </p>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-number">03 · LEARN</div>
+                <h3>Explain Again</h3>
+                <p>
+                    Provide simple explanations, examples and practice
+                    around an identified weak subject.
+                </p>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-number">04 · SUPPORT</div>
+                <h3>Targeted Intervention</h3>
+                <p>
+                    Create a focused revision plan and recommend additional
+                    academic support.
+                </p>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-number">05 · COMMUNICATE</div>
+                <h3>Connect Parents</h3>
+                <p>
+                    Generate a structured teacher-to-parent academic update
+                    for the student's support needs.
+                </p>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-number">06 · TRACK</div>
+                <h3>Monitor Progress</h3>
+                <p>
+                    Review academic indicators across multiple weeks and
+                    observe changing support signals.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ROLES
+========================= -->
+
+<section class="roles" id="roles">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            Role-Based Platform
+        </div>
+
+        <h2 class="section-title">
+            One academic support system. Three connected views.
+        </h2>
+
+        <p class="section-description">
+            Teachers identify and support. Students learn and practice.
+            Parents monitor progress and receive updates.
+        </p>
+
+        <div class="role-grid">
+
+            <div class="role-card">
+
+                <div class="role-number">
+                    ROLE 01
+                </div>
+
+                <h3>Teacher</h3>
+
+                <p>
+                    A complete overview for identifying students who may
+                    require additional academic support.
+                </p>
+
+                <ul>
+                    <li>Class Dashboard</li>
+                    <li>Student Profiles</li>
+                    <li>Risk Factor Analysis</li>
+                    <li>Time Travel</li>
+                    <li>Intervention Center</li>
+                    <li>Parent Updates</li>
+                    <li>Progress Tracking</li>
+                </ul>
+
+            </div>
+
+
+            <div class="role-card">
+
+                <div class="role-number">
+                    ROLE 02
+                </div>
+
+                <h3>Student</h3>
+
+                <p>
+                    A learner-focused dashboard designed around academic
+                    improvement and targeted practice.
+                </p>
+
+                <ul>
+                    <li>Marks Overview</li>
+                    <li>Attendance</li>
+                    <li>Weak Subjects</li>
+                    <li>Explain Again</li>
+                    <li>Practice Questions</li>
+                    <li>Special Classes</li>
+                </ul>
+
+            </div>
+
+
+            <div class="role-card">
+
+                <div class="role-number">
+                    ROLE 03
+                </div>
+
+                <h3>Parent</h3>
+
+                <p>
+                    A simplified view of the child's academic performance,
+                    attendance and teacher recommendations.
+                </p>
+
+                <ul>
+                    <li>Child Performance</li>
+                    <li>Attendance</li>
+                    <li>Subject-wise Marks</li>
+                    <li>Teacher Update</li>
+                    <li>Special Classes</li>
+                    <li>Progress Trends</li>
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FEATURES
+========================= -->
+
+<section class="features" id="features">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            Core Features
+        </div>
+
+        <h2 class="section-title">
+            Built around the decisions teachers actually need to make.
+        </h2>
+
+        <div class="feature-grid">
+
+            <div class="feature">
+                <h3>Explainable Risk Signals</h3>
+                <p>
+                    Understand the factors behind the academic support signal
+                    instead of relying on a black-box score.
+                </p>
+            </div>
+
+            <div class="feature">
+                <h3>Subject-Level Analysis</h3>
+                <p>
+                    Identify weak subjects using subject-wise marks and
+                    attendance indicators.
+                </p>
+            </div>
+
+            <div class="feature">
+                <h3>Time Travel</h3>
+                <p>
+                    Replay weekly academic data to understand how a student's
+                    indicators changed over time.
+                </p>
+            </div>
+
+            <div class="feature">
+                <h3>Explain Again</h3>
+                <p>
+                    Turn an identified weak area into a simple learning
+                    explanation and practice opportunity.
+                </p>
+            </div>
+
+            <div class="feature">
+                <h3>Parent Communication</h3>
+                <p>
+                    Generate a structured academic update that teachers can
+                    review before communicating with parents.
+                </p>
+            </div>
+
+            <div class="feature">
+                <h3>Special Classes</h3>
+                <p>
+                    Recommend focused online support sessions for identified
+                    learning needs.
+                </p>
+            </div>
+
+            <div class="feature">
+                <h3>Daily Attendance</h3>
+                <p>
+                    Review attendance at both overall and daily levels.
+                </p>
+            </div>
+
+            <div class="feature">
+                <h3>Progress Tracking</h3>
+                <p>
+                    Follow changing academic indicators across multiple
+                    weeks using visual trends.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     EXPLAINABLE AI
+========================= -->
+
+<section class="explain">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            Explainable Support
+        </div>
+
+        <h2 class="section-title">
+            Don't just show the signal. Show the evidence.
+        </h2>
+
+        <p class="section-description">
+            The prototype uses transparent weighted indicators so educators
+            can inspect the underlying factors before deciding on support.
+        </p>
+
+        <div class="explain-box">
+
+            <div class="explain-card">
+
+                <h3>
+                    Example Student
+                </h3>
+
+                <div class="reason">
+                    Attendance is declining across recent weeks.
+                </div>
+
+                <div class="reason">
+                    Assessment performance is trending downward.
+                </div>
+
+                <div class="reason">
+                    Recent assessment performance is below the expected level.
+                </div>
+
+                <div class="reason">
+                    Recent assignments require additional review.
+                </div>
+
+            </div>
+
+
+            <div class="explain-card">
+
+                <h3>
+                    What the Teacher Can Do
+                </h3>
+
+                <div class="reason">
+                    Review the student profile.
+                </div>
+
+                <div class="reason">
+                    Identify the weak subject.
+                </div>
+
+                <div class="reason">
+                    Create a targeted support plan.
+                </div>
+
+                <div class="reason">
+                    Communicate the support recommendation.
+                </div>
+
+                <div class="reason">
+                    Track indicators over time.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     INTERVENTION
+========================= -->
+
+<section class="intervention">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            Intervention
+        </div>
+
+        <h2 class="section-title">
+            Turn an academic signal into an action plan.
+        </h2>
+
+        <p class="section-description">
+            The intervention workflow moves beyond detection by connecting
+            the identified learning need with practical academic support.
+        </p>
+
+        <div class="intervention-grid">
+
+            <div class="support-flow">
+
+                <div class="support-step">
+                    <strong>01 · Identify Weak Subject</strong>
+                    <span>
+                        Review subject-level performance and attendance.
+                    </span>
+                </div>
+
+                <div class="support-step">
+                    <strong>02 · Explain Again</strong>
+                    <span>
+                        Present the concept in a simpler learning format.
+                    </span>
+                </div>
+
+                <div class="support-step">
+                    <strong>03 · Practice</strong>
+                    <span>
+                        Provide targeted practice questions.
+                    </span>
+                </div>
+
+                <div class="support-step">
+                    <strong>04 · Revision Plan</strong>
+                    <span>
+                        Set a focused daily revision recommendation.
+                    </span>
+                </div>
+
+                <div class="support-step">
+                    <strong>05 · Special Class</strong>
+                    <span>
+                        Recommend additional support when appropriate.
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="class-card">
+
+                <h3>
+                    Recommended Special Class
+                </h3>
+
+                <div class="class-row">
+                    <strong>Mathematics</strong><br>
+                    Concept Revision · Online · Recommended
+                </div>
+
+                <div class="class-row">
+                    <strong>Science</strong><br>
+                    Chapter Support · Online · Available
+                </div>
+
+                <div class="class-row">
+                    <strong>English</strong><br>
+                    Practice Session · Online · Available
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     PARENT COMMUNICATION
+========================= -->
+
+<section class="parent">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            Parent Communication
+        </div>
+
+        <h2 class="section-title">
+            Keep parents connected to the support process.
+        </h2>
+
+        <p class="section-description">
+            Teachers can review and generate a structured academic update
+            based on the student's current indicators and recommended support.
+        </p>
+
+        <div class="parent-message">
+
+            <div class="message-label">
+                Example Teacher Update
+            </div>
+
+            <div class="message-text">
+                Hello Parent, the student may benefit from additional support
+                in Mathematics. Current attendance and recent assessment
+                performance are shown in the academic overview. Regular
+                revision and participation in the recommended support class
+                may help address the identified learning need.
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     TRACK
+========================= -->
+
+<section class="track">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            Track
+        </div>
+
+        <h2 class="section-title">
+            Support should be measurable over time.
+        </h2>
+
+        <p class="section-description">
+            The platform provides a longitudinal view of academic indicators
+            so educators can review whether the student's trajectory is changing.
+        </p>
+
+        <div class="track-grid">
+
+            <div class="track-card">
+                <span>Attendance</span>
+                <strong>
+                    71%
+                    <span class="arrow">→</span>
+                    82%
+                </strong>
+            </div>
+
+            <div class="track-card">
+                <span>Assessment</span>
+                <strong>
+                    54%
+                    <span class="arrow">→</span>
+                    68%
+                </strong>
+            </div>
+
+            <div class="track-card">
+                <span>Support Signal</span>
+                <strong>
+                    72
+                    <span class="arrow">→</span>
+                    54
+                </strong>
+            </div>
+
+            <div class="track-card">
+                <span>Current Status</span>
+                <strong>
+                    Recovering
+                </strong>
+            </div>
+
+        </div>
+
+        <p class="hero-note" style="margin-top:22px;">
+            Demonstration values shown above are synthetic and do not establish
+            that an intervention caused the observed changes.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     TECHNOLOGY
+========================= -->
+
+<section class="technology" id="technology">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            Technology
+        </div>
+
+        <h2 class="section-title">
+            Lightweight technology. Transparent logic.
+        </h2>
+
+        <p class="section-description">
+            The prototype focuses on a practical architecture that can be
+            demonstrated clearly and extended in future development.
+        </p>
+
+        <div class="tech-grid">
+
+            <div class="tech">Python</div>
+            <div class="tech">Streamlit</div>
+            <div class="tech">Pandas</div>
+            <div class="tech">NumPy</div>
+            <div class="tech">Plotly</div>
+            <div class="tech">Rule-Based Risk Engine</div>
+            <div class="tech">Synthetic Dataset</div>
+            <div class="tech">Streamlit Community Cloud</div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     RESPONSIBLE AI
+========================= -->
+
+<section class="responsible">
+
+    <div class="section-container">
+
+        <div class="section-tag">
+            Responsible AI
+        </div>
+
+        <h2 class="section-title">
+            Designed to support educators, not replace their judgment.
+        </h2>
+
+        <div class="responsible-grid">
+
+            <div class="responsible-card">
+                <h3>Human Oversight</h3>
+                <p>
+                    Risk signals are intended to support teacher review,
+                    not make high-stakes decisions automatically.
+                </p>
+            </div>
+
+            <div class="responsible-card">
+                <h3>Synthetic Data</h3>
+                <p>
+                    The hackathon prototype uses generated demonstration
+                    data rather than real student records.
+                </p>
+            </div>
+
+            <div class="responsible-card">
+                <h3>Privacy by Design</h3>
+                <p>
+                    Real deployment would require appropriate privacy,
+                    security and institutional safeguards.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     CTA
+========================= -->
+
+<section class="cta">
+
+    <div class="cta-container">
+
+        <h2>
+            Identify early. Understand clearly. Support personally.
+        </h2>
+
+        <p>
+            Explore the working prototype and see the complete academic
+            support workflow.
+        </p>
+
+        <div class="cta-buttons">
+
+            <a
+                href="https://ai-academic-risk-detection.streamlit.app/"
+                target="_blank"
+                class="primary-button"
+            >
+                Launch Application
             </a>
 
             <a
                 href="https://github.com/guruvemula61-cmyk/ai-academic-risk-detection"
                 target="_blank"
-                class="secondary-btn"
+                class="secondary-button"
             >
-                View GitHub
+                Explore Source Code
             </a>
 
         </div>
@@ -1919,27 +1853,15 @@
 </section>
 
 
-<!-- FOOTER -->
+<!-- =========================
+     FOOTER
+========================= -->
 
 <footer>
 
-    <div class="container footer-inner">
-
-        <div>
-            <div class="footer-title">
-                AI-Based Early Detection of Students at Academic Risk
-            </div>
-
-            <div style="margin-top:5px;">
-                Explainable early-warning and intervention prototype.
-            </div>
-        </div>
-
-        <div>
-            DETECT → EXPLAIN → INTERVENE → TRACK
-        </div>
-
-    </div>
+    AI-Based Early Detection of Students at Academic Risk
+    <br>
+    Horizon 2026 · AI with Education · Hackathon Prototype
 
 </footer>
 
