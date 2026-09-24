@@ -1,1462 +1,1917 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LogisticRegression
-import plotly.express as px
+import plotly.graph_objects as go
 
-# =========================================================
-# PAGE CONFIG
-# =========================================================
+
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
 
 st.set_page_config(
-    page_title="AI Academic Risk Detection",
-    layout="wide"
+    page_title="AI-Based Early Detection of Students at Academic Risk",
+    layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
-# =========================================================
-# STYLE
-# =========================================================
 
-st.markdown("""
-<style>
+# ============================================================
+# CUSTOM CSS
+# ============================================================
 
-.main-title {
-    font-size: 38px;
-    font-weight: 800;
-    margin-bottom: 5px;
-}
+st.markdown(
+    """
+    <style>
+    @import url(
+        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'
+    );
 
-.subtitle {
-    font-size: 17px;
-    color: #64748b;
-    margin-bottom: 25px;
-}
+    html, body, [class*="css"] {
+        font-family: Inter, sans-serif;
+    }
 
-.risk-card {
-    padding: 20px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    margin: 10px 0;
-}
+    .stApp {
+        background: #f5f7fb;
+        color: #172033;
+    }
 
-.insight-card {
-    padding: 18px;
-    border-radius: 14px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-}
+    .block-container {
+        max-width: 1450px;
+        padding-top: 1.2rem;
+        padding-bottom: 2rem;
+    }
 
-.small-text {
-    color: #64748b;
-    font-size: 13px;
-}
+    .topbar {
+        background: #101828;
+        color: white;
+        padding: 18px 24px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+    }
 
-</style>
-""", unsafe_allow_html=True)
+    .brand {
+        font-size: 21px;
+        font-weight: 800;
+    }
+
+    .top-subtitle {
+        color: #98a2b3;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .card {
+        background: white;
+        border: 1px solid #e4e7ec;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(16, 24, 40, 0.04);
+        margin-bottom: 14px;
+    }
+
+    .metric-label {
+        color: #667085;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .metric-value {
+        font-size: 31px;
+        font-weight: 800;
+        margin-top: 4px;
+    }
+
+    .section-title {
+        font-size: 21px;
+        font-weight: 800;
+        margin: 25px 0 12px;
+    }
+
+    .reason {
+        color: #475467;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .small-note {
+        color: #667085;
+        font-size: 12px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .badge-red {
+        background: #fee4e2;
+        color: #b42318;
+    }
+
+    .badge-orange {
+        background: #fff0d6;
+        color: #b54708;
+    }
+
+    .badge-yellow {
+        background: #fff7cc;
+        color: #8a6116;
+    }
+
+    .badge-green {
+        background: #dcfae6;
+        color: #067647;
+    }
+
+    .factor {
+        margin: 15px 0;
+    }
+
+    .factor-top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .bar {
+        height: 9px;
+        background: #eaecf0;
+        border-radius: 99px;
+        margin-top: 7px;
+        overflow: hidden;
+    }
+
+    .fill-red {
+        height: 100%;
+        background: #d92d20;
+    }
+
+    .fill-orange {
+        height: 100%;
+        background: #f79009;
+    }
+
+    .fill-blue {
+        height: 100%;
+        background: #3b82f6;
+    }
+
+    .login-wrap {
+        max-width: 760px;
+        margin: 9vh auto;
+        text-align: center;
+    }
+
+    .login-title {
+        font-size: 43px;
+        line-height: 1.1;
+        font-weight: 800;
+        color: #101828;
+        margin-top: 15px;
+    }
+
+    .login-sub {
+        color: #667085;
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 15px auto 30px;
+        max-width: 650px;
+    }
+
+    .heatmap {
+        border-collapse: separate;
+        border-spacing: 4px;
+        width: 100%;
+    }
+
+    .heatmap th {
+        font-size: 11px;
+        color: #667085;
+        padding: 5px;
+    }
+
+    .heatmap td {
+        height: 28px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 9px;
+        color: #344054;
+    }
+
+    .h-green {
+        background: #b7ebc6;
+    }
+
+    .h-yellow {
+        background: #ffe58f;
+    }
+
+    .h-orange {
+        background: #ffbf69;
+    }
+
+    .h-red {
+        background: #f98b82;
+        color: white !important;
+    }
+
+    .info-strip {
+        background: #eef4ff;
+        border: 1px solid #c7d7fe;
+        color: #344054;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+
+    .demo-strip {
+        background: #f9fafb;
+        border: 1px solid #eaecf0;
+        color: #667085;
+        border-radius: 9px;
+        padding: 10px 13px;
+        font-size: 12px;
+        margin-top: 10px;
+    }
+
+    div.stButton > button {
+        border-radius: 9px;
+        font-weight: 700;
+        min-height: 44px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 
-# =========================================================
-# SYNTHETIC STUDENT DATA
-# =========================================================
+# ============================================================
+# SYNTHETIC CLASSROOM DATA
+# ============================================================
 
 @st.cache_data
-def create_student_data():
+def build_data():
+    rng = np.random.default_rng(2026)
 
-    rng = np.random.default_rng(42)
+    personas = (
+        ["Steady"] * 15
+        + ["Stable Middle"] * 22
+        + ["Gradual Decliner"] * 8
+        + ["Sudden Dropper"] * 5
+        + ["Chronic Absentee"] * 5
+        + ["Recovering"] * 3
+        + ["Fluctuating"] * 2
+    )
 
-    students = [
-        "Aarav", "Ananya", "Arjun", "Bhavya", "Charan",
-        "Deepika", "Esha", "Harsha", "Ishaan", "Kavya",
-        "Manoj", "Meera", "Nikhil", "Pooja", "Rahul",
-        "Sanjana", "Sathwik", "Sneha", "Tejas", "Varsha"
-    ]
+    records = []
 
-    data = []
+    for i, persona in enumerate(personas, 1):
 
-    for index, student in enumerate(students):
-
-        # Different synthetic learning patterns
-        pattern = index % 5
+        student = f"Student {i:02d}"
 
         for week in range(1, 9):
 
-            if pattern == 0:
-                # Stable learner
-                attendance_base = 94
-                quiz_base = 88
-                assignment_base = 94
-                engagement_base = 90
-                mastery_base = 88
+            if persona == "Steady":
 
-            elif pattern == 1:
-                # Academic difficulty
-                decline = (week - 1) * 1.6
-                attendance_base = 91
-                quiz_base = 84 - decline * 2
-                assignment_base = 90 - decline * 0.8
-                engagement_base = 87
-                mastery_base = 84 - decline * 2.3
+                attendance = 92 + rng.normal(0, 2)
+                quiz = 84 + rng.normal(0, 3)
+                assignment = 95 + rng.normal(0, 2)
+                lms = 90 + rng.normal(0, 3)
 
-            elif pattern == 2:
-                # Disengagement
-                decline = (week - 1) * 1.8
-                attendance_base = 94 - decline * 1.5
-                quiz_base = 86
-                assignment_base = 91
-                engagement_base = 90 - decline * 2.4
-                mastery_base = 86
+            elif persona == "Stable Middle":
 
-            elif pattern == 3:
-                # Sudden decline
-                if week < 6:
-                    attendance_base = 94
-                    quiz_base = 90
-                    assignment_base = 94
-                    engagement_base = 92
-                    mastery_base = 89
+                attendance = 80 + rng.normal(0, 4)
+                quiz = 69 + rng.normal(0, 5)
+                assignment = 80 + rng.normal(0, 5)
+                lms = 73 + rng.normal(0, 5)
+
+            elif persona == "Gradual Decliner":
+
+                decline = max(0, week - 2)
+
+                attendance = (
+                    88
+                    - decline * 7
+                    + rng.normal(0, 2)
+                )
+
+                quiz = (
+                    78
+                    - decline * 6
+                    + rng.normal(0, 3)
+                )
+
+                assignment = (
+                    90
+                    - decline * 7
+                    + rng.normal(0, 3)
+                )
+
+                lms = (
+                    84
+                    - decline * 6
+                    + rng.normal(0, 3)
+                )
+
+            elif persona == "Sudden Dropper":
+
+                if week <= 4:
+
+                    attendance = 92 + rng.normal(0, 2)
+                    quiz = 82 + rng.normal(0, 3)
+                    assignment = 94 + rng.normal(0, 2)
+                    lms = 88 + rng.normal(0, 3)
+
                 else:
-                    drop = (week - 5) * 7
-                    attendance_base = 94 - drop
-                    quiz_base = 90 - drop
-                    assignment_base = 94 - drop * 0.8
-                    engagement_base = 92 - drop
-                    mastery_base = 89 - drop * 0.7
+
+                    decline = week - 4
+
+                    attendance = (
+                        92
+                        - decline * 21
+                        + rng.normal(0, 2)
+                    )
+
+                    quiz = (
+                        82
+                        - decline * 9
+                        + rng.normal(0, 3)
+                    )
+
+                    assignment = (
+                        94
+                        - decline * 18
+                        + rng.normal(0, 2)
+                    )
+
+                    lms = (
+                        88
+                        - decline * 15
+                        + rng.normal(0, 3)
+                    )
+
+            elif persona == "Chronic Absentee":
+
+                attendance = 47 + rng.normal(0, 4)
+                quiz = 54 + rng.normal(0, 5)
+                assignment = 50 + rng.normal(0, 5)
+                lms = 44 + rng.normal(0, 5)
+
+            elif persona == "Recovering":
+
+                if week <= 3:
+
+                    attendance = (
+                        48
+                        + week * 2
+                        + rng.normal(0, 2)
+                    )
+
+                    quiz = (
+                        48
+                        + week * 2
+                        + rng.normal(0, 3)
+                    )
+
+                    assignment = (
+                        46
+                        + week * 3
+                        + rng.normal(0, 3)
+                    )
+
+                    lms = (
+                        45
+                        + week * 2
+                        + rng.normal(0, 3)
+                    )
+
+                else:
+
+                    recovery = week - 3
+
+                    attendance = (
+                        58
+                        + recovery * 7
+                        + rng.normal(0, 2)
+                    )
+
+                    quiz = (
+                        54
+                        + recovery * 7
+                        + rng.normal(0, 3)
+                    )
+
+                    assignment = (
+                        55
+                        + recovery * 7
+                        + rng.normal(0, 3)
+                    )
+
+                    lms = (
+                        52
+                        + recovery * 7
+                        + rng.normal(0, 3)
+                    )
 
             else:
-                # Chronic struggler
-                attendance_base = 76
-                quiz_base = 55
-                assignment_base = 61
-                engagement_base = 58
-                mastery_base = 52
 
-            attendance = np.clip(
-                attendance_base + rng.normal(0, 2.5),
-                35, 100
+                swing = [
+                    0,
+                    5,
+                    -4,
+                    7,
+                    -3,
+                    4,
+                    -2,
+                    3,
+                ][week - 1]
+
+                attendance = (
+                    71
+                    + swing
+                    + rng.normal(0, 3)
+                )
+
+                quiz = (
+                    62
+                    + swing
+                    + rng.normal(0, 4)
+                )
+
+                assignment = (
+                    70
+                    + swing
+                    + rng.normal(0, 4)
+                )
+
+                lms = (
+                    65
+                    + swing
+                    + rng.normal(0, 4)
+                )
+
+            assignment = float(
+                np.clip(
+                    assignment,
+                    0,
+                    100
+                )
             )
 
-            quiz_score = np.clip(
-                quiz_base + rng.normal(0, 4),
-                20, 100
+            records.append(
+                {
+                    "Student": student,
+                    "Persona": persona,
+                    "Week": week,
+                    "Attendance": float(
+                        np.clip(
+                            attendance,
+                            15,
+                            99
+                        )
+                    ),
+                    "Quiz": float(
+                        np.clip(
+                            quiz,
+                            10,
+                            99
+                        )
+                    ),
+                    "Assignment": assignment,
+                    "LMS": float(
+                        np.clip(
+                            lms,
+                            5,
+                            100
+                        )
+                    ),
+                    "Submitted": assignment >= 55,
+                }
             )
 
-            assignment_completion = np.clip(
-                assignment_base + rng.normal(0, 3),
-                20, 100
-            )
+    return pd.DataFrame(records)
 
-            engagement = np.clip(
-                engagement_base + rng.normal(0, 4),
-                15, 100
-            )
 
-            concept_mastery = np.clip(
-                mastery_base + rng.normal(0, 4),
-                15, 100
-            )
+df = build_data()
 
-            data.append([
-                student,
-                week,
-                round(attendance, 1),
-                round(quiz_score, 1),
-                round(assignment_completion, 1),
-                round(engagement, 1),
-                round(concept_mastery, 1)
-            ])
 
-    return pd.DataFrame(
-        data,
-        columns=[
-            "Student",
-            "Week",
-            "Attendance",
-            "Quiz Score",
-            "Assignment Completion",
-            "Engagement",
-            "Concept Mastery"
-        ]
+# ============================================================
+# RISK ENGINE
+# ============================================================
+
+def risk_score(history):
+
+    h = history.sort_values("Week").copy()
+
+    last_attendance = float(
+        h.iloc[-1]["Attendance"]
+    )
+
+    last_quiz = float(
+        h.iloc[-1]["Quiz"]
+    )
+
+    recent_attendance = h.tail(3)
+
+    recent_quiz = h.tail(4)
+
+    attendance_slope = np.polyfit(
+        recent_attendance["Week"],
+        recent_attendance["Attendance"],
+        1
+    )[0]
+
+    quiz_slope = np.polyfit(
+        recent_quiz["Week"],
+        recent_quiz["Quiz"],
+        1
+    )[0]
+
+    missing_streak = 0
+
+    for submitted in h["Submitted"].iloc[::-1]:
+
+        if not submitted:
+            missing_streak += 1
+        else:
+            break
+
+    attendance_level = np.clip(
+        (75 - last_attendance) / 75 * 100,
+        0,
+        100
+    )
+
+    attendance_trend = np.clip(
+        (-attendance_slope) * 8
+        + attendance_level * 0.35,
+        0,
+        100
+    )
+
+    quiz_trend = np.clip(
+        (-quiz_slope) * 8
+        + max(
+            0,
+            70 - last_quiz
+        ) * 1.25,
+        0,
+        100
+    )
+
+    assignment_gap = np.clip(
+        missing_streak / 3 * 100,
+        0,
+        100
+    )
+
+    overall_attendance = np.clip(
+        (70 - last_attendance) / 70 * 100,
+        0,
+        100
+    )
+
+    score = (
+        attendance_trend * 0.35
+        + quiz_trend * 0.30
+        + assignment_gap * 0.20
+        + overall_attendance * 0.15
+    )
+
+    return float(
+        np.clip(
+            score,
+            0,
+            100
+        )
     )
 
 
-df = create_student_data()
-
-
-# =========================================================
-# MACHINE LEARNING MODEL
-# =========================================================
-
-FEATURES = [
-    "Attendance",
-    "Quiz Score",
-    "Assignment Completion",
-    "Engagement",
-    "Concept Mastery"
-]
-
-
-@st.cache_resource
-def train_model():
-
-    rng = np.random.default_rng(10)
-
-    X = rng.uniform(
-        25,
-        100,
-        size=(2000, 5)
-    )
-
-    risk_signal = (
-        7
-        - 0.035 * X[:, 0]
-        - 0.045 * X[:, 1]
-        - 0.025 * X[:, 2]
-        - 0.020 * X[:, 3]
-        - 0.040 * X[:, 4]
-        + rng.normal(0, 0.45, 2000)
-    )
-
-    probability = 1 / (
-        1 + np.exp(-risk_signal)
-    )
-
-    y = (
-        probability > 0.5
-    ).astype(int)
-
-    model = LogisticRegression(
-        max_iter=1000
-    )
-
-    model.fit(X, y)
-
-    return model
-
-
-model = train_model()
-
-df["Risk Score"] = (
-    model.predict_proba(
-        df[FEATURES]
-    )[:, 1] * 100
-)
-
-
-# =========================================================
-# RISK LEVEL
-# =========================================================
-
-def risk_level(score):
+def risk_label(score):
 
     if score >= 70:
-        return "High Risk"
+        return "Needs Support", "red"
 
-    if score >= 40:
-        return "Moderate Risk"
+    if score >= 55:
+        return "Monitor Closely", "orange"
 
-    return "Low Risk"
+    if score >= 35:
+        return "Watch", "yellow"
 
-
-df["Risk Level"] = df[
-    "Risk Score"
-].apply(risk_level)
+    return "On Track", "green"
 
 
-# =========================================================
-# LATEST STUDENT RECORD
-# =========================================================
+def primary_reason(history):
 
-latest = (
-    df.sort_values("Week")
-    .groupby("Student")
-    .tail(1)
-    .copy()
-)
+    h = history.sort_values("Week")
 
+    attendance_slope = np.polyfit(
+        h["Week"].tail(3),
+        h["Attendance"].tail(3),
+        1
+    )[0]
 
-# =========================================================
-# HELPER FUNCTIONS
-# =========================================================
+    quiz_slope = np.polyfit(
+        h["Week"].tail(4),
+        h["Quiz"].tail(4),
+        1
+    )[0]
 
-def calculate_risk(values):
-
-    values = np.array(
-        values
-    ).reshape(1, -1)
-
-    return float(
-        model.predict_proba(values)[0][1] * 100
+    missing = int(
+        (~h["Submitted"].tail(4)).sum()
     )
 
-
-def linear_slope(values):
-
-    if len(values) < 2:
-        return 0.0
-
-    x = np.arange(len(values))
-
-    return float(
-        np.polyfit(x, values, 1)[0]
-    )
-
-
-def get_trend_information(history):
-
-    recent = history.tail(3)
-
-    risk_values = recent[
-        "Risk Score"
-    ].values
-
-    slope = linear_slope(
-        risk_values
-    )
-
-    if slope > 0.5:
-        direction = "Increasing"
-
-    elif slope < -0.5:
-        direction = "Improving"
-
-    else:
-        direction = "Stable"
-
-    return slope, direction
-
-
-def forecast_threshold(
-    current_risk,
-    slope,
-    threshold=70
-):
-
-    if current_risk >= threshold:
-        return 0
-
-    if slope <= 0:
-        return None
-
-    weeks = (
-        threshold - current_risk
-    ) / slope
-
-    return max(
-        1,
-        int(np.ceil(weeks))
-    )
-
-
-def root_cause_classification(history):
-
-    latest_row = history.iloc[-1]
-
-    recent = history.tail(3)
-
-    attendance_slope = linear_slope(
-        recent["Attendance"].values
-    )
-
-    quiz_slope = linear_slope(
-        recent["Quiz Score"].values
-    )
-
-    engagement_slope = linear_slope(
-        recent["Engagement"].values
-    )
-
-    mastery_slope = linear_slope(
-        recent["Concept Mastery"].values
-    )
-
-    avg_quiz = history[
-        "Quiz Score"
-    ].mean()
-
-    avg_mastery = history[
-        "Concept Mastery"
-    ].mean()
-
-    avg_engagement = history[
-        "Engagement"
-    ].mean()
-
-    current_quiz = latest_row[
-        "Quiz Score"
-    ]
-
-    current_mastery = latest_row[
-        "Concept Mastery"
-    ]
-
-    current_attendance = latest_row[
-        "Attendance"
-    ]
-
-    current_engagement = latest_row[
-        "Engagement"
-    ]
-
-    # -----------------------------------------------------
-    # SUDDEN DECLINE
-    # -----------------------------------------------------
-
-    if len(history) >= 5:
-
-        previous = history.iloc[-5]
-
-        recent_drop = (
-            previous["Quiz Score"]
-            - current_quiz
-        )
-
-        if recent_drop >= 15:
-
-            return (
-                "Sudden Decline",
-                "Recent performance changed sharply "
-                "after a relatively stable period."
-            )
-
-    # -----------------------------------------------------
-    # CHRONIC STRUGGLER
-    # -----------------------------------------------------
-
-    if (
-        avg_quiz < 65
-        and avg_mastery < 65
-        and avg_engagement < 70
-    ):
+    if attendance_slope < -7:
 
         return (
-            "Chronic Struggler",
-            "Performance has remained consistently low "
-            "across multiple learning signals."
+            "Attendance has dropped sharply "
+            "in recent weeks."
         )
 
-    # -----------------------------------------------------
-    # DISENGAGEMENT
-    # -----------------------------------------------------
-
-    if (
-        engagement_slope < -1
-        or attendance_slope < -1
-    ):
-
-        if (
-            current_quiz >= 70
-            and current_mastery >= 70
-        ):
-
-            return (
-                "Disengagement",
-                "Attendance or engagement is declining "
-                "while academic performance remains comparatively stronger."
-            )
-
-    # -----------------------------------------------------
-    # ACADEMIC DIFFICULTY
-    # -----------------------------------------------------
-
-    if (
-        mastery_slope < -1
-        or quiz_slope < -1
-        or current_mastery < 65
-        or current_quiz < 65
-    ):
+    if quiz_slope < -4:
 
         return (
-            "Academic Difficulty",
-            "Assessment performance or concept mastery "
-            "shows signs of learning difficulty."
+            "Quiz performance has been declining "
+            "across recent weeks."
         )
 
-    # -----------------------------------------------------
-    # GENERAL
-    # -----------------------------------------------------
+    if missing >= 2:
+
+        return (
+            "Recent assignment submissions show "
+            "a completion gap."
+        )
+
+    if float(h.iloc[-1]["Attendance"]) < 55:
+
+        return (
+            "Attendance is consistently low "
+            "across the observed period."
+        )
 
     return (
-        "Emerging Risk",
-        "Multiple learning signals suggest that "
-        "additional monitoring may be useful."
+        "Multiple learning signals are below "
+        "the class monitoring range."
     )
 
 
-def get_intervention(cause):
+def risk_components(history):
 
-    interventions = {
+    h = history.sort_values("Week")
 
-        "Academic Difficulty": [
-            "Identify the weakest concepts or topics.",
-            "Provide targeted revision material.",
-            "Use guided practice questions.",
-            "Conduct a short mastery reassessment."
-        ],
-
-        "Disengagement": [
-            "Schedule a short mentor or teacher check-in.",
-            "Review attendance and classroom participation.",
-            "Introduce interactive learning activities.",
-            "Monitor engagement during the next cycle."
-        ],
-
-        "Sudden Decline": [
-            "Prioritize teacher review.",
-            "Review recent changes in learning behaviour.",
-            "Use supportive parent communication.",
-            "Monitor the student closely over the next learning cycle."
-        ],
-
-        "Chronic Struggler": [
-            "Create an individualized learning plan.",
-            "Break learning goals into smaller milestones.",
-            "Provide regular guided practice.",
-            "Review progress weekly."
-        ],
-
-        "Emerging Risk": [
-            "Continue close monitoring.",
-            "Identify the earliest changing learning signal.",
-            "Provide targeted academic support.",
-            "Reassess after the next learning cycle."
-        ]
-    }
-
-    return interventions.get(
-        cause,
-        interventions["Emerging Risk"]
-    )
-
-
-def get_factor_changes(history):
-
-    if len(history) < 3:
-        return []
-
-    first = history.iloc[0]
-    current = history.iloc[-1]
-
-    changes = []
-
-    for feature in FEATURES:
-
-        change = (
-            current[feature]
-            - first[feature]
+    attendance_change = (
+        float(
+            h.iloc[-1]["Attendance"]
         )
-
-        changes.append(
-            (feature, change)
+        -
+        float(
+            h.iloc[0]["Attendance"]
         )
-
-    return sorted(
-        changes,
-        key=lambda x: x[1]
     )
 
+    quiz_start = max(
+        0,
+        len(h) - 4
+    )
 
-# =========================================================
-# HEADER
-# =========================================================
+    quiz_change = (
+        float(
+            h.iloc[-1]["Quiz"]
+        )
+        -
+        float(
+            h.iloc[quiz_start]["Quiz"]
+        )
+    )
 
-st.markdown(
-    '<div class="main-title">'
-    'AI-Based Early Detection of Students at Academic Risk'
-    '</div>',
-    unsafe_allow_html=True
-)
+    missing_recent = int(
+        (~h["Submitted"].tail(4)).sum()
+    )
 
-st.markdown(
-    '<div class="subtitle">'
-    'Detect early • Identify why • Forecast risk • Recommend action • Track outcomes'
-    '</div>',
-    unsafe_allow_html=True
-)
+    attendance_impact = max(
+        0,
+        -attendance_change
+    )
 
+    quiz_impact = max(
+        0,
+        -quiz_change
+    )
 
-# =========================================================
-# SIDEBAR
-# =========================================================
+    assignment_impact = (
+        missing_recent * 20
+    )
 
-st.sidebar.title("Navigation")
-
-page = st.sidebar.radio(
-    "Select Module",
-    [
-        "Dashboard",
-        "Student Analysis",
-        "Time Travel",
-        "What-If Simulator",
-        "Intervention Center"
+    values = [
+        (
+            "Attendance trend",
+            attendance_impact,
+            (
+                f"Attendance changed "
+                f"{h.iloc[0]['Attendance']:.0f}% "
+                f"→ "
+                f"{h.iloc[-1]['Attendance']:.0f}%"
+            ),
+        ),
+        (
+            "Quiz trend",
+            quiz_impact,
+            (
+                f"Recent quiz performance changed "
+                f"{h.iloc[quiz_start]['Quiz']:.0f} "
+                f"→ "
+                f"{h.iloc[-1]['Quiz']:.0f}"
+            ),
+        ),
+        (
+            "Assignment gap",
+            assignment_impact,
+            (
+                f"{missing_recent} recent assignment(s) "
+                f"were not submitted"
+            ),
+        ),
     ]
-)
 
-st.sidebar.markdown("---")
-
-st.sidebar.info(
-    "Prototype uses synthetic classroom data "
-    "for demonstration."
-)
-
-
-# =========================================================
-# DASHBOARD
-# =========================================================
-
-if page == "Dashboard":
-
-    total_students = len(latest)
-
-    high_risk = len(
-        latest[
-            latest["Risk Level"] == "High Risk"
-        ]
+    total = sum(
+        item[1]
+        for item in values
     )
 
-    moderate_risk = len(
-        latest[
-            latest["Risk Level"] == "Moderate Risk"
-        ]
-    )
+    if total == 0:
+        total = 1
 
-    average_risk = latest[
-        "Risk Score"
-    ].mean()
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    col1.metric(
-        "Students Monitored",
-        total_students
-    )
-
-    col2.metric(
-        "High Risk",
-        high_risk
-    )
-
-    col3.metric(
-        "Moderate Risk",
-        moderate_risk
-    )
-
-    col4.metric(
-        "Average Risk",
-        f"{average_risk:.1f}%"
-    )
-
-    # -----------------------------------------------------
-    # SMART ALERTS
-    # -----------------------------------------------------
-
-    st.markdown("## Smart Early-Warning Center")
-
-    alerts = []
-
-    for student in latest["Student"]:
-
-        history = df[
-            df["Student"] == student
-        ].sort_values("Week")
-
-        current = history.iloc[-1]
-
-        slope, direction = get_trend_information(
-            history
+    return [
+        (
+            name,
+            value / total * 100,
+            explanation
         )
-
-        if current["Risk Score"] >= 70:
-
-            alerts.append(
-                f"**{student}** — High estimated risk "
-                f"({current['Risk Score']:.1f}%)."
-            )
-
-        elif slope > 3:
-
-            alerts.append(
-                f"**{student}** — Risk is increasing rapidly "
-                f"({slope:+.1f} points/week)."
-            )
-
-    if alerts:
-
-        for alert in alerts[:8]:
-            st.warning(alert)
-
-    else:
-
-        st.success(
-            "No immediate high-priority warning signals detected."
+        for name, value, explanation
+        in sorted(
+            values,
+            key=lambda x: x[1],
+            reverse=True
         )
+    ]
 
-    # -----------------------------------------------------
-    # RISK CHART
-    # -----------------------------------------------------
 
-    st.markdown("## Class Risk Overview")
+# ============================================================
+# STUDENT SUMMARY TABLE
+# ============================================================
 
-    chart_data = latest.sort_values(
-        "Risk Score",
-        ascending=True
+student_rows = []
+
+for student in df["Student"].unique():
+
+    history = df[
+        df["Student"] == student
+    ].sort_values("Week")
+
+    score = risk_score(history)
+
+    label, tone = risk_label(
+        score
     )
 
-    fig = px.bar(
-        chart_data,
-        x="Risk Score",
-        y="Student",
-        orientation="h",
-        text=chart_data[
-            "Risk Score"
-        ].round(0),
-        labels={
-            "Risk Score": "Academic Risk Score (%)",
-            "Student": "Student"
+    student_rows.append(
+        {
+            "Student": student,
+            "Risk": score,
+            "Level": label,
+            "Tone": tone,
+            "Reason": primary_reason(
+                history
+            ),
+            "Persona": history.iloc[0]["Persona"],
         }
     )
 
-    fig.update_layout(
-        height=650,
-        showlegend=False
+
+risk_df = (
+    pd.DataFrame(student_rows)
+    .sort_values(
+        "Risk",
+        ascending=False
+    )
+    .reset_index(drop=True)
+)
+
+
+# ============================================================
+# SESSION STATE
+# ============================================================
+
+if "screen" not in st.session_state:
+    st.session_state.screen = "Login"
+
+if "selected_student" not in st.session_state:
+    st.session_state.selected_student = (
+        risk_df.iloc[0]["Student"]
     )
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+if "support_generated" not in st.session_state:
+    st.session_state.support_generated = False
 
-    # -----------------------------------------------------
-    # ROOT CAUSE DISTRIBUTION
-    # -----------------------------------------------------
+if "teacher_tasks" not in st.session_state:
 
-    st.markdown("## Root-Cause Distribution")
-
-    causes = []
-
-    for student in latest["Student"]:
-
-        history = df[
-            df["Student"] == student
-        ].sort_values("Week")
-
-        cause, _ = root_cause_classification(
-            history
-        )
-
-        causes.append({
-            "Student": student,
-            "Root Cause": cause
-        })
-
-    cause_df = pd.DataFrame(causes)
-
-    cause_counts = (
-        cause_df[
-            "Root Cause"
-        ]
-        .value_counts()
-        .reset_index()
-    )
-
-    cause_counts.columns = [
-        "Root Cause",
-        "Students"
-    ]
-
-    fig2 = px.pie(
-        cause_counts,
-        names="Root Cause",
-        values="Students",
-        hole=0.45
-    )
-
-    st.plotly_chart(
-        fig2,
-        use_container_width=True
-    )
+    st.session_state.teacher_tasks = {
+        "student": False,
+        "parent": False,
+        "revision": False,
+        "followup": False,
+    }
 
 
-# =========================================================
-# STUDENT ANALYSIS
-# =========================================================
+def navigate(screen):
 
-elif page == "Student Analysis":
+    st.session_state.screen = screen
 
-    st.title("Explainable Student Risk Analysis")
 
-    selected_student = st.selectbox(
-        "Select Student",
-        sorted(
-            latest["Student"].unique()
-        )
-    )
+# ============================================================
+# SCREEN 1 — LOGIN
+# ============================================================
 
-    history = df[
-        df["Student"] == selected_student
-    ].sort_values("Week")
-
-    current = history.iloc[-1]
-
-    current_risk = current[
-        "Risk Score"
-    ]
-
-    cause, cause_explanation = (
-        root_cause_classification(
-            history
-        )
-    )
-
-    slope, direction = (
-        get_trend_information(
-            history
-        )
-    )
-
-    forecast = forecast_threshold(
-        current_risk,
-        slope
-    )
-
-    # -----------------------------------------------------
-    # TOP METRICS
-    # -----------------------------------------------------
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    c1.metric(
-        "Current Risk",
-        f"{current_risk:.1f}%"
-    )
-
-    c2.metric(
-        "Risk Level",
-        risk_level(current_risk)
-    )
-
-    c3.metric(
-        "Root Cause",
-        cause
-    )
-
-    c4.metric(
-        "Trend",
-        direction
-    )
-
-    # -----------------------------------------------------
-    # EXPLAINABLE RISK CARD
-    # -----------------------------------------------------
-
-    st.markdown("## Explainable Risk Card")
+if st.session_state.screen == "Login":
 
     st.markdown(
-        f"""
-        <div class="risk-card">
-
-        <h3> {risk_level(current_risk)}</h3>
-
-        <p>
-        <b>Primary pattern:</b> {cause}
-        </p>
-
-        <p>
-        <b>Why?</b> {cause_explanation}
-        </p>
-
-        <p>
-        <b>Trend velocity:</b>
-        {slope:+.2f} risk points/week
-        </p>
-
-        </div>
-        """,
+        '<div class="login-wrap">',
         unsafe_allow_html=True
     )
 
-    # -----------------------------------------------------
-    # EARLY FORECAST
-    # -----------------------------------------------------
+    st.markdown(
+        '<div class="brand">'
+        'AI-Based Early Detection of Students at Academic Risk'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
-    st.markdown("## Early Risk Forecast")
+    st.markdown(
+        '<div class="login-title">'
+        'See the struggle early.'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
-    if forecast == 0:
+    st.markdown(
+        '<div class="login-sub">'
+        'An explainable early-warning and intervention system '
+        'that helps teachers identify emerging academic risk, '
+        'understand likely drivers, provide targeted support, '
+        'and track the student trajectory.'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
-        st.warning(
-            "The student is already above the high-risk threshold. "
-            "Teacher review is recommended."
+    st.markdown(
+        '<div class="demo-strip">'
+        'Demo environment: synthetic classroom data. '
+        'No real student records are used.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    st.write("")
+
+    login_left, login_right = st.columns(2)
+
+    with login_left:
+
+        if st.button(
+            "Enter as Teacher (Demo)",
+            use_container_width=True,
+            key="teacher_login"
+        ):
+
+            navigate("Dashboard")
+            st.rerun()
+
+    with login_right:
+
+        if st.button(
+            "Enter as Student (Demo)",
+            use_container_width=True,
+            key="student_login"
+        ):
+
+            navigate("Dashboard")
+            st.rerun()
+
+    st.markdown(
+        "</div>",
+        unsafe_allow_html=True
+    )
+
+    st.stop()
+
+
+# ============================================================
+# TOP BAR
+# ============================================================
+
+st.markdown(
+    """
+    <div class="topbar">
+        <div class="brand">
+            AI-Based Early Detection of Students at Academic Risk
+        </div>
+        <div class="top-subtitle">
+            Detect early · Explain clearly · Intervene · Track
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
+# NAVIGATION
+# ============================================================
+
+navigation_columns = st.columns(5)
+
+navigation_items = [
+    ("Dashboard", "Dashboard"),
+    ("Student Profile", "Student Profile"),
+    ("Intervention", "Intervention"),
+    ("Track", "Track"),
+    ("Login", "Login"),
+]
+
+for index, (label, target) in enumerate(
+    navigation_items
+):
+
+    with navigation_columns[index]:
+
+        if st.button(
+            label,
+            use_container_width=True,
+            key=f"navigation_{label}"
+        ):
+
+            navigate(target)
+            st.rerun()
+
+
+# ============================================================
+# SCREEN 2 — TEACHER DASHBOARD
+# ============================================================
+
+if st.session_state.screen == "Dashboard":
+
+    st.markdown(
+        "## Teacher Dashboard"
+    )
+
+    selector_one, selector_two, selector_three = (
+        st.columns(3)
+    )
+
+    with selector_one:
+
+        st.selectbox(
+            "Class",
+            ["Class 8-B"],
+            key="class_selector"
         )
 
-    elif forecast is not None:
+    with selector_two:
 
-        st.warning(
-            f"If the current trend continues, the model estimates "
-            f"that the student could reach the 70% risk threshold "
-            f"in approximately {forecast} week(s)."
+        st.selectbox(
+            "Week",
+            ["Week 8"],
+            key="week_selector"
+        )
+
+    with selector_three:
+
+        st.selectbox(
+            "Monitoring Mode",
+            ["Early-warning"],
+            key="monitoring_mode"
+        )
+
+    st.write("")
+
+    total_students = 60
+
+    needs_support = int(
+        (
+            risk_df["Risk"] >= 70
+        ).sum()
+    )
+
+    recovering = int(
+        (
+            risk_df["Persona"]
+            == "Recovering"
+        ).sum()
+    )
+
+    average_attendance = float(
+        df[
+            df["Week"] == 8
+        ]["Attendance"].mean()
+    )
+
+    metric_one, metric_two, metric_three, metric_four = (
+        st.columns(4)
+    )
+
+    with metric_one:
+
+        st.markdown(
+            f"""
+            <div class="card">
+                <div class="metric-label">
+                    Students
+                </div>
+                <div class="metric-value">
+                    {total_students}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with metric_two:
+
+        st.markdown(
+            f"""
+            <div class="card">
+                <div class="metric-label">
+                    Needs Support
+                </div>
+                <div class="metric-value">
+                    {needs_support}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with metric_three:
+
+        st.markdown(
+            f"""
+            <div class="card">
+                <div class="metric-label">
+                    Recovering
+                </div>
+                <div class="metric-value">
+                    {recovering}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with metric_four:
+
+        st.markdown(
+            f"""
+            <div class="card">
+                <div class="metric-label">
+                    Avg Attendance
+                </div>
+                <div class="metric-value">
+                    {average_attendance:.0f}%
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown(
+        '<div class="section-title">'
+        'Class Risk Heatmap'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    heatmap_html = """
+    <table class="heatmap">
+        <tr>
+            <th style="text-align:left">
+                Student
+            </th>
+            <th>W1</th>
+            <th>W2</th>
+            <th>W3</th>
+            <th>W4</th>
+            <th>W5</th>
+            <th>W6</th>
+            <th>W7</th>
+            <th>W8</th>
+        </tr>
+    """
+
+    for student in df["Student"].unique():
+
+        student_data = df[
+            df["Student"] == student
+        ].sort_values("Week")
+
+        heatmap_html += (
+            "<tr>"
+            f"<td style='text-align:left;font-size:9px'>"
+            f"{student}"
+            f"</td>"
+        )
+
+        for week in range(1, 9):
+
+            partial_history = student_data[
+                student_data["Week"] <= week
+            ]
+
+            score = risk_score(
+                partial_history
+            )
+
+            if score < 35:
+                css_class = "h-green"
+
+            elif score < 55:
+                css_class = "h-yellow"
+
+            elif score < 70:
+                css_class = "h-orange"
+
+            else:
+                css_class = "h-red"
+
+            heatmap_html += (
+                f"<td class='{css_class}' "
+                f"title='Risk {score:.0f}/100'>"
+                f"{score:.0f}"
+                f"</td>"
+            )
+
+        heatmap_html += "</tr>"
+
+    heatmap_html += "</table>"
+
+    st.markdown(
+        heatmap_html,
+        unsafe_allow_html=True
+    )
+
+    st.caption(
+        "Synthetic classroom data. Each cell represents "
+        "the rule-based risk score using information "
+        "available up to that week."
+    )
+
+    st.markdown(
+        '<div class="section-title">'
+        'Needs Support'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    for _, row in risk_df.head(5).iterrows():
+
+        col_student, col_score, col_reason, col_button = (
+            st.columns(
+                [1.2, 0.8, 3.6, 1]
+            )
+        )
+
+        with col_student:
+
+            st.write(
+                f"**{row['Student']}**"
+            )
+
+        with col_score:
+
+            st.write(
+                f"**{row['Risk']:.0f}/100**"
+            )
+
+        with col_reason:
+
+            st.markdown(
+                f'<div class="reason">'
+                f'{row["Reason"]}'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+        with col_button:
+
+            if st.button(
+                "View",
+                key=f"dashboard_view_{row['Student']}"
+            ):
+
+                st.session_state.selected_student = (
+                    row["Student"]
+                )
+
+                navigate(
+                    "Student Profile"
+                )
+
+                st.rerun()
+
+
+# ============================================================
+# SCREEN 3 — STUDENT PROFILE
+# ============================================================
+
+elif st.session_state.screen == "Student Profile":
+
+    st.markdown(
+        "## Student Profile"
+    )
+
+    students = risk_df[
+        "Student"
+    ].tolist()
+
+    if (
+        st.session_state.selected_student
+        in students
+    ):
+
+        selected_index = students.index(
+            st.session_state.selected_student
         )
 
     else:
 
-        st.success(
-            "The current trend does not indicate movement toward "
-            "the high-risk threshold."
-        )
+        selected_index = 0
 
-    # -----------------------------------------------------
-    # SIGNAL CHANGES
-    # -----------------------------------------------------
+    selected = st.selectbox(
+        "Student",
+        students,
+        index=selected_index,
+        key="profile_student"
+    )
 
-    st.markdown("## Learning Signal Changes")
+    st.session_state.selected_student = selected
 
-    changes = get_factor_changes(
+    history = df[
+        df["Student"] == selected
+    ].sort_values("Week")
+
+    current_score = risk_score(
         history
     )
 
-    for feature, change in changes:
-
-        if change < -5:
-
-            st.warning(
-                f"**{feature}** decreased by "
-                f"{abs(change):.1f} points across the observed period."
-            )
-
-        elif change > 5:
-
-            st.success(
-                f"**{feature}** improved by "
-                f"{change:.1f} points."
-            )
-
-    # -----------------------------------------------------
-    # TRAJECTORY
-    # -----------------------------------------------------
-
-    st.markdown("## Learning Trajectory")
-
-    fig = px.line(
-        history,
-        x="Week",
-        y="Risk Score",
-        markers=True,
-        labels={
-            "Risk Score":
-            "Academic Risk Score (%)"
-        }
+    current_label, current_tone = risk_label(
+        current_score
     )
 
-    fig.add_hline(
-        y=70,
-        line_dash="dash",
-        annotation_text="High Risk"
+    left, right = st.columns(
+        [0.95, 1.35]
     )
 
-    fig.add_hline(
-        y=40,
-        line_dash="dot",
-        annotation_text="Moderate Risk"
-    )
+    # --------------------------------------------------------
+    # LEFT SIDE
+    # --------------------------------------------------------
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+    with left:
 
-    # -----------------------------------------------------
-    # ACTION
-    # -----------------------------------------------------
-
-    st.markdown("## Recommended Action")
-
-    actions = get_intervention(
-        cause
-    )
-
-    for i, action in enumerate(
-        actions,
-        1
-    ):
-
-        st.write(
-            f"**{i}.** {action}"
+        st.markdown(
+            '<div class="card">',
+            unsafe_allow_html=True
         )
 
-
-# =========================================================
-# TIME TRAVEL
-# =========================================================
-
-elif page == "Time Travel":
-
-    st.title("Time Travel")
-
-    st.write(
-        "Replay the student's academic journey to identify "
-        "when warning signals began changing."
-    )
-
-    selected_student = st.selectbox(
-        "Choose Student",
-        sorted(
-            latest["Student"].unique()
-        ),
-        key="time_student"
-    )
-
-    history = df[
-        df["Student"] == selected_student
-    ].sort_values("Week")
-
-    fig = px.line(
-        history,
-        x="Week",
-        y="Risk Score",
-        markers=True,
-        labels={
-            "Risk Score":
-            "Academic Risk Score (%)"
-        }
-    )
-
-    fig.add_hline(
-        y=70,
-        line_dash="dash",
-        annotation_text="High Risk"
-    )
-
-    fig.add_hline(
-        y=40,
-        line_dash="dot",
-        annotation_text="Moderate Risk"
-    )
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
-
-    selected_week = st.slider(
-        "Replay Week",
-        1,
-        8,
-        4
-    )
-
-    snapshot = history[
-        history["Week"] == selected_week
-    ].iloc[0]
-
-    st.markdown(
-        f"## Week {selected_week} Snapshot"
-    )
-
-    c1, c2, c3, c4, c5 = st.columns(5)
-
-    c1.metric(
-        "Attendance",
-        f"{snapshot['Attendance']:.0f}%"
-    )
-
-    c2.metric(
-        "Quiz",
-        f"{snapshot['Quiz Score']:.0f}%"
-    )
-
-    c3.metric(
-        "Assignments",
-        f"{snapshot['Assignment Completion']:.0f}%"
-    )
-
-    c4.metric(
-        "Engagement",
-        f"{snapshot['Engagement']:.0f}%"
-    )
-
-    c5.metric(
-        "Mastery",
-        f"{snapshot['Concept Mastery']:.0f}%"
-    )
-
-    if selected_week > 1:
-
-        previous = history[
-            history["Week"] < selected_week
-        ].iloc[-1]
-
-        risk_change = (
-            snapshot["Risk Score"]
-            - previous["Risk Score"]
+        st.markdown(
+            f"### {selected}"
         )
 
-        if risk_change > 3:
+        st.markdown(
+            f'<span class="badge badge-{current_tone}">'
+            f'{current_label}'
+            f'</span>',
+            unsafe_allow_html=True
+        )
 
-            st.warning(
-                f"Risk increased by "
-                f"{risk_change:.1f} points from the previous week."
+        st.markdown(
+            f"""
+            <div style="
+                font-size:64px;
+                font-weight:800;
+                margin-top:12px
+            ">
+                {current_score:.0f}
+                <span style="
+                    font-size:20px;
+                    color:#667085
+                ">
+                    /100
+                </span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.caption(
+            "Explainable rule-based academic risk score"
+        )
+
+        st.markdown(
+            "### Top Risk Factors"
+        )
+
+        factors = risk_components(
+            history
+        )
+
+        for index, (
+            name,
+            impact,
+            explanation
+        ) in enumerate(
+            factors[:3]
+        ):
+
+            if index == 0:
+                fill_class = "fill-red"
+
+            elif index == 1:
+                fill_class = "fill-orange"
+
+            else:
+                fill_class = "fill-blue"
+
+            st.markdown(
+                f"""
+                <div class="factor">
+                    <div class="factor-top">
+                        <span>{name}</span>
+                        <span>{impact:.0f}%</span>
+                    </div>
+
+                    <div class="bar">
+                        <div class="{fill_class}"
+                             style="
+                                width:
+                                {min(impact,100):.0f}%
+                             ">
+                        </div>
+                    </div>
+
+                    <div class="small-note">
+                        {explanation}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
-        elif risk_change < -3:
+        if st.button(
+            "Explain this risk",
+            use_container_width=True,
+            key="explain_risk"
+        ):
 
-            st.success(
-                f"Risk decreased by "
-                f"{abs(risk_change):.1f} points from the previous week."
+            st.info(
+                f"{selected} is currently classified as "
+                f"'{current_label}'. The explanation is based "
+                f"on observed attendance, quiz, and assignment "
+                f"signals. Current attendance is "
+                f"{history.iloc[-1]['Attendance']:.0f}% "
+                f"and current quiz performance is "
+                f"{history.iloc[-1]['Quiz']:.0f}%. "
+                f"This is a decision-support signal and "
+                f"should be reviewed by a teacher."
+            )
+
+        st.markdown(
+            "</div>",
+            unsafe_allow_html=True
+        )
+
+    # --------------------------------------------------------
+    # RIGHT SIDE
+    # --------------------------------------------------------
+
+    with right:
+
+        st.markdown(
+            '<div class="card">',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            "### Attendance and Quiz Trend"
+        )
+
+        trend_chart = go.Figure()
+
+        trend_chart.add_trace(
+            go.Scatter(
+                x=history["Week"],
+                y=history["Attendance"],
+                mode="lines+markers",
+                name="Attendance",
+            )
+        )
+
+        trend_chart.add_trace(
+            go.Scatter(
+                x=history["Week"],
+                y=history["Quiz"],
+                mode="lines+markers",
+                name="Quiz",
+            )
+        )
+
+        trend_chart.update_layout(
+            height=300,
+            margin=dict(
+                l=10,
+                r=10,
+                t=10,
+                b=10
+            ),
+            yaxis=dict(
+                range=[0, 100],
+                title="Percent"
+            ),
+            xaxis=dict(
+                title="Week",
+                dtick=1
+            ),
+            legend=dict(
+                orientation="h"
+            ),
+        )
+
+        st.plotly_chart(
+            trend_chart,
+            use_container_width=True
+        )
+
+        st.markdown(
+            "### Time Travel"
+        )
+
+        selected_week = st.slider(
+            "Replay week",
+            min_value=1,
+            max_value=8,
+            value=4,
+            step=1,
+            key="profile_time_travel"
+        )
+
+        snapshot_history = history[
+            history["Week"] <= selected_week
+        ]
+
+        snapshot = history[
+            history["Week"] == selected_week
+        ].iloc[0]
+
+        snapshot_score = risk_score(
+            snapshot_history
+        )
+
+        week_col, risk_col, attendance_col = (
+            st.columns(3)
+        )
+
+        with week_col:
+
+            st.metric(
+                "Week",
+                selected_week
+            )
+
+        with risk_col:
+
+            st.metric(
+                "Risk",
+                f"{snapshot_score:.0f}/100"
+            )
+
+        with attendance_col:
+
+            st.metric(
+                "Attendance",
+                f"{snapshot['Attendance']:.0f}%"
+            )
+
+        if selected_week == 4:
+
+            st.warning(
+                "Flagged for teacher review in Week 4 "
+                "in this synthetic demonstration."
+            )
+
+        elif selected_week == 8:
+
+            st.info(
+                "Week 8 snapshot. Review the complete "
+                "trajectory before deciding the next "
+                "support step."
             )
 
         else:
 
-            st.info(
-                "Risk remained relatively stable compared "
-                "with the previous week."
+            st.caption(
+                "Move the slider to replay the "
+                "student's trajectory."
             )
 
+        st.markdown(
+            "</div>",
+            unsafe_allow_html=True
+        )
 
-# =========================================================
-# WHAT-IF SIMULATOR
-# =========================================================
 
-elif page == "What-If Simulator":
+# ============================================================
+# SCREEN 4 — INTERVENTION
+# ============================================================
 
-    st.title("What-If Intervention Simulator")
-
-    st.write(
-        "Simulate hypothetical improvements in learning signals "
-        "and observe how the model's estimated risk score changes."
-    )
-
-    st.info(
-        "Simulation only — this is not a guaranteed prediction "
-        "of future performance."
-    )
-
-    selected_student = st.selectbox(
-        "Select Student",
-        sorted(
-            latest["Student"].unique()
-        ),
-        key="what_student"
-    )
-
-    current = latest[
-        latest["Student"] == selected_student
-    ].iloc[0]
-
-    current_values = [
-        current[f]
-        for f in FEATURES
-    ]
-
-    current_risk = calculate_risk(
-        current_values
-    )
-
-    cause, _ = root_cause_classification(
-        df[
-            df["Student"] == selected_student
-        ].sort_values("Week")
-    )
+elif st.session_state.screen == "Intervention":
 
     st.markdown(
-        f"### Primary Root Cause: **{cause}**"
+        "## Intervention"
     )
 
-    st.markdown("## Simulate Support")
+    students = risk_df[
+        "Student"
+    ].tolist()
 
-    attendance_change = st.slider(
-        "Attendance improvement",
-        0,
-        15,
-        0
-    )
+    if (
+        st.session_state.selected_student
+        in students
+    ):
 
-    quiz_change = st.slider(
-        "Assessment improvement",
-        0,
-        20,
-        0
-    )
-
-    assignment_change = st.slider(
-        "Assignment completion improvement",
-        0,
-        20,
-        0
-    )
-
-    engagement_change = st.slider(
-        "Engagement improvement",
-        0,
-        20,
-        0
-    )
-
-    mastery_change = st.slider(
-        "Concept mastery improvement",
-        0,
-        20,
-        0
-    )
-
-    simulated_values = [
-
-        min(
-            100,
-            current["Attendance"]
-            + attendance_change
-        ),
-
-        min(
-            100,
-            current["Quiz Score"]
-            + quiz_change
-        ),
-
-        min(
-            100,
-            current["Assignment Completion"]
-            + assignment_change
-        ),
-
-        min(
-            100,
-            current["Engagement"]
-            + engagement_change
-        ),
-
-        min(
-            100,
-            current["Concept Mastery"]
-            + mastery_change
-        )
-    ]
-
-    simulated_risk = calculate_risk(
-        simulated_values
-    )
-
-    difference = (
-        current_risk
-        - simulated_risk
-    )
-
-    c1, c2, c3 = st.columns(3)
-
-    c1.metric(
-        "Current Risk",
-        f"{current_risk:.1f}%"
-    )
-
-    c2.metric(
-        "Simulated Risk",
-        f"{simulated_risk:.1f}%"
-    )
-
-    c3.metric(
-        "Estimated Change",
-        f"{difference:+.1f} pts"
-    )
-
-    comparison = pd.DataFrame({
-        "State": [
-            "Current",
-            "Simulated"
-        ],
-        "Risk": [
-            current_risk,
-            simulated_risk
-        ]
-    })
-
-    fig = px.bar(
-        comparison,
-        x="State",
-        y="Risk",
-        text="Risk",
-        range_y=[0, 100],
-        title="Current vs Simulated Risk"
-    )
-
-    fig.update_traces(
-        texttemplate="%{text:.1f}%"
-    )
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
-
-    if difference > 0:
-
-        st.success(
-            f"The simulated scenario reduces the model's "
-            f"estimated risk by {difference:.1f} points."
+        selected_index = students.index(
+            st.session_state.selected_student
         )
 
     else:
 
-        st.info(
-            "Try adjusting the intervention variables "
-            "to explore another scenario."
-        )
+        selected_index = 0
 
-
-# =========================================================
-# INTERVENTION CENTER
-# =========================================================
-
-else:
-
-    st.title("Intervention Center")
-
-    selected_student = st.selectbox(
-        "Select Student",
-        sorted(
-            latest["Student"].unique()
-        ),
+    selected = st.selectbox(
+        "Student",
+        students,
+        index=selected_index,
         key="intervention_student"
     )
 
+    st.session_state.selected_student = selected
+
     history = df[
-        df["Student"] == selected_student
+        df["Student"] == selected
     ].sort_values("Week")
 
-    current = history.iloc[-1]
-
-    current_risk = current[
-        "Risk Score"
-    ]
-
-    cause, explanation = (
-        root_cause_classification(
-            history
-        )
+    score = risk_score(
+        history
     )
 
-    # -----------------------------------------------------
-    # ROOT CAUSE
-    # -----------------------------------------------------
-
-    st.markdown("## Detected Root Cause")
-
-    st.info(
-        f"**{cause}** — {explanation}"
+    label, tone = risk_label(
+        score
     )
 
-    # -----------------------------------------------------
-    # INTERVENTION PLAN
-    # -----------------------------------------------------
-
-    st.markdown("## Personalized Support Plan")
-
-    actions = get_intervention(
-        cause
+    reason = primary_reason(
+        history
     )
 
-    for i, action in enumerate(
-        actions,
-        1
+    st.markdown(
+        '<div class="card">',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f"### {selected}"
+    )
+
+    st.markdown(
+        f'<span class="badge badge-{tone}">'
+        f'{label}'
+        f'</span>',
+        unsafe_allow_html=True
+    )
+
+    st.write("")
+
+    st.write(
+        f"**Observed pattern:** {reason}"
+    )
+
+    st.markdown(
+        '<div class="info-strip">'
+        'Support recommendations are generated from the '
+        'observed synthetic signals. They are intended to '
+        'assist teacher review, not replace it.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    if st.button(
+        "Generate Support Plan",
+        use_container_width=True,
+        key="generate_support"
     ):
 
-        st.write(
-            f"**{i}.** {action}"
+        st.session_state.support_generated = True
+
+    if st.session_state.support_generated:
+
+        plan_left, plan_right = (
+            st.columns(2)
         )
 
-    # -----------------------------------------------------
-    # TRACKER
-    # -----------------------------------------------------
+        # ----------------------------------------------------
+        # REVISION PLAN
+        # ----------------------------------------------------
 
-    st.markdown("## Intervention Impact Tracker")
+        with plan_left:
 
-    initial_risk = history.iloc[0][
-        "Risk Score"
-    ]
+            st.markdown(
+                "### Revision Plan"
+            )
 
-    latest_risk = history.iloc[-1][
-        "Risk Score"
-    ]
+            st.write(
+                "**Day 1–2:** Review the weakest "
+                "recent learning area."
+            )
 
-    change = (
-        latest_risk
-        - initial_risk
+            st.write(
+                "**Day 3:** Complete a short "
+                "targeted practice set."
+            )
+
+            st.write(
+                "**Day 4:** Teacher check-in "
+                "and feedback."
+            )
+
+            st.write(
+                "**Day 5:** Reassess the relevant "
+                "skill and update support."
+            )
+
+        # ----------------------------------------------------
+        # TELUGU PARENT COMMUNICATION
+        # ----------------------------------------------------
+
+        with plan_right:
+
+            st.markdown(
+                "### Parent Communication"
+            )
+
+            st.info(
+                "నమస్కారం గారు, మీ పిల్లవారి చదువులో "
+                "కొన్ని సహాయం అవసరమైన సంకేతాలు కనిపిస్తున్నాయి. "
+                "కలిసి కొంత అదనపు సహాయం అందిస్తే చదువులో "
+                "మెరుగుదల రావడానికి అవకాశం ఉంటుంది. "
+                "ఉపాధ్యాయుడితో కలిసి తదుపరి చర్యలను "
+                "చర్చిద్దాం."
+            )
+
+            st.button(
+                "Play Telugu Voice Message",
+                disabled=True,
+                use_container_width=True,
+                key="voice_demo"
+            )
+
+            st.caption(
+                "Prototype transcript. Voice playback is "
+                "not connected to an external voice service "
+                "in this version."
+            )
+
+        # ----------------------------------------------------
+        # TEACHER CHECKLIST
+        # ----------------------------------------------------
+
+        st.markdown(
+            "### Teacher Checklist"
+        )
+
+        task_student = st.checkbox(
+            "Talk to the student",
+            value=st.session_state.teacher_tasks[
+                "student"
+            ],
+            key="task_student"
+        )
+
+        task_parent = st.checkbox(
+            "Contact parent or guardian",
+            value=st.session_state.teacher_tasks[
+                "parent"
+            ],
+            key="task_parent"
+        )
+
+        task_revision = st.checkbox(
+            "Assign targeted revision",
+            value=st.session_state.teacher_tasks[
+                "revision"
+            ],
+            key="task_revision"
+        )
+
+        task_followup = st.checkbox(
+            "Schedule follow-up review",
+            value=st.session_state.teacher_tasks[
+                "followup"
+            ],
+            key="task_followup"
+        )
+
+        st.session_state.teacher_tasks = {
+            "student": task_student,
+            "parent": task_parent,
+            "revision": task_revision,
+            "followup": task_followup,
+        }
+
+        completed_tasks = sum(
+            st.session_state.teacher_tasks.values()
+        )
+
+        st.progress(
+            completed_tasks / 4
+        )
+
+        st.caption(
+            f"{completed_tasks} of 4 support actions completed."
+        )
+
+    st.markdown(
+        "</div>",
+        unsafe_allow_html=True
     )
 
-    c1, c2, c3 = st.columns(3)
 
-    c1.metric(
-        "Initial Risk",
-        f"{initial_risk:.1f}%"
+# ============================================================
+# SCREEN 5 — TRACK
+# ============================================================
+
+elif st.session_state.screen == "Track":
+
+    st.markdown(
+        "## Track"
     )
 
-    c2.metric(
-        "Current Risk",
-        f"{latest_risk:.1f}%"
+    recovering_students = risk_df[
+        risk_df["Persona"] == "Recovering"
+    ]["Student"].tolist()
+
+    if recovering_students:
+
+        selected = st.selectbox(
+            "Recovering Student",
+            recovering_students,
+            key="track_student"
+        )
+
+    else:
+
+        selected = st.selectbox(
+            "Student",
+            risk_df["Student"].tolist(),
+            key="track_student_fallback"
+        )
+
+    history = df[
+        df["Student"] == selected
+    ].sort_values("Week")
+
+    weekly_risks = []
+
+    for week in range(1, 9):
+
+        weekly_history = history[
+            history["Week"] <= week
+        ]
+
+        weekly_risks.append(
+            risk_score(
+                weekly_history
+            )
+        )
+
+    week_three_risk = weekly_risks[2]
+    week_eight_risk = weekly_risks[7]
+
+    trajectory_change = (
+        week_eight_risk
+        - week_three_risk
     )
 
-    c3.metric(
-        "Trajectory Change",
-        f"{change:+.1f} pts"
+    st.markdown(
+        '<div class="card">',
+        unsafe_allow_html=True
     )
 
-    if change < -2:
+    track_one, track_two, track_three = (
+        st.columns(3)
+    )
+
+    with track_one:
+
+        st.metric(
+            "Risk at Week 3",
+            f"{week_three_risk:.0f}/100"
+        )
+
+    with track_two:
+
+        st.metric(
+            "Risk at Week 8",
+            f"{week_eight_risk:.0f}/100"
+        )
+
+    with track_three:
+
+        st.metric(
+            "Trajectory Change",
+            f"{trajectory_change:+.0f} pts"
+        )
+
+    track_chart = go.Figure()
+
+    track_chart.add_trace(
+        go.Scatter(
+            x=list(range(1, 9)),
+            y=weekly_risks,
+            mode="lines+markers",
+            name="Risk trajectory",
+        )
+    )
+
+    track_chart.add_hline(
+        y=70,
+        line_dash="dash",
+        annotation_text="Needs Support"
+    )
+
+    track_chart.add_hline(
+        y=55,
+        line_dash="dot",
+        annotation_text="Monitor Closely"
+    )
+
+    track_chart.update_layout(
+        height=400,
+        yaxis=dict(
+            range=[0, 100],
+            title="Risk Score"
+        ),
+        xaxis=dict(
+            title="Week",
+            dtick=1
+        ),
+        margin=dict(
+            l=10,
+            r=10,
+            t=25,
+            b=10
+        )
+    )
+
+    st.plotly_chart(
+        track_chart,
+        use_container_width=True
+    )
+
+    if trajectory_change < 0:
 
         st.success(
-            "Estimated risk has decreased across the observed period."
-        )
-
-    elif change > 2:
-
-        st.warning(
-            "Estimated risk has increased across the observed period. "
-            "Closer review may be appropriate."
+            "Recovering trajectory shown in this "
+            "synthetic demonstration."
         )
 
     else:
 
         st.info(
-            "Estimated risk has remained relatively stable."
+            "This trajectory is shown for demonstration "
+            "and requires teacher interpretation."
         )
 
-    # -----------------------------------------------------
-    # PARENT COMMUNICATION
-    # -----------------------------------------------------
-
-    st.markdown("## Supportive Parent Communication")
-
-    language = st.radio(
-        "Choose Language",
-        [
-            "English",
-            "Telugu"
-        ],
-        horizontal=True
+    st.markdown(
+        '<div class="demo-strip">'
+        'Important: this is synthetic data. A lower risk '
+        'score after support does not by itself prove '
+        'that the support intervention caused the change.'
+        '</div>',
+        unsafe_allow_html=True
     )
 
-    if language == "English":
-
-        message = (
-            f"Hello, this is a supportive academic update "
-            f"regarding {selected_student}. Recent learning "
-            "signals suggest that some additional academic "
-            "support may be helpful. We recommend focused "
-            "support and regular follow-up during the coming "
-            "learning cycle. Our goal is to identify learning "
-            "gaps early and support the student's progress."
-        )
-
-    else:
-
-        message = (
-            f"నమస్కారం. {selected_student} విద్యాభ్యాసానికి "
-            "సంబంధించిన తాజా సమాచారం ఇది. కొన్ని అంశాల్లో "
-            "అదనపు సహాయం అవసరమయ్యే సూచనలు కనిపిస్తున్నాయి. "
-            "వచ్చే అభ్యాస దశలో లక్ష్యిత సహాయం మరియు క్రమమైన "
-            "పర్యవేక్షణ చేయడం మంచిది. విద్యార్థి అభ్యాసంలో "
-            "ఉన్న ఖాళీలను ముందుగానే గుర్తించి సహాయం "
-            "అందించడం మా లక్ష్యం."
-        )
-
-    st.text_area(
-        "Message",
-        message,
-        height=170
+    st.markdown(
+        "</div>",
+        unsafe_allow_html=True
     )
