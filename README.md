@@ -1,351 +1,359 @@
 # AI-Based Early Detection of Students at Academic Risk
 
-An explainable AI-powered early-warning and intervention system that helps educators identify students showing emerging academic risk, understand the likely contributing factors, recommend targeted support, and track changes over time.
+An explainable early-warning and intervention system designed to help teachers identify emerging academic risk, understand the likely contributing factors, provide targeted support, and track student progress over time.
 
----
+## 1. Problem Statement
 
-## 1. The Problem
+Students may begin showing signs of academic difficulty before the problem becomes clearly visible through final examination results.
 
-Academic difficulties are often identified only after a student has already experienced repeated low scores, missed assignments, poor attendance, or declining engagement.
+Changes in:
 
-Traditional monitoring systems usually answer:
+- Attendance
+- Quiz performance
+- Assignment completion
+- Learning engagement
+- Academic trends
 
-> "Which students are performing poorly?"
+can provide useful early signals.
 
-But educators need a more useful question:
+The challenge is to transform these signals into an understandable early-warning system that helps teachers take timely, targeted action.
 
-> "Which students are starting to show warning signals, why are those signals appearing, and what support can be provided early?"
+## 2. Proposed Solution
 
-This project addresses that gap through an AI-assisted early-warning workflow.
-
----
-
-## 2. Our Approach
-
-The system follows a four-stage workflow:
+**AI-Based Early Detection of Students at Academic Risk** provides a teacher-focused workflow:
 
 **DETECT → EXPLAIN → INTERVENE → TRACK**
 
-### Detect
+The system analyzes synthetic weekly student records and produces an interpretable risk score.
 
-The system analyzes multiple learning signals such as:
+Instead of showing only a prediction, the application explains:
 
-- Attendance
-- Assessment performance
-- Assignment completion
-- Learning engagement
-- Concept mastery
-- Performance trends
+- What changed
+- Which factors contributed to the risk
+- When the risk started increasing
+- What support can be provided
+- Whether the student's risk trajectory is improving
 
-### Explain
-
-Instead of showing only a risk score, the system identifies the likely pattern behind the risk.
-
-The prototype identifies four major patterns:
-
-- Academic Difficulty
-- Disengagement
-- Sudden Decline
-- Chronic Struggler
-
-### Intervene
-
-The system generates a targeted support recommendation based on the identified pattern.
-
-Examples include:
-
-- Targeted topic revision
-- Teacher or mentor check-in
-- Priority academic review
-- Individualized long-term support
-
-### Track
-
-The student's trajectory is monitored over time to observe whether risk signals are improving or worsening.
+The system is designed as a decision-support prototype with human oversight.
 
 ---
 
-## 3. Key Features
+# 3. Five-Screen Application Workflow
 
-### 3.1 Explainable Academic Risk Detection
+## Screen 1 — Login
 
-The system combines multiple student learning signals and generates an academic risk score.
+A simple demo entry screen with two options:
 
-Risk levels are presented as:
+- Enter as Teacher
+- Enter as Student
 
-- Low Risk
-- Moderate Risk
-- High Risk
+No real authentication, signup, password, OTP, or account management is implemented.
 
-The objective is not to label students, but to provide an early signal for educator attention.
-
----
-
-### 3.2 Root-Cause Classification
-
-A major feature of the system is identifying the likely pattern behind academic risk.
-
-#### Academic Difficulty
-
-The student's academic performance and concept mastery show persistent weakness.
-
-#### Disengagement
-
-Attendance, assignments, or learning engagement show deterioration.
-
-#### Sudden Decline
-
-The student previously showed stable performance but recently experienced a sharp decline.
-
-#### Chronic Struggler
-
-The student demonstrates consistently weak performance over an extended period.
-
-This converts a simple risk score into an actionable explanation.
+The application is designed for demonstration purposes.
 
 ---
 
-### 3.3 Trend Velocity
+## Screen 2 — Teacher Dashboard
 
-A student's current risk score alone may not tell the complete story.
+The Teacher Dashboard provides a class-level overview.
 
-The system analyzes the direction and rate of change in the student's risk trajectory.
+### Key information
 
-For example:
+- Total students
+- Students needing support
+- Recovering students
+- Average attendance
 
-> "Risk is increasing rapidly."
+### Class Risk Heatmap
 
-This helps educators identify students whose situation may require attention before they cross a critical risk level.
+The heatmap displays student risk across eight weeks.
 
----
+Each cell represents the student's risk level for a specific week.
 
-### 3.4 Explainable Risk Card
+Risk categories:
 
-For every selected student, the system presents:
+| Risk Score | Status |
+|---|---|
+| Below 35 | On Track |
+| 35–54 | Watch |
+| 55–69 | Monitor Closely |
+| 70 and above | Needs Support |
 
-- Current risk score
-- Risk level
-- Root cause
-- Trend direction
-- Signal changes
-- Supporting evidence
-- Recommended action
+This allows teachers to identify patterns instead of looking only at the latest score.
 
-This makes the AI output easier for educators to understand and act upon.
+### Needs Support List
 
----
+The dashboard highlights students requiring attention with:
 
-### 3.5 Early Risk Forecast
-
-The system examines recent risk trends and estimates when a student may approach a higher-risk threshold if the current trajectory continues.
-
-This is intended as an early-warning signal, not a guaranteed prediction.
-
----
-
-### 3.6 Time Travel Analysis
-
-The Time Travel feature replays historical weekly learning data and visualizes how the student's risk changed over time.
-
-Educators can identify:
-
-- The week risk began increasing
-- Sudden changes
-- Persistent deterioration
-- Periods of recovery
-- Week-over-week changes
-
-This shifts the focus from:
-
-> "The student is at risk."
-
-to:
-
-> "When did the warning signals begin?"
+- Student name
+- Risk score
+- Main contributing reason
+- Risk trend
+- Profile access
 
 ---
 
-### 3.7 What-If Simulator
+# 4. Screen 3 — Student Profile
 
-Educators can simulate changes in learning signals such as:
+The Student Profile provides an individual-level explanation of academic risk.
 
-- Attendance
-- Assessment performance
-- Assignment completion
-- Engagement
-- Concept mastery
+## Risk Gauge
 
-The system then compares the current risk with the simulated scenario.
+The current risk score is displayed on a 0–100 scale.
+
+The application uses the student-friendly status:
+
+**Needs Support**
+
+instead of labeling a student as failing.
+
+## Top Risk Factors
+
+The application displays the main contributing factors, such as:
+
+- Attendance dropped
+- Quiz trend
+- Assignment gap
+
+These factors help explain why the current risk score changed.
+
+## Plain-Language Explanation
+
+The system converts numerical signals into a simple explanation.
 
 Example:
 
-> "What happens to the estimated risk if attendance improves?"
+> Attendance has declined during the recent weeks and quiz performance is also showing a downward trend. The recent assignment gap is contributing additional risk.
 
-This helps demonstrate how different learning signals can influence the overall risk assessment.
-
-The simulator is a scenario-analysis tool and does not guarantee future outcomes.
+The purpose is to make the output understandable to teachers without requiring them to interpret raw model values.
 
 ---
 
-### 3.8 Personalized Intervention Engine
+# 5. Trend Analysis
 
-The system maps detected risk patterns to suggested support actions.
-
-| Risk Pattern | Suggested Support |
-|---|---|
-| Academic Difficulty | Targeted topic revision |
-| Disengagement | Teacher or mentor check-in |
-| Sudden Decline | Priority academic review |
-| Chronic Struggler | Individualized long-term support |
-
-The objective is to move from detection to meaningful action.
-
----
-
-### 3.9 Intervention Center
-
-The Intervention Center provides educators with a consolidated view of:
-
-- Detected root cause
-- Current risk
-- Initial risk
-- Risk trajectory
-- Recommended support plan
-- Parent communication draft
-
-This creates a practical workflow for educator intervention.
-
----
-
-### 3.10 Parent Communication Support
-
-The system can generate a supportive communication message for parents in:
-
-- English
-- Telugu
-
-The communication focuses on providing support rather than publicly labeling or ranking students.
-
----
-
-## 4. AI and Machine Learning
-
-The prototype uses machine learning to estimate academic risk from multiple learning signals.
-
-### Current Model
-
-**Logistic Regression**
-
-The model provides a simple and interpretable baseline for the prototype.
-
-### Input Signals
+The Student Profile includes eight-week trend analysis for:
 
 - Attendance
-- Assessment score
-- Assignment completion
-- Engagement
-- Concept mastery
+- Quiz performance
+- Academic risk
 
-### Additional Analytics
+The charts help identify changes over time rather than relying only on a single observation.
 
-The system also uses:
-
-- Trend analysis
-- Risk trajectory analysis
-- Rule-based root-cause classification
-- Scenario simulation
-- Threshold forecasting
-
-The architecture can later be extended with more advanced models and real institutional data.
+This is important because academic risk is often better understood as a trajectory.
 
 ---
 
-## 5. Demonstration Data
+# 6. Time Travel Analysis
 
-This prototype uses synthetic classroom data.
+The Time Travel feature allows the teacher to move through the student's academic history from:
 
-The synthetic dataset contains multiple student learning patterns designed to demonstrate different academic-risk scenarios.
+**Week 1 → Week 8**
 
-This allows the system to be demonstrated without exposing real student information.
+As the selected week changes, the application updates the student's:
 
-For real-world deployment, the system would require:
+- Risk score
+- Risk status
+- Attendance
+- Quiz performance
+- Assignment status
+- Historical context
 
-- Institution-approved data
-- Appropriate privacy controls
-- Validated indicators
-- Local model evaluation
-- Human oversight
+The interface also identifies the point at which the student was first flagged in the demonstration dataset.
 
----
+Example:
 
-## 6. Why This Approach Matters
+**Week 4 — Flagged**
 
-Most academic dashboards focus heavily on historical performance.
-
-This project focuses on early signals and actionable intervention.
-
-Instead of only asking:
-
-> "Who is performing poorly?"
-
-the system attempts to answer:
-
-> "Who is showing emerging warning signals?"
-
-> "What pattern is associated with the warning?"
-
-> "What support could be considered?"
-
-> "Is the student's trajectory changing over time?"
-
-This creates an early-warning workflow rather than a simple performance dashboard.
+This creates a clear visual story of how academic risk emerged.
 
 ---
 
-## 7. System Workflow
+# 7. Screen 4 — Intervention
+
+Once a student is identified as needing support, the teacher can generate a support plan.
+
+## Personalized Support Plan
+
+The prototype generates a structured intervention containing:
+
+### 1. Revision Plan
+
+Suggested academic actions based on the student's observed risk factors.
+
+### 2. Parent Communication
+
+A Telugu parent communication message is generated to help the teacher communicate the concern clearly and respectfully.
+
+The message focuses on:
+
+- The observed academic change
+- The student's current situation
+- Suggested support
+- A collaborative approach
+
+### 3. Teacher Checklist
+
+The teacher can track actions such as:
+
+- Talk to student
+- Call parent
+- Assign revision plan
+- Mark action as completed
+
+The goal is to connect detection with an actionable support workflow.
+
+---
+
+# 8. Parent Voice Message Prototype
+
+The Intervention screen includes a voice-message interface for Telugu parent communication.
+
+For the current prototype, the displayed transcript represents the intended communication content.
+
+If text-to-speech is not connected, the interface clearly identifies the feature as a prototype rather than presenting simulated audio as a real communication.
+
+---
+
+# 9. Screen 5 — Track
+
+The Track screen follows the student's risk trajectory after support.
+
+The prototype can demonstrate a simulated recovery scenario where a student's risk changes over time.
+
+Example:
+
+**Risk: 72 → 54**
+
+Status:
+
+**Recovering**
+
+This recovery scenario is based on synthetic demonstration data.
+
+It does not claim that the intervention itself caused the improvement.
+
+The purpose is to demonstrate how the system could support continuous monitoring.
+
+---
+
+# 10. Risk Detection Engine
+
+The current prototype uses an interpretable weighted rule-based scoring system rather than a complex machine-learning training pipeline.
+
+The risk score considers four major components:
+
+| Signal | Weight |
+|---|---:|
+| Attendance trend | 35% |
+| Quiz score trend | 30% |
+| Assignment missing streak | 20% |
+| Overall attendance level | 15% |
+
+The resulting score is normalized to a 0–100 risk scale.
+
+Higher scores indicate stronger signals that the student may require attention.
+
+The system is intended for early-warning support, not final academic judgment.
+
+---
+
+# 11. Risk Categories
+
+The prototype uses the following score ranges:
+
+| Score Range | Status |
+|---|---|
+| < 35 | On Track |
+| 35–54 | Watch |
+| 55–69 | Monitor Closely |
+| ≥ 70 | Needs Support |
+
+These thresholds are part of the demonstration prototype and should be validated and adapted before use with real institutional data.
+
+---
+
+# 12. Synthetic Dataset
+
+The application uses synthetic student records for demonstration.
+
+The prototype contains:
+
+- 60 students
+- 8 weeks of academic data
+
+Each weekly record includes:
+
+- Student ID
+- Week number
+- Attendance percentage
+- Quiz score
+- Assignment submission status
+- LMS login activity
+
+## Student Personas
+
+The synthetic dataset contains different learning patterns:
+
+- 15 steady toppers
+- 22 stable middle-performing students
+- 8 gradual decliners
+- 5 sudden droppers
+- 5 chronic absentee patterns
+- 3 recovering students
+- 2 fluctuating students
+
+These personas are intentionally created to demonstrate different academic trajectories.
+
+The recovering-student pattern is particularly useful for demonstrating the Track workflow.
+
+---
+
+# 13. Explainability
+
+A central design principle of the application is:
+
+**Do not show only a risk score. Explain the signals behind it.**
+
+The application provides:
+
+- Risk score
+- Risk status
+- Contributing factors
+- Trend information
+- Historical timeline
+- Plain-language explanation
+- Suggested support actions
+
+This helps teachers understand why a student was flagged and what information should be considered before taking action.
+
+---
+
+# 14. Application Architecture
+
+The prototype follows this workflow:
 
 ```text
-Student Learning Signals
+Student Weekly Data
         |
         v
-+---------------------------+
-| Data Processing           |
-| Attendance                |
-| Assessments               |
-| Assignments               |
-| Engagement                |
-| Concept Mastery           |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-| AI Risk Assessment        |
-| Logistic Regression       |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-| Explainability Layer      |
-| Risk + Trends + Signals   |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-| Root-Cause Classification |
-| Difficulty / Disengage    |
-| Sudden Decline / Chronic  |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-| Intervention Engine       |
-| Personalized Support      |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-| Tracking and Monitoring   |
-| Risk Trajectory           |
-| Time Travel               |
-| What-If Analysis          |
-+---------------------------+
+Risk Signal Analysis
+        |
+        v
+Weighted Risk Score
+        |
+        v
+Risk Classification
+        |
+        +------------------+
+        |                  |
+        v                  v
+Explain Risk         Track Trend
+        |
+        v
+Generate Support Plan
+        |
+        v
+Teacher Actions
+        |
+        v
+Monitor Recovery
