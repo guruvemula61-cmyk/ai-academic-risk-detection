@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Based Early Detection of Students at Academic Risk</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f6f8fc;
+            color: #172033;
+            line-height: 1.6;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,0.96);
+            border-bottom: 1px solid #e5e9f2;
+            padding: 16px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 18px;
+            font-weight: 800;
+            color: #172033;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #4b5568;
+            margin-left: 24px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        nav a:hover {
+            color: #315bea;
+        }
+
+        .hero {
+            min-height: 650px;
+            display: flex;
+            align-items: center;
+            padding: 80px 7%;
+            background: linear-gradient(135deg, #eef3ff, #ffffff);
+        }
+
+        .hero-content {
+            max-width: 900px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: #e3eaff;
+            color: #315bea;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        h1 {
+            font-size: clamp(38px, 6vw, 68px);
+            line-height: 1.08;
+            margin-bottom: 25px;
+            letter-spacing: -2px;
+        }
+
+        .hero p {
+            max-width: 760px;
+            font-size: 19px;
+            color: #596579;
+            margin-bottom: 32px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 13px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .primary {
+            background: #315bea;
+            color: white;
+        }
+
+        .secondary {
+            background: white;
+            color: #172033;
+            border: 1px solid #d7ddea;
+        }
+
+        section {
+            padding: 80px 7%;
+        }
+
+        .section-title {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 45px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .section-title p {
+            color: #687386;
+        }
+
+        .problem {
+            background: white;
+        }
+
+        .problem-box {
+            max-width: 1000px;
+            margin: auto;
+            padding: 35px;
+            border: 1px solid #e3e7ef;
+            border-radius: 14px;
+            background: #fbfcff;
+        }
+
+        .workflow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .workflow-card,
+        .feature-card {
+            background: white;
+            padding: 28px;
+            border: 1px solid #e3e7ef;
+            border-radius: 14px;
+        }
+
+        .number {
+            font-size: 13px;
+            font-weight: 800;
+            color: #315bea;
+            margin-bottom: 12px;
+        }
+
+        .workflow-card h3,
+        .feature-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .workflow-card p,
+        .feature-card p {
+            color: #687386;
+            font-size: 14px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .demo {
+            background: #101828;
+            color: white;
+        }
+
+        .demo .section-title p {
+            color: #aab4c6;
+        }
+
+        .demo-window {
+            max-width: 1050px;
+            margin: auto;
+            background: #182235;
+            border: 1px solid #2c3850;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .window-top {
+            padding: 14px 18px;
+            border-bottom: 1px solid #2c3850;
+            color: #9eabc0;
+            font-size: 13px;
+        }
+
+        .dashboard {
+            padding: 30px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .metric {
+            background: #202c42;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .metric small {
+            color: #aab4c6;
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 28px;
+            margin-top: 6px;
+        }
+
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .risk-table th,
+        .risk-table td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #2c3850;
+            font-size: 13px;
+        }
+
+        .risk-high {
+            color: #ff9a9a;
+        }
+
+        .risk-medium {
+            color: #ffd98a;
+        }
+
+        .risk-low {
+            color: #8ee6ae;
+        }
+
+        .tech {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .tech-card {
+            text-align: center;
+            padding: 22px 10px;
+            background: white;
+            border: 1px solid #e3e7ef;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .responsible {
+            background: white;
+        }
+
+        .responsible-box {
+            max-width: 950px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .responsible-card {
+            padding: 25px;
+            background: #f7f9fd;
+            border-radius: 12px;
+        }
+
+        .responsible-card h3 {
+            margin-bottom: 8px;
+        }
+
+        .responsible-card p {
+            color: #687386;
+            font-size: 14px;
+        }
+
+        .cta {
+            text-align: center;
+            background: linear-gradient(135deg, #315bea, #2346c7);
+            color: white;
+        }
+
+        .cta p {
+            max-width: 700px;
+            margin: 15px auto 25px;
+            color: #dfe6ff;
+        }
+
+        footer {
+            background: #0c1220;
+            color: #9aa5b8;
+            text-align: center;
+            padding: 25px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 900px) {
+            .workflow,
+            .features,
+            .responsible-box {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tech {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 14px 5%;
+            }
+
+            nav .links {
+                display: none;
+            }
+
+            section {
+                padding: 60px 5%;
+            }
+
+            .workflow,
+            .features,
+            .responsible-box,
+            .tech,
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 65px 5%;
+            }
+
+            h1 {
+                letter-spacing: -1px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div class="brand">AI Academic Risk Detection</div>
+
+    <div class="links">
+        <a href="#problem">Problem</a>
+        <a href="#workflow">Approach</a>
+        <a href="#features">Features</a>
+        <a href="#demo">Demo</a>
+        <a href="#technology">Technology</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-content">
+        <span class="tag">AI + EDUCATION</span>
+
+        <h1>
+            AI-Based Early Detection of Students at Academic Risk
+        </h1>
+
+        <p>
+            An explainable AI-powered early-warning and intervention system
+            that helps teachers identify emerging academic risk, understand
+            its likely drivers, provide targeted support, and track student
+            trajectories over time.
+        </p>
+
+        <div class="buttons">
+            <a href="#demo" class="btn primary">Explore Demo</a>
+            <a href="https://github.com/guruvemula61-cmyk/ai-academic-risk-detection"
+               class="btn secondary" target="_blank">
+                View GitHub
+            </a>
+        </div>
+    </div>
+</section>
+
+<section id="problem" class="problem">
+    <div class="section-title">
+        <h2>The Problem</h2>
+        <p>
+            Academic difficulties are often recognized after performance
+            has already declined.
+        </p>
+    </div>
+
+    <div class="problem-box">
+        <p>
+            Students can gradually move toward academic difficulty through
+            changes in attendance, assessments, assignment completion,
+            engagement, and concept mastery. Teachers need a way to identify
+            emerging patterns earlier and understand the signals associated
+            with a student's current academic situation.
+        </p>
+    </div>
+</section>
+
+<section id="workflow">
+    <div class="section-title">
+        <h2>Detect. Explain. Intervene. Track.</h2>
+        <p>
+            A complete workflow connecting early detection with actionable
+            teacher support.
+        </p>
+    </div>
+
+    <div class="workflow">
+
+        <div class="workflow-card">
+            <div class="number">01</div>
+            <h3>Detect</h3>
+            <p>
+                Analyze multiple learning signals and identify students
+                who may require academic attention.
+            </p>
+        </div>
+
+        <div class="workflow-card">
+            <div class="number">02</div>
+            <h3>Explain</h3>
+            <p>
+                Present the risk level, trend, and dominant risk pattern
+                instead of relying only on a single score.
+            </p>
+        </div>
+
+        <div class="workflow-card">
+            <div class="number">03</div>
+            <h3>Intervene</h3>
+            <p>
+                Generate personalized support recommendations based on
+                the identified academic pattern.
+            </p>
+        </div>
+
+        <div class="workflow-card">
+            <div class="number">04</div>
+            <h3>Track</h3>
+            <p>
+                Monitor risk trajectories over time and observe how the
+                student's academic situation changes.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<section id="features" class="problem">
+
+    <div class="section-title">
+        <h2>Core Features</h2>
+        <p>
+            Designed to turn academic data into understandable and
+            actionable insights.
+        </p>
+    </div>
+
+    <div class="features">
+
+        <div class="feature-card">
+            <h3>Explainable Risk Detection</h3>
+            <p>
+                Provides an academic risk score and risk level using
+                multiple student learning signals.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <h3>Root-Cause Classification</h3>
+            <p>
+                Identifies patterns such as sudden decline, disengagement,
+                academic difficulty, and chronic struggle.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <h3>Trend Velocity</h3>
+            <p>
+                Examines recent changes in academic risk to identify
+                emerging movement.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <h3>Time Travel Analysis</h3>
+            <p>
+                Replays previous weeks to identify when a student's risk
+                trajectory started changing.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <h3>What-If Simulator</h3>
+            <p>
+                Allows teachers to explore simulated scenarios by changing
+                key academic signals.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <h3>Intervention Center</h3>
+            <p>
+                Provides personalized support plans and parent communication
+                drafts for teacher use.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<section id="demo" class="demo">
+
+    <div class="section-title">
+        <h2>Product Demonstration</h2>
+        <p>
+            A conceptual view of the academic risk monitoring dashboard.
+        </p>
+    </div>
+
+    <div class="demo-window">
+
+        <div class="window-top">
+            AI Academic Risk Detection / Dashboard
+        </div>
+
+        <div class="dashboard">
+
+            <div class="metrics">
+
+                <div class="metric">
+                    <small>Students</small>
+                    <strong>20</strong>
+                </div>
+
+                <div class="metric">
+                    <small>High Risk</small>
+                    <strong>4</strong>
+                </div>
+
+                <div class="metric">
+                    <small>Moderate Risk</small>
+                    <strong>6</strong>
+                </div>
+
+                <div class="metric">
+                    <small>Low Risk</small>
+                    <strong>10</strong>
+                </div>
+
+            </div>
+
+            <table class="risk-table">
+
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Risk Score</th>
+                        <th>Risk Level</th>
+                        <th>Pattern</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>Student 01</td>
+                        <td>82</td>
+                        <td class="risk-high">High Risk</td>
+                        <td>Sudden Decline</td>
+                    </tr>
+
+                    <tr>
+                        <td>Student 02</td>
+                        <td>61</td>
+                        <td class="risk-medium">Moderate Risk</td>
+                        <td>Academic Difficulty</td>
+                    </tr>
+
+                    <tr>
+                        <td>Student 03</td>
+                        <td>28</td>
+                        <td class="risk-low">Low Risk</td>
+                        <td>Stable Learner</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+</section>
+
+<section id="technology">
+
+    <div class="section-title">
+        <h2>Technology Stack</h2>
+        <p>
+            A lightweight prototype architecture designed for rapid
+            experimentation and demonstration.
+        </p>
+    </div>
+
+    <div class="tech">
+
+        <div class="tech-card">Python</div>
+        <div class="tech-card">Streamlit</div>
+        <div class="tech-card">Pandas</div>
+        <div class="tech-card">NumPy</div>
+        <div class="tech-card">Scikit-learn</div>
+
+    </div>
+</section>
+
+<section class="responsible">
+
+    <div class="section-title">
+        <h2>Responsible AI</h2>
+        <p>
+            The system is designed as a teacher-support tool, not as a
+            replacement for human judgment.
+        </p>
+    </div>
+
+    <div class="responsible-box">
+
+        <div class="responsible-card">
+            <h3>Human Oversight</h3>
+            <p>
+                Risk insights should support teacher decisions rather than
+                automatically determine a student's academic outcome.
+            </p>
+        </div>
+
+        <div class="responsible-card">
+            <h3>Needs Support</h3>
+            <p>
+                The system focuses on identifying students who may need
+                support rather than publicly labeling or ranking them.
+            </p>
+        </div>
+
+        <div class="responsible-card">
+            <h3>Prototype Data</h3>
+            <p>
+                The current demonstration uses synthetic student data and
+                should not be interpreted as real student assessment.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<section class="cta">
+
+    <h2>From Early Signals to Timely Support</h2>
+
+    <p>
+        Detect emerging academic risk, understand the associated signals,
+        support teachers with targeted interventions, and track student
+        trajectories over time.
+    </p>
+
+    <div class="buttons" style="justify-content:center;">
+        <a href="https://github.com/guruvemula61-cmyk/ai-academic-risk-detection"
+           class="btn secondary" target="_blank">
+            Open GitHub Repository
+        </a>
+    </div>
+
+</section>
+
+<footer>
+    AI-Based Early Detection of Students at Academic Risk
+</footer>
+
+</body>
+</html>
