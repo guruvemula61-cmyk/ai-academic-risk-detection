@@ -2,7 +2,9 @@
 
 An explainable AI-powered early-warning and intervention system that helps educators identify students showing emerging academic risk, understand the likely contributing factors, recommend targeted support, and track changes over time.
 
-## 🚀 The Problem
+---
+
+## 1. The Problem
 
 Academic difficulties are often identified only after a student has already experienced repeated low scores, missed assignments, poor attendance, or declining engagement.
 
@@ -18,15 +20,15 @@ This project addresses that gap through an AI-assisted early-warning workflow.
 
 ---
 
-## 💡 Our Approach
+## 2. Our Approach
 
 The system follows a four-stage workflow:
 
-### DETECT → EXPLAIN → INTERVENE → TRACK
+**DETECT → EXPLAIN → INTERVENE → TRACK**
 
-**1. Detect**
+### Detect
 
-Analyze multiple learning signals such as:
+The system analyzes multiple learning signals such as:
 
 - Attendance
 - Assessment performance
@@ -35,75 +37,79 @@ Analyze multiple learning signals such as:
 - Concept mastery
 - Performance trends
 
-**2. Explain**
+### Explain
 
 Instead of showing only a risk score, the system identifies the likely pattern behind the risk.
 
-Examples:
+The prototype identifies four major patterns:
 
 - Academic Difficulty
 - Disengagement
 - Sudden Decline
 - Chronic Struggler
 
-**3. Intervene**
+### Intervene
 
-Generate a targeted support recommendation based on the identified pattern.
+The system generates a targeted support recommendation based on the identified pattern.
 
-Examples:
+Examples include:
 
 - Targeted topic revision
-- Teacher/mentor check-in
+- Teacher or mentor check-in
 - Priority academic review
 - Individualized long-term support
 
-**4. Track**
+### Track
 
-Monitor the student's trajectory over time and observe whether risk signals are improving or worsening.
+The student's trajectory is monitored over time to observe whether risk signals are improving or worsening.
 
 ---
 
-# 🌟 Key Features
+## 3. Key Features
 
-## 1. Explainable Academic Risk Detection
+### 3.1 Explainable Academic Risk Detection
 
 The system combines multiple student learning signals and generates an academic risk score.
 
 Risk levels are presented as:
 
-- 🟢 Low Risk
-- 🟡 Moderate Risk
-- 🔴 High Risk
+- Low Risk
+- Moderate Risk
+- High Risk
 
-The goal is not to label students, but to provide an early signal for educator attention.
+The objective is not to label students, but to provide an early signal for educator attention.
 
 ---
 
-## 2. Root-Cause Classification
+### 3.2 Root-Cause Classification
 
 A major feature of the system is identifying the likely pattern behind academic risk.
 
-### Academic Difficulty
+#### Academic Difficulty
+
 The student's academic performance and concept mastery show persistent weakness.
 
-### Disengagement
+#### Disengagement
+
 Attendance, assignments, or learning engagement show deterioration.
 
-### Sudden Decline
+#### Sudden Decline
+
 The student previously showed stable performance but recently experienced a sharp decline.
 
-### Chronic Struggler
+#### Chronic Struggler
+
 The student demonstrates consistently weak performance over an extended period.
 
 This converts a simple risk score into an actionable explanation.
 
 ---
 
-## 3. Trend Velocity
+### 3.3 Trend Velocity
 
-A student's current score alone may not tell the complete story.
+A student's current risk score alone may not tell the complete story.
 
-The system also analyzes the direction and rate of change in the student's risk trajectory.
+The system analyzes the direction and rate of change in the student's risk trajectory.
 
 For example:
 
@@ -113,7 +119,7 @@ This helps educators identify students whose situation may require attention bef
 
 ---
 
-## 4. Explainable Risk Card
+### 3.4 Explainable Risk Card
 
 For every selected student, the system presents:
 
@@ -129,7 +135,7 @@ This makes the AI output easier for educators to understand and act upon.
 
 ---
 
-## 5. Early Risk Forecast
+### 3.5 Early Risk Forecast
 
 The system examines recent risk trends and estimates when a student may approach a higher-risk threshold if the current trajectory continues.
 
@@ -137,9 +143,7 @@ This is intended as an early-warning signal, not a guaranteed prediction.
 
 ---
 
-## 6. Time Travel Analysis
-
-### "When did the risk actually start?"
+### 3.6 Time Travel Analysis
 
 The Time Travel feature replays historical weekly learning data and visualizes how the student's risk changed over time.
 
@@ -161,7 +165,7 @@ to:
 
 ---
 
-## 7. What-If Simulator
+### 3.7 What-If Simulator
 
 Educators can simulate changes in learning signals such as:
 
@@ -175,22 +179,22 @@ The system then compares the current risk with the simulated scenario.
 
 Example:
 
-> What happens to the estimated risk if attendance improves?
+> "What happens to the estimated risk if attendance improves?"
 
 This helps demonstrate how different learning signals can influence the overall risk assessment.
 
-**Note:** The simulator is a scenario-analysis tool and does not guarantee future outcomes.
+The simulator is a scenario-analysis tool and does not guarantee future outcomes.
 
 ---
 
-## 8. Personalized Intervention Engine
+### 3.8 Personalized Intervention Engine
 
 The system maps detected risk patterns to suggested support actions.
 
 | Risk Pattern | Suggested Support |
 |---|---|
 | Academic Difficulty | Targeted topic revision |
-| Disengagement | Teacher / mentor check-in |
+| Disengagement | Teacher or mentor check-in |
 | Sudden Decline | Priority academic review |
 | Chronic Struggler | Individualized long-term support |
 
@@ -198,7 +202,7 @@ The objective is to move from detection to meaningful action.
 
 ---
 
-## 9. Intervention Center
+### 3.9 Intervention Center
 
 The Intervention Center provides educators with a consolidated view of:
 
@@ -213,7 +217,7 @@ This creates a practical workflow for educator intervention.
 
 ---
 
-## 10. Parent Communication Support
+### 3.10 Parent Communication Support
 
 The system can generate a supportive communication message for parents in:
 
@@ -224,7 +228,7 @@ The communication focuses on providing support rather than publicly labeling or 
 
 ---
 
-# 🧠 AI / Machine Learning
+## 4. AI and Machine Learning
 
 The prototype uses machine learning to estimate academic risk from multiple learning signals.
 
@@ -256,9 +260,9 @@ The architecture can later be extended with more advanced models and real instit
 
 ---
 
-# 📊 Demonstration Data
+## 5. Demonstration Data
 
-This prototype uses **synthetic classroom data**.
+This prototype uses synthetic classroom data.
 
 The synthetic dataset contains multiple student learning patterns designed to demonstrate different academic-risk scenarios.
 
@@ -274,74 +278,74 @@ For real-world deployment, the system would require:
 
 ---
 
-# 🎯 Why This Approach Matters
+## 6. Why This Approach Matters
 
 Most academic dashboards focus heavily on historical performance.
 
-This project focuses on **early signals and actionable intervention**.
+This project focuses on early signals and actionable intervention.
 
 Instead of only asking:
 
-**"Who is performing poorly?"**
+> "Who is performing poorly?"
 
 the system attempts to answer:
 
-**"Who is showing emerging warning signals?"**
+> "Who is showing emerging warning signals?"
 
-**"What pattern is associated with the warning?"**
+> "What pattern is associated with the warning?"
 
-**"What support could be considered?"**
+> "What support could be considered?"
 
-**"Is the student's trajectory changing over time?"**
+> "Is the student's trajectory changing over time?"
 
 This creates an early-warning workflow rather than a simple performance dashboard.
 
 ---
 
-# 🏗️ System Workflow
+## 7. System Workflow
 
 ```text
 Student Learning Signals
-        │
-        ▼
-┌───────────────────────────┐
-│ Data Processing           │
-│ Attendance                │
-│ Assessments               │
-│ Assignments               │
-│ Engagement                │
-│ Concept Mastery           │
-└─────────────┬─────────────┘
-              │
-              ▼
-┌───────────────────────────┐
-│ AI Risk Assessment        │
-│ Logistic Regression       │
-└─────────────┬─────────────┘
-              │
-              ▼
-┌───────────────────────────┐
-│ Explainability Layer      │
-│ Risk + Trends + Signals   │
-└─────────────┬─────────────┘
-              │
-              ▼
-┌───────────────────────────┐
-│ Root-Cause Classification │
-│ Difficulty / Disengage    │
-│ Sudden Decline / Chronic  │
-└─────────────┬─────────────┘
-              │
-              ▼
-┌───────────────────────────┐
-│ Intervention Engine       │
-│ Personalized Support      │
-└─────────────┬─────────────┘
-              │
-              ▼
-┌───────────────────────────┐
-│ Tracking & Monitoring     │
-│ Risk Trajectory           │
-│ Time Travel               │
-│ What-If Analysis          │
-└───────────────────────────┘
+        |
+        v
++---------------------------+
+| Data Processing           |
+| Attendance                |
+| Assessments               |
+| Assignments               |
+| Engagement                |
+| Concept Mastery           |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| AI Risk Assessment        |
+| Logistic Regression       |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| Explainability Layer      |
+| Risk + Trends + Signals   |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| Root-Cause Classification |
+| Difficulty / Disengage    |
+| Sudden Decline / Chronic  |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| Intervention Engine       |
+| Personalized Support      |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| Tracking and Monitoring   |
+| Risk Trajectory           |
+| Time Travel               |
+| What-If Analysis          |
++---------------------------+
