@@ -10,7 +10,6 @@ import plotly.express as px
 
 st.set_page_config(
     page_title="AI Academic Risk Detection",
-    page_icon="🎓",
     layout="wide"
 )
 
@@ -580,7 +579,7 @@ st.markdown(
 # SIDEBAR
 # =========================================================
 
-st.sidebar.title("🎓 Navigation")
+st.sidebar.title("Navigation")
 
 page = st.sidebar.radio(
     "Select Module",
@@ -633,12 +632,12 @@ if page == "Dashboard":
     )
 
     col2.metric(
-        "🔴 High Risk",
+        "High Risk",
         high_risk
     )
 
     col3.metric(
-        "🟡 Moderate Risk",
+        "Moderate Risk",
         moderate_risk
     )
 
@@ -651,7 +650,7 @@ if page == "Dashboard":
     # SMART ALERTS
     # -----------------------------------------------------
 
-    st.markdown("## 🚨 Smart Early-Warning Center")
+    st.markdown("## Smart Early-Warning Center")
 
     alerts = []
 
@@ -670,14 +669,14 @@ if page == "Dashboard":
         if current["Risk Score"] >= 70:
 
             alerts.append(
-                f"🔴 **{student}** — High estimated risk "
+                f"**{student}** — High estimated risk "
                 f"({current['Risk Score']:.1f}%)."
             )
 
         elif slope > 3:
 
             alerts.append(
-                f"⚠️ **{student}** — Risk is increasing rapidly "
+                f"**{student}** — Risk is increasing rapidly "
                 f"({slope:+.1f} points/week)."
             )
 
@@ -696,7 +695,7 @@ if page == "Dashboard":
     # RISK CHART
     # -----------------------------------------------------
 
-    st.markdown("## 📊 Class Risk Overview")
+    st.markdown("## Class Risk Overview")
 
     chart_data = latest.sort_values(
         "Risk Score",
@@ -731,7 +730,7 @@ if page == "Dashboard":
     # ROOT CAUSE DISTRIBUTION
     # -----------------------------------------------------
 
-    st.markdown("## 🧠 Root-Cause Distribution")
+    st.markdown("## Root-Cause Distribution")
 
     causes = []
 
@@ -784,7 +783,7 @@ if page == "Dashboard":
 
 elif page == "Student Analysis":
 
-    st.title("🧠 Explainable Student Risk Analysis")
+    st.title("Explainable Student Risk Analysis")
 
     selected_student = st.selectbox(
         "Select Student",
@@ -850,13 +849,13 @@ elif page == "Student Analysis":
     # EXPLAINABLE RISK CARD
     # -----------------------------------------------------
 
-    st.markdown("## 🔎 Explainable Risk Card")
+    st.markdown("## Explainable Risk Card")
 
     st.markdown(
         f"""
         <div class="risk-card">
 
-        <h3>⚠️ {risk_level(current_risk)}</h3>
+        <h3> {risk_level(current_risk)}</h3>
 
         <p>
         <b>Primary pattern:</b> {cause}
@@ -880,7 +879,7 @@ elif page == "Student Analysis":
     # EARLY FORECAST
     # -----------------------------------------------------
 
-    st.markdown("## 🔮 Early Risk Forecast")
+    st.markdown("## Early Risk Forecast")
 
     if forecast == 0:
 
@@ -908,7 +907,7 @@ elif page == "Student Analysis":
     # SIGNAL CHANGES
     # -----------------------------------------------------
 
-    st.markdown("## 📉 Learning Signal Changes")
+    st.markdown("## Learning Signal Changes")
 
     changes = get_factor_changes(
         history
@@ -934,7 +933,7 @@ elif page == "Student Analysis":
     # TRAJECTORY
     # -----------------------------------------------------
 
-    st.markdown("## 📈 Learning Trajectory")
+    st.markdown("## Learning Trajectory")
 
     fig = px.line(
         history,
@@ -968,7 +967,7 @@ elif page == "Student Analysis":
     # ACTION
     # -----------------------------------------------------
 
-    st.markdown("## 🎯 Recommended Action")
+    st.markdown("## Recommended Action")
 
     actions = get_intervention(
         cause
@@ -990,7 +989,7 @@ elif page == "Student Analysis":
 
 elif page == "Time Travel":
 
-    st.title("⏪ Time Travel")
+    st.title("Time Travel")
 
     st.write(
         "Replay the student's academic journey to identify "
@@ -1093,7 +1092,7 @@ elif page == "Time Travel":
         if risk_change > 3:
 
             st.warning(
-                f"⚠️ Risk increased by "
+                f"Risk increased by "
                 f"{risk_change:.1f} points from the previous week."
             )
 
@@ -1118,7 +1117,7 @@ elif page == "Time Travel":
 
 elif page == "What-If Simulator":
 
-    st.title("🔮 What-If Intervention Simulator")
+    st.title("What-If Intervention Simulator")
 
     st.write(
         "Simulate hypothetical improvements in learning signals "
@@ -1161,7 +1160,7 @@ elif page == "What-If Simulator":
         f"### Primary Root Cause: **{cause}**"
     )
 
-    st.markdown("## 🧪 Simulate Support")
+    st.markdown("## Simulate Support")
 
     attendance_change = st.slider(
         "Attendance improvement",
@@ -1307,7 +1306,7 @@ elif page == "What-If Simulator":
 
 else:
 
-    st.title("🎯 Intervention Center")
+    st.title("Intervention Center")
 
     selected_student = st.selectbox(
         "Select Student",
@@ -1337,7 +1336,7 @@ else:
     # ROOT CAUSE
     # -----------------------------------------------------
 
-    st.markdown("## 🧠 Detected Root Cause")
+    st.markdown("## Detected Root Cause")
 
     st.info(
         f"**{cause}** — {explanation}"
@@ -1347,7 +1346,7 @@ else:
     # INTERVENTION PLAN
     # -----------------------------------------------------
 
-    st.markdown("## 🎯 Personalized Support Plan")
+    st.markdown("## Personalized Support Plan")
 
     actions = get_intervention(
         cause
@@ -1366,7 +1365,7 @@ else:
     # TRACKER
     # -----------------------------------------------------
 
-    st.markdown("## 📈 Intervention Impact Tracker")
+    st.markdown("## Intervention Impact Tracker")
 
     initial_risk = history.iloc[0][
         "Risk Score"
@@ -1421,7 +1420,7 @@ else:
     # PARENT COMMUNICATION
     # -----------------------------------------------------
 
-    st.markdown("## 👨‍👩‍👧 Supportive Parent Communication")
+    st.markdown("## Supportive Parent Communication")
 
     language = st.radio(
         "Choose Language",
